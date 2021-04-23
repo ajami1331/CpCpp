@@ -12,7 +12,7 @@ namespace utils
 {
     const char* prefix = "#include \"";
     const int prefixLen = strlen(prefix);
-    const char* startFile = "main.cpp";
+    const char* startFile = "main.cc";
     std::map<std::string, bool> visited;
     std::string content;
 
@@ -70,6 +70,7 @@ namespace utils
         content.clear();
         Process("", startFile);
         std::ofstream out("submission.cc");
+        std::cout << content;
         out << content;
         out.close();
     }
