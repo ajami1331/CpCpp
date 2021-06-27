@@ -1,8 +1,8 @@
 ﻿#ifndef solution_h
 #define solution_h 1
 
-#include "library/dsu.h"
 #include <iostream>
+#include "library/DisjointSet.h"
 
 namespace solution
 {

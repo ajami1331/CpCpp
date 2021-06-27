@@ -108,7 +108,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions),CLown1331</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_UNICODE;UNICODE;%(PreprocessorDefinitions);CLown1331</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -234,7 +234,7 @@
       <ImpLibCompiled></ImpLibCompiled>
     </None>
     <ClInclude Include="solution.h" />
-    <ClInclude Include="library\dsu.h" />
+    <ClInclude Include="library\DisjointSet.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemGroup>

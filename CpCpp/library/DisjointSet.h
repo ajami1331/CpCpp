@@ -1,15 +1,29 @@
-﻿#ifndef dsu_h
-#define dsu_h 1
-#include <vector>
+﻿#ifndef DisjointSet_h
+#define DisjointSet_h 1
+
+#include <algorithm>
+
 namespace library
 {
     struct DisjointSet {
         int n;
-        std::vector<int> par, cnt, rnk;
+        int *par;
+        int *cnt;
+        int *rnk;
 
-        DisjointSet( int n ) : n(n), par(n), cnt(n), rnk(n)
+        DisjointSet(int n) : n(n)
         {
+            par = new int[n];
+            cnt = new int[n];
+            rnk = new int[n];
             Reset();
+        }
+
+        ~DisjointSet()
+        {
+            delete[] par;
+            delete[] cnt;
+            delete[] rnk;
         }
 
         void Reset()
