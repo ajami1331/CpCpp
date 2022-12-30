@@ -1,4 +1,4 @@
-﻿#ifndef solution_h
+#ifndef solution_h
 #define solution_h 1
 
 #include <iostream>

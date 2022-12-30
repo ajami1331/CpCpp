@@ -1,4 +1,4 @@
-﻿#ifndef util_h
+#ifndef util_h
 #define util_h 1
 
 #include <fstream>
@@ -45,7 +45,7 @@ namespace utils
         std::ifstream fstream(fullFilePath);
         std::string line;
         std::string skippedContent;
-        char a,b,c;
+        char a, b, c;
         a = fstream.get();
         b = fstream.get();
         c = fstream.get();
@@ -63,7 +63,7 @@ namespace utils
                 std::string includePath = line.substr(prefixLen);
                 includePath.pop_back();
                 std::string fileName = GetFileName(includePath);
-                std::string dir = includePath.substr(0,includePath.size() - fileName.size());
+                std::string dir = includePath.substr(0, includePath.size() - fileName.size());
                 Process(path + dir, fileName);
             }
             else if (line.rfind(header) == 0)
@@ -86,7 +86,7 @@ namespace utils
         visited["utils.h"] = true;
         content.clear();
         Process("", startFile);
-        std::ofstream out("submission.cc");
+        std::ofstream out("submission.cpp");
         out << headers;
         out << content;
         out.close();

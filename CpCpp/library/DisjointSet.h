@@ -1,4 +1,4 @@
-﻿#ifndef DisjointSet_h
+#ifndef DisjointSet_h
 #define DisjointSet_h 1
 
 #include <algorithm>
@@ -7,9 +7,9 @@ namespace library
 {
     struct DisjointSet {
         int n;
-        int *par;
-        int *cnt;
-        int *rnk;
+        int* par;
+        int* cnt;
+        int* rnk;
 
         DisjointSet(int n) : n(n)
         {
@@ -28,7 +28,7 @@ namespace library
 
         void Reset()
         {
-            for(int i=0; i<n; i++)
+            for (int i = 0; i < n; i++)
             {
                 par[i] = i;
                 cnt[i] = 1;
