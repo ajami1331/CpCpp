@@ -5,6 +5,8 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <source_location>
+#include <filesystem>
 
 const int MAX_PATH = 256;
 
@@ -13,7 +15,6 @@ namespace utils
     const char* header = "#include ";
     const char* prefix = "#include \"";
     const size_t prefixLen = strlen(prefix);
-    const char* startFile = "main.cc";
     std::map<std::string, bool> visited;
     std::string headers;
     std::string content;
@@ -33,9 +34,9 @@ namespace utils
         return fileName;
     }
 
-    void Process(std::string path, std::string file)
+    void Process(std::string path, std::string filename)
     {
-        std::string fullFilePath = path + file;
+        std::string fullFilePath = path + filename;
         if (visited[fullFilePath])
         {
             return;
@@ -80,13 +81,17 @@ namespace utils
         fstream.close();
     }
 
-    void CreateFileForSubmission()
+    void CreateFileForSubmission(const std::source_location location = std::source_location::current())
     {
+        auto path = std::filesystem::path(location.file_name());
+        auto filename = path.filename().string();
+        path = path.remove_filename();
         visited.clear();
-        visited["utils.h"] = true;
+        visited[std::filesystem::path(path).concat("utils.h").string()] = true;
         content.clear();
-        Process("", startFile);
-        std::ofstream out("submission.cpp");
+        Process(path.string(), filename);
+        std::ofstream out(std::filesystem::path(path).concat("submission.cpp"));
+        path.remove_filename();
         out << headers;
         out << content;
         out.close();
