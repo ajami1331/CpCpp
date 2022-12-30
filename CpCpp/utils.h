@@ -12,7 +12,7 @@ namespace utils
 {
     const char* header = "#include ";
     const char* prefix = "#include \"";
-    const int prefixLen = strlen(prefix);
+    const size_t prefixLen = strlen(prefix);
     const char* startFile = "main.cc";
     std::map<std::string, bool> visited;
     std::string headers;
