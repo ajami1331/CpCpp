@@ -71,7 +71,7 @@ namespace utils
             {
                 headers.append(line + "\n");
             }
-            else
+            else if (!line.empty())
             {
                 skippedContent.append(line + "\n");
             }

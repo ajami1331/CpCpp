@@ -4,8 +4,6 @@
 #include <algorithm>
 #ifndef solution_h
 #define solution_h 1
-
-
 namespace solution
 {
     void Solve()
@@ -39,7 +37,6 @@ namespace solution
 }
 #endif
 #define _CRT_SECURE_NO_WARNINGS
-
 int main(int argc, char* argv[])
 {
 #ifdef CLown1331
