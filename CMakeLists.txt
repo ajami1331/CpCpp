@@ -4,8 +4,8 @@
 cmake_minimum_required (VERSION 3.8)
 
 if (UNIX)
-    set(CMAKE_C_COMPILER "gcc")
-    set(CMAKE_CXX_COMPILER "g++")
+    set(CMAKE_C_COMPILER gcc CACHE STRING "C compiler" FORCE)
+    set(CMAKE_CXX_COMPILER g++ CACHE STRING "C++ compiler" FORCE)
 endif()
 
 project ("CpCpp")
