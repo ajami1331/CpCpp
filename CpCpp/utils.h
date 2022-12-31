@@ -1,6 +1,8 @@
 #ifndef util_h
 #define util_h 1
 
+#include <cstring>
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <map>
@@ -30,7 +32,7 @@ namespace utils
             }
             fileName.push_back(cs[i]);
         }
-        reverse(fileName.begin(), fileName.end());
+        std::reverse(fileName.begin(), fileName.end());
         return fileName;
     }
 
