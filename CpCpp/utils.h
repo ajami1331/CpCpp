@@ -122,7 +122,7 @@ namespace utils
                 {
                     skippedContent.append(ifnPrefix + "\n");
                 }
-                else 
+                else if (!library::trim_n(line).rfind(elifPrefix))
                 {
                     skippedContent.append("#" + library::trim_n(line).erase(0, 3) + "\n");
                 }

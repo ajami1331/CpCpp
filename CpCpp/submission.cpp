@@ -41,10 +41,6 @@ namespace solution
 #define _CRT_SECURE_NO_WARNINGS
 int main(int argc, char* argv[])
 {
-#ifndef CLown1331
-#endif
     solution::Solve();
-#if ok
-#endif
     return 0;
 }
