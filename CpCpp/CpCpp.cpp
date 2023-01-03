@@ -9,13 +9,11 @@ int main(int argc, char* argv[])
     const clock_t tStart = clock();
     freopen("input.txt", "r", stdin);
     // freopen("output.txt", "w", stdout);
-#else
 #endif
     solution::Solve();
 #ifdef CLown1331
     fprintf(stderr, "\n>> Runtime: %.10fs\n", static_cast<double>(clock() - tStart) / CLOCKS_PER_SEC);
     utils::CreateFileForSubmission();
-#elif ok
 #endif
     return 0;
 }
