@@ -1,9 +1,10 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #include <cstdio>
-#include "utils.h"
-#include "solution.h"
 
-int main(int argc, char* argv[])
+#include "solution.h"
+#include "utils.h"
+
+int main(int argc, char *argv[])
 {
 #ifdef CLown1331
     const clock_t tStart = clock();
