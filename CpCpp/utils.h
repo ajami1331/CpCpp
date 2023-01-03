@@ -9,45 +9,55 @@
 #include <string>
 #include <source_location>
 #include <filesystem>
+#include "library/StringUtils.h"
+#include <cassert>
 
 const int MAX_PATH = 256;
 
 namespace utils
 {
-    const char* header = "#include ";
-    const char* prefix = "#include \"";
-    const size_t prefixLen = strlen(prefix);
+    const char* header = "#include";
+    const std::string ifPrefix = "#ifdef CLown1331";
+    const std::string ifnPrefix = "#ifndef CLown1331";
+    const std::string elifPrefix = "#elif";
+    const std::string elsePrefix = "#else";
+    const std::string endifPrefix = "#endif";
+    const bool shouldSkipComment = true;
     std::map<std::string, bool> visited;
-    std::string headers;
+    std::vector<std::string> headers;
     std::string content;
 
-    std::string GetFileName(const std::string& cs)
+    void Process(std::filesystem::path filePath);
+
+    bool IsComment(std::string line)
     {
-        std::string fileName;
-        for (int i = static_cast<int>(cs.size()) - 1; i >= 0; i--)
-        {
-            if (cs[i] == '/')
-            {
-                break;
-            }
-            fileName.push_back(cs[i]);
-        }
-        std::reverse(fileName.begin(), fileName.end());
-        return fileName;
+        library::trim(line);
+        return line.rfind("//") == 0;
     }
 
-    void Process(std::string path, std::string filename)
+    void ProcessIncludes(std::string line, std::filesystem::path filePath)
     {
-        std::string fullFilePath = path + filename;
-        if (visited[fullFilePath])
+        auto tokens = library::split(line, ' ');
+        auto tokensFiltered = std::vector<std::string>{};
+        std::copy_if(begin(tokens), end(tokens), back_inserter(tokensFiltered), [](const std::string& s) -> bool {
+            return !s.empty();
+            });
+        assert(tokensFiltered.size() == 2 && "Should be in format {#include $library_name}");
+        if (tokensFiltered[1][0] == '<')
         {
+            headers.emplace_back(tokensFiltered[0] + " " + tokensFiltered[1] + "\n");
             return;
         }
+        std::string includePath = tokensFiltered[1];
+        includePath.pop_back();
+        includePath.erase(0, 1);
+        std::filesystem::path fpath = includePath;
+        Process(std::filesystem::path(filePath).remove_filename().concat(fpath.string()));
+    }
 
-        visited[fullFilePath] = true;
-        std::ifstream fstream(fullFilePath);
-        std::string line;
-        std::string skippedContent;
+    std::ifstream OpenInputAndValidate(std::string filePathString)
+    {
+        std::ifstream fstream(filePathString);
         char a, b, c;
         a = fstream.get();
         b = fstream.get();
@@ -57,46 +67,106 @@ namespace utils
         }
         else
         {
-            std::cerr << "Warning: " + fullFilePath + " contains the so-called 'UTF-8 signature'\n";
+            std::cerr << "Warning: " + filePathString + " contains the so-called 'UTF-8 signature'\n";
         }
+
+        return fstream;
+    }
+
+    void Process(std::filesystem::path filePath)
+    {
+        bool skipIfBlock = false;
+        auto filePathString = filePath.string();
+        if (visited[filePathString])
+        {
+            return;
+        }
+
+        visited[filePathString] = true;
+        std::ifstream fstream = OpenInputAndValidate(filePathString);
+        std::string line;
+        std::string skippedContent;
         while (std::getline(fstream, line))
         {
-            if (line.rfind(prefix) == 0)
+            library::rtrim(line);
+            if (library::trim_n(line).rfind(header) == 0)
             {
-                std::string includePath = line.substr(prefixLen);
-                includePath.pop_back();
-                std::string fileName = GetFileName(includePath);
-                std::string dir = includePath.substr(0, includePath.size() - fileName.size());
-                Process(path + dir, fileName);
+                ProcessIncludes(line, filePath);
+                continue;
             }
-            else if (line.rfind(header) == 0)
+
+            bool skip = false;
+
+            if (line.empty())
             {
-                headers.append(line + "\n");
+                skip = true;
             }
-            else if (!line.empty())
+
+            if (IsComment(line)) 
             {
-                skippedContent.append(line + "\n");
+                skip = shouldSkipComment;
             }
+
+            if (!library::trim_n(line).rfind(ifPrefix))
+            {
+                skipIfBlock = true;
+            }
+
+            if (skipIfBlock && 
+                (!library::trim_n(line).rfind(endifPrefix) 
+                || !library::trim_n(line).rfind(elsePrefix) 
+                || !library::trim_n(line).rfind(elifPrefix)))
+            {
+                skip = true;
+                if(!library::trim_n(line).rfind(elsePrefix))
+                {
+                    skippedContent.append(ifnPrefix + "\n");
+                }
+                else 
+                {
+                    skippedContent.append("#" + library::trim_n(line).erase(0, 3) + "\n");
+                }
+                skipIfBlock = false;
+            }
+
+            if (skipIfBlock)
+            {
+                skip = true;
+            }
+
+            if (skip)
+            {
+                continue;
+            }
+            
+            skippedContent.append(line + "\n");
         }
 
         content.append(skippedContent);
         fstream.close();
     }
 
+    void WriteFile(std::filesystem::path path)
+    {
+        std::ofstream out(std::filesystem::path(path).remove_filename().concat("submission.cpp"));
+        std::sort(headers.begin(), headers.end());
+        headers.resize(std::unique(headers.begin(), headers.end()) - headers.begin());
+        for (const auto& header : headers)
+        {
+            out << header;
+        }
+        out << content;
+        out.close();
+    }
+
     void CreateFileForSubmission(const std::source_location location = std::source_location::current())
     {
         auto path = std::filesystem::path(location.file_name());
-        auto filename = path.filename().string();
-        path = path.remove_filename();
         visited.clear();
-        visited[std::filesystem::path(path).concat("utils.h").string()] = true;
+        visited[std::filesystem::path(path).remove_filename().concat("utils.h").string()] = true;
         content.clear();
-        Process(path.string(), filename);
-        std::ofstream out(std::filesystem::path(path).concat("submission.cpp"));
-        path.remove_filename();
-        out << headers;
-        out << content;
-        out.close();
+        Process(path);
+        WriteFile(path);
     }
 }
 #endif

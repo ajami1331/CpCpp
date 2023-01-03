@@ -3,36 +3,39 @@
 
 #include <iostream>
 #include <queue>
-#include <algorithm>
+#include <algorithm> 
 
 namespace solution
 {
+    using namespace std;
+
     void Solve()
     {
-        int t;
-        std::cin >> t;
+        int t, n;
+        cin >> t;
         while (t--) {
-            int n, m;
-            std::cin >> n >> m;
-            std::priority_queue<int, std::vector<int>, std::greater<int>> pq;
-            for (int i = 0; i < n; i++) {
-                int x;
-                std::cin >> x;
-                pq.push(x);
+            cin >> n;
+            cerr << n << ": --> \n";
+            if (n == 3) {
+                cout << "NO\n";
             }
-            for (int i = 0; i < m; i++) {
-                int x;
-                std::cin >> x;
-                pq.pop();
-                pq.push(x);
+            else {
+                cout << "YES\n";
+                if (n & 1) {
+                    for (int i = 0; i < n; i++) {
+                        if (i & 1) cout << ((n - 1) / 2) << " ";
+                        else cout << -(((n - 1) / 2) - 1) << " ";
+                    }
+                    cout << "\n";
+                }
+                else {
+                    for (int i = 0; i < n; i++) {
+                        if (i & 1) cout << "-";
+                        cout << 1 << " ";
+                    }
+                    cout << "\n";
+                }
             }
-            long long ans = 0;
-            while (!pq.empty())
-            {   
-                ans += pq.top();
-                pq.pop();
-            }
-            std::cout << ans << "\n";
         }
     }
 }
