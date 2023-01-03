@@ -1,0 +1,16 @@
+# Run manually to reformat a file:
+# clang-format -i --style=file <file>
+# find . -iname '*.cpp' -o -iname '*.h' -o -iname '*.h.in' | xargs clang-format -i --style=file
+BasedOnStyle: Microsoft
+DerivePointerAlignment: false
+
+# Public headers are in a different location in the internal Google repository.
+# Order them so that when imported to the authoritative repository they will be
+# in correct alphabetical order.
+IncludeCategories:
+  - Regex:           '^<.*\.h'
+    Priority:        1
+  - Regex:           '^<.*'
+    Priority:        2
+  - Regex:           '.*'
+    Priority:        3
