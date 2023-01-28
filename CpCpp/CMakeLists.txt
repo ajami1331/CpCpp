@@ -6,7 +6,8 @@
 add_compile_definitions(CLown1331)
 
 # Add source to this project's executable.
-add_executable (CpCpp "CpCpp.cpp"  "utils.h" "library/DisjointSet.h" "solution.h" "library/StringUtils.h")
+file(GLOB_RECURSE LIBRARY_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} library/*)
+add_executable (${CMAKE_PROJECT_NAME} "CpCpp.cpp"  "utils.h" ${LIBRARY_SOURCES})
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/input.txt  ${CMAKE_CURRENT_BINARY_DIR}/input.txt COPYONLY)
 
