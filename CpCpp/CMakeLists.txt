@@ -1,6 +1,7 @@
 ﻿# CMakeList.txt : CMake project for CpCpp, include source and define
 # project specific logic here.
 #
+cmake_minimum_required (VERSION 3.8)
 
 # Define CLown1331
 add_compile_definitions(CLown1331)
