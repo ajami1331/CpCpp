@@ -166,7 +166,7 @@ void CreateFileForSubmission(const std::source_location location = std::source_l
 #else
 void CreateFileForSubmission()
 {
-    auto path = std::filesystem::path(SOURCE_DIR);
+    auto path = std::filesystem::path(STARTING_FILE);
 #endif
     visited.clear();
     visited[std::filesystem::path(path).remove_filename().concat("utils.h").string()] = true;

@@ -16,6 +16,6 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/input.txt  ${CMAKE_CURRENT_BINARY_DIR
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/input.txt  ${CMAKE_CURRENT_BINARY_DIR}/Debug/input.txt COPYONLY)
 
 set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY CXX_STANDARD 20)
-add_compile_definitions(SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+add_compile_definitions(STARTING_FILE="${CMAKE_CURRENT_SOURCE_DIR}/CpCpp.cpp")
 
 # TODO: Add tests and install targets if needed.
