@@ -8,7 +8,9 @@
 #include <fstream>
 #include <iostream>
 #include <map>
+#ifndef __llvm__
 #include <source_location>
+#endif
 #include <string>
 
 #include "library/StringUtils.h"
@@ -157,10 +159,15 @@ void WriteFile(std::filesystem::path path)
     out << content;
     out.close();
 }
-
+#ifndef __llvm__
 void CreateFileForSubmission(const std::source_location location = std::source_location::current())
 {
     auto path = std::filesystem::path(location.file_name());
+#else
+void CreateFileForSubmission()
+{
+    auto path = std::filesystem::path(SOURCE_DIR);
+#endif
     visited.clear();
     visited[std::filesystem::path(path).remove_filename().concat("utils.h").string()] = true;
     content.clear();
