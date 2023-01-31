@@ -7,43 +7,59 @@
 namespace solution
 {
 using namespace std;
+const int sz = 2e5 + 10;
+int c[sz];
+int d[sz];
+int ans;
+vector<int> G[sz];
+void dfs(int u, int dist = 0, int par = -1)
+{
+    d[u] = dist;
+    if (dist >= ans)
+    {
+        return;
+    }
+    for (int v : G[u])
+    {
+        if (v == par)
+            continue;
+        if (d[v] > dist + 1)
+            dfs(v, dist + 1, u);
+        else
+            ans = min(ans, dist + 1 + d[v]);
+    }
+}
 void Solve()
 {
-    int t, n;
-    cin >> t;
+    int t, n, root;
+    scanf("%d", &t);
     while (t--)
     {
-        cin >> n;
-        cerr << n << ": --> \n";
-        if (n == 3)
+        scanf("%d %d", &n, &root);
+        for (int i = 1; i <= n; i++)
         {
-            cout << "NO\n";
+            G[i].clear();
+            d[i] = n + 10;
         }
-        else
+        for (int i = 1; i < n; i++)
         {
-            cout << "YES\n";
-            if (n & 1)
-            {
-                for (int i = 0; i < n; i++)
-                {
-                    if (i & 1)
-                        cout << ((n - 1) / 2) << " ";
-                    else
-                        cout << -(((n - 1) / 2) - 1) << " ";
-                }
-                cout << "\n";
-            }
-            else
-            {
-                for (int i = 0; i < n; i++)
-                {
-                    if (i & 1)
-                        cout << "-";
-                    cout << 1 << " ";
-                }
-                cout << "\n";
-            }
+            scanf("%d", &c[i]);
         }
+        for (int i = 1; i < n; i++)
+        {
+            int x, y;
+            scanf("%d %d", &x, &y);
+            G[x].emplace_back(y);
+            G[y].emplace_back(x);
+        }
+        ans = n + 10;
+        dfs(root);
+        for (int i = 1; i < n; i++)
+        {
+            dfs(c[i]);
+            printf("%d ", ans);
+        }
+        printf("\n");
     }
 }
 } // namespace solution
