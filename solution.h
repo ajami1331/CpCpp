@@ -4,41 +4,30 @@
 #include <algorithm>
 #include <iostream>
 #include <queue>
+#include "library/DisjointSet.h"
 
 namespace solution
 {
 using namespace std;
 
 const int sz = 2e5 + 10;
-int c[sz];
-int d[sz];
-int ans;
-vector<int> G[sz];
 
-void dfs(int u, int dist = 0, int par = -1)
-{
-    d[u] = dist;
-    if (dist >= ans)
-    {
-        return;
-    }
-
-    for (int v : G[u])
-    {
-        if (v == par)
-            continue;
-        if (d[v] > dist + 1)
-            dfs(v, dist + 1, u);
-        else
-            ans = min(ans, dist + 1 + d[v]);
-    }
-}
+library::DisjointSet<sz> dsu;
 
 void Solve()
 {
-    int a, b;
-    cin >> a >> b;
-    cout << ((a * b) / 2) << "\n";
+    int n, q;
+    cin >> n >> q;
+    dsu.Resize(n);
+    while (q--) {
+        int t, a, b;
+        cin >> t >> a >> b;
+        if (!t) {
+            dsu.MergeSet(a, b);
+        } else {
+            cout << dsu.IsSameSet(a, b) << "\n";
+        }
+    }
 }
 } // namespace solution
 #endif

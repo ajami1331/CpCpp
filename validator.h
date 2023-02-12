@@ -48,7 +48,8 @@ void reset(FILE *file)
 
 void Process(bool validateTestCases)
 {
-    if (!validateTestCases) {
+    if (!validateTestCases)
+    {
         freopen(INPUT_FILE, "r", stdin);
         freopen(OUTPUT_FILE, "w", stdout);
         solution::Solve();

@@ -5,26 +5,30 @@
 
 namespace library
 {
-struct DisjointSet
+template <int sz> struct DisjointSet
 {
     int n;
-    int *par;
-    int *cnt;
-    int *rnk;
+    int par[sz];
+    int cnt[sz];
+    int rnk[sz];
+
+    DisjointSet()
+    {
+    }
 
     DisjointSet(int n) : n(n)
     {
-        par = new int[n];
-        cnt = new int[n];
-        rnk = new int[n];
-        Reset();
+        this->Reset();
     }
 
     ~DisjointSet()
     {
-        delete[] par;
-        delete[] cnt;
-        delete[] rnk;
+    }
+
+    void Resize(int n)
+    {
+        this->n = n;
+        this->Reset();
     }
 
     void Reset()
