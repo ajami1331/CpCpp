@@ -46,8 +46,22 @@ void reset(FILE *file)
     fprintf(file, "\033[0m");
 }
 
-void Process()
+void Process(bool validateTestCases)
 {
+    if (!validateTestCases) {
+        freopen(INPUT_FILE, "r", stdin);
+        freopen(OUTPUT_FILE, "w", stdout);
+        solution::Solve();
+        fflush(stdout);
+        std::ifstream outputFileForTestcase(OUTPUT_FILE);
+        std::string outputLine;
+        while (std::getline(outputFileForTestcase, outputLine))
+        {
+            std::cerr << outputLine << std::endl;
+        }
+        return;
+    }
+
     std::ifstream testCaseCntFile;
     std::string testCaseDir(TEST_CASES_DIR);
     testCaseCntFile.open(testCaseDir + "cnt");
@@ -76,20 +90,22 @@ void Process()
             outfile << outputLine << std::endl;
             std::cerr << outputLine << std::endl;
         }
+
         bool success = compareFiles(validFileForTestcaseName, outputFileForTestcaseName);
         if (success)
         {
             passedCnt++;
             green(stderr);
-            std::cerr << "Test " << testCase << ": success!" << std::endl;
+            std::cerr << "Test " << testCase << ": Success!" << std::endl;
         }
         else
         {
             red(stderr);
-            std::cerr << "Test " << testCase << ": fail!" << std::endl;
+            std::cerr << "Test " << testCase << ": Fail!" << std::endl;
         }
         reset(stderr);
     }
+
     if (passedCnt == testCaseCnt)
     {
         green(stderr);
@@ -98,8 +114,9 @@ void Process()
     {
         red(stderr);
     }
-    std::cerr << passedCnt << "/" << testCaseCnt << " test passed!" << std::endl;
+    std::cerr << passedCnt << "/" << testCaseCnt << " Test passed!" << std::endl;
     reset(stderr);
+
     outfile.close();
     fprintf(stderr, "\n>> Avg Runtime: %.10fs\n", totalRuntime / testCaseCnt);
     utils::CreateFileForSubmission();

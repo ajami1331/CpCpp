@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
 #ifdef CLown1331
-    validator::Process();
+    validator::Process(true);
     return 0;
 #endif
     solution::Solve();

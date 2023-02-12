@@ -160,7 +160,6 @@ void WriteFile(std::filesystem::path path)
     out.close();
 }
 
-
 void CreateFileForSubmission()
 {
     auto path = std::filesystem::path(STARTING_FILE);
