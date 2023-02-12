@@ -159,15 +159,11 @@ void WriteFile(std::filesystem::path path)
     out << content;
     out.close();
 }
-#ifndef __llvm__
-void CreateFileForSubmission(const std::source_location location = std::source_location::current())
-{
-    auto path = std::filesystem::path(location.file_name());
-#else
+
+
 void CreateFileForSubmission()
 {
     auto path = std::filesystem::path(STARTING_FILE);
-#endif
     visited.clear();
     visited[std::filesystem::path(path).remove_filename().concat("utils.h").string()] = true;
     visited[std::filesystem::path(path).remove_filename().concat("validator.h").string()] = true;

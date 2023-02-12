@@ -12,7 +12,7 @@ add_compile_definitions(CLown1331)
 file(GLOB_RECURSE LIBRARY_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} library/*)
 add_executable (${CMAKE_PROJECT_NAME} "CpCpp.cpp"  "utils.h" ${LIBRARY_SOURCES})
 
-set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY CXX_STANDARD 20)
+set_property(TARGET ${CMAKE_PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 add_compile_definitions(STARTING_FILE="${CMAKE_CURRENT_SOURCE_DIR}/CpCpp.cpp")
 add_compile_definitions(INPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/input.txt")
 add_compile_definitions(OUTPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/output.txt")
