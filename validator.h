@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include "solution.h"
+#include "utils.h"
 
 namespace validator
 {

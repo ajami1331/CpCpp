@@ -1,7 +1,6 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 
 #include "solution.h"
-#include "utils.h"
 #include "validator.h"
 
 int main(int argc, char *argv[])
