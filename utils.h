@@ -170,6 +170,7 @@ void CreateFileForSubmission()
 #endif
     visited.clear();
     visited[std::filesystem::path(path).remove_filename().concat("utils.h").string()] = true;
+    visited[std::filesystem::path(path).remove_filename().concat("validator.h").string()] = true;
     content.clear();
     Process(path);
     WriteFile(path);
