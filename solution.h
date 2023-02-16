@@ -1,8 +1,8 @@
 #ifndef solution_h
 #define solution_h 1
 
-#include <iomanip>
 #include <algorithm>
+#include <iomanip>
 #include <iostream>
 #include <queue>
 #include "library/EdmondsKarp.h"
