@@ -38,6 +38,7 @@ template <int INF> struct EdmondsKarp
         graph[from][to] = cap;
         graph[to][from] = directed ? cap : graph[to][from];
     }
+
     bool Bfs(int src, int sink)
     {
         int u;
