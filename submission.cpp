@@ -1,6 +1,57 @@
 #include <algorithm>
 #include <cstdio>
+#include <functional>
 #include <vector>
+#ifndef SparseTable_h
+#define SparseTable_h 1
+namespace library
+{
+#define LOG2(x) (32 - __builtin_clz(x) - 1)
+template <typename T> struct SparseTable
+{
+    int n;
+    int log2n;
+    std::function<T(T, T)> combine;
+    std::vector<T> table[32];
+    SparseTable()
+    {
+    }
+    SparseTable(const std::vector<T> &arr, std::function<T(T, T)> combine) : SparseTable(arr)
+    {
+        this->combine = combine;
+    }
+    SparseTable(const std::vector<T> &arr)
+    {
+        n = arr.size();
+        log2n = LOG2(n) + 1;
+        table[0] = arr;
+        for (int i = 1; i < log2n; ++i)
+        {
+            table[i].resize(n - (1 << i) + 1);
+            for (int j = 0; j + (1 << i) <= n; j++)
+            {
+                int x = table[i - 1][j];
+                int y = table[i - 1][j + (1 << (i - 1))];
+                table[i][j] = Combine(x, y);
+            }
+        }
+    }
+    T Combine(T x, T y)
+    {
+        if (this->combine != nullptr)
+            return this->combine(x, y);
+        return std::min(x, y);
+    }
+    T Query(int l, int r)
+    {
+        int k = LOG2(r - l + 1);
+        int x = table[k][l];
+        int y = table[k][r - (1 << k) + 1];
+        return Combine(x, y);
+    }
+};
+} // namespace library
+#endif
 #ifndef LCA_H
 #define LCA_H 1
 namespace library
@@ -15,10 +66,8 @@ struct LCA
     std::vector<int> level;
     std::vector<int> tour;
     std::vector<int> position;
-    std::vector<std::vector<int>> sparse_table;
-    LCA(int n)
-        : n(n), log2n(LOG2(2 * n - 1) + 1), graph(n, std::vector<int>()), level(n), parent(n), position(n, -1),
-          sparse_table(log2n, std::vector<int>(2 * n - 1, -1))
+    SparseTable<int> sparse_table;
+    LCA(int n) : n(n), log2n(LOG2(2 * n - 1) + 1), graph(n, std::vector<int>()), level(n), parent(n), position(n, -1)
     {
     }
     ~LCA()
@@ -33,19 +82,7 @@ struct LCA
     {
         level[root] = 0;
         Dfs(root, -1);
-        for (int i = 0; i < tour.size(); i++)
-        {
-            sparse_table[0][i] = tour[i];
-        }
-        for (int i = 1; i < log2n; i++)
-        {
-            for (int j = 0; j + (1 << i) <= tour.size(); j++)
-            {
-                int x = sparse_table[i - 1][j];
-                int y = sparse_table[i - 1][j + (1 << (i - 1))];
-                sparse_table[i][j] = level[x] < level[y] ? x : y;
-            }
-        }
+        sparse_table = SparseTable<int>(tour, [level = level](int x, int y) { return level[x] < level[y] ? x : y; });
     }
     void Dfs(int u, int prev)
     {
@@ -68,10 +105,7 @@ struct LCA
         int r = position[v];
         if (l > r)
             std::swap(l, r);
-        int k = LOG2(r - l + 1);
-        int x = sparse_table[k][l];
-        int y = sparse_table[k][r - (1 << k) + 1];
-        return level[x] < level[y] ? x : y;
+        return sparse_table.Query(l, r);
     }
     int Distance(int u, int v)
     {

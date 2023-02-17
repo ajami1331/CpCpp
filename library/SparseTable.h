@@ -1,23 +1,34 @@
 #ifndef SparseTable_h
 #define SparseTable_h 1
 
+#include <functional>
 #include <vector>
 
 namespace library
 {
-    
+
 #define LOG2(x) (32 - __builtin_clz(x) - 1)
 
 template <typename T> struct SparseTable
 {
     int n;
     int log2n;
+    std::function<T(T, T)> combine;
     std::vector<T> table[32];
+
+    SparseTable()
+    {
+    }
+
+    SparseTable(const std::vector<T> &arr, std::function<T(T, T)> combine) : SparseTable(arr)
+    {
+        this->combine = combine;
+    }
 
     SparseTable(const std::vector<T> &arr)
     {
         n = arr.size();
-        log2n = LOG2(n) + 1; 
+        log2n = LOG2(n) + 1;
         table[0] = arr;
         for (int i = 1; i < log2n; ++i)
         {
@@ -33,6 +44,8 @@ template <typename T> struct SparseTable
 
     T Combine(T x, T y)
     {
+        if (this->combine != nullptr)
+            return this->combine(x, y);
         return std::min(x, y);
     }
 
