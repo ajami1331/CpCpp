@@ -1,11 +1,11 @@
 #include <algorithm>
-#include <cmath>
 #include <cstdio>
 #include <vector>
 #ifndef LCA_H
 #define LCA_H 1
 namespace library
 {
+#define LOG2(x) (32 - __builtin_clz(x) - 1)
 struct LCA
 {
     int n;
@@ -17,7 +17,7 @@ struct LCA
     std::vector<int> position;
     std::vector<std::vector<int>> sparse_table;
     LCA(int n)
-        : n(n), log2n(log2(2 * n - 1) + 1), graph(n, std::vector<int>()), level(n), parent(n), position(n, -1),
+        : n(n), log2n(LOG2(2 * n - 1) + 1), graph(n, std::vector<int>()), level(n), parent(n), position(n, -1),
           sparse_table(log2n, std::vector<int>(2 * n - 1, -1))
     {
     }
@@ -68,7 +68,7 @@ struct LCA
         int r = position[v];
         if (l > r)
             std::swap(l, r);
-        int k = log2(r - l + 1);
+        int k = LOG2(r - l + 1);
         int x = sparse_table[k][l];
         int y = sparse_table[k][r - (1 << k) + 1];
         return level[x] < level[y] ? x : y;
