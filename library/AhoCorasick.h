@@ -1,9 +1,9 @@
 #ifndef AhoCorasick_h
 #define AhoCorasick_h 1
 
+#include <algorithm>
 #include <queue>
 #include <vector>
-#include <algorithm>
 
 namespace library
 {
