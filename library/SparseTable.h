@@ -20,6 +20,15 @@ template <typename T> struct SparseTable
     {
     }
 
+    SparseTable(T *arr, int len, std::function<T(T, T)> combine) : SparseTable(arr, len)
+    {
+        this->combine = combine;
+    }
+
+    SparseTable(T *arr, int len) : SparseTable(std::vector<T>(arr, arr + len))
+    {
+    }
+
     SparseTable(const std::vector<T> &arr, std::function<T(T, T)> combine) : SparseTable(arr)
     {
         this->combine = combine;
