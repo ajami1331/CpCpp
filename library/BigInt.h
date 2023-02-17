@@ -2,27 +2,27 @@
 #define BigInt_h 1
 
 #include <algorithm>
-#include <vector>
-#include <string>
-#include <iostream>
-#include <sstream>
-#include <iomanip>
 #include <cassert>
-#include <cstring>
+#include <cmath>
 #include <cstdio>
 #include <cstdlib>
-#include <cmath>
+#include <cstring>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 
 namespace library
 {
 using ll = ll;
-using vll = vector<ll>;
+using vll = std::vector<ll>;
 const int base = 1000000000;
 const int base_digits = 9;
 
 struct BigInt
 {
-    vector<int> z;
+    std::vector<int> z;
     int sign;
 
     BigInt() : sign(1)
@@ -34,7 +34,7 @@ struct BigInt
         *this = v;
     }
 
-    BigInt(const string &s)
+    BigInt(const std::string &s)
     {
         Read(s);
     }
@@ -61,7 +61,7 @@ struct BigInt
         {
             BigInt res = v;
 
-            for (int i = 0, carry = 0; i < (int)max(z.size(), v.z.size()) || carry; ++i)
+            for (int i = 0, carry = 0; i < (int)std::max(z.size(), v.z.size()) || carry; ++i)
             {
                 if (i == (int)res.z.size())
                     res.z.push_back(0);
@@ -145,7 +145,7 @@ struct BigInt
         r.sign = a1.sign;
         q.Trim();
         r.Trim();
-        return make_pair(q, r / norm);
+        return std::make_pair(q, r / norm);
     }
 
     friend BigInt Sqrt(const BigInt &a1)
@@ -330,7 +330,7 @@ struct BigInt
         return a / Gcd(a, b) * b;
     }
 
-    void Read(const string &s)
+    void Read(const std::string &s)
     {
         sign = 1;
         z.clear();
@@ -351,31 +351,31 @@ struct BigInt
         Trim();
     }
 
-    friend istream &operator>>(istream &stream, BigInt &v)
+    friend std::istream &operator>>(std::istream &stream, BigInt &v)
     {
-        string s;
+        std::string s;
         stream >> s;
         v.Read(s);
         return stream;
     }
 
-    friend ostream &operator<<(ostream &stream, const BigInt &v)
+    friend std::ostream &operator<<(std::ostream &stream, const BigInt &v)
     {
         if (v.sign == -1)
             stream << '-';
         stream << (v.z.empty() ? 0 : v.z.back());
         for (int i = (int)v.z.size() - 2; i >= 0; --i)
-            stream << setw(base_digits) << setfill('0') << v.z[i];
+            stream << std::setw(base_digits) << std::setfill('0') << v.z[i];
         return stream;
     }
 
-    static vector<int> ConvertBase(const vector<int> &a, int old_digits, int new_digits)
+    static std::vector<int> ConvertBase(const std::vector<int> &a, int old_digits, int new_digits)
     {
-        vector<ll> p(max(old_digits, new_digits) + 1);
+        std::vector<ll> p(std::max(old_digits, new_digits) + 1);
         p[0] = 1;
         for (int i = 1; i < (int)p.size(); i++)
             p[i] = p[i - 1] * 10;
-        vector<int> res;
+        std::vector<int> res;
         ll cur = 0;
         int cur_digits = 0;
         for (int i = 0; i < (int)a.size(); i++)
@@ -438,8 +438,8 @@ struct BigInt
 
     BigInt operator*(const BigInt &v) const
     {
-        vector<int> a6 = ConvertBase(this->z, base_digits, 6);
-        vector<int> b6 = ConvertBase(v.z, base_digits, 6);
+        std::vector<int> a6 = ConvertBase(this->z, base_digits, 6);
+        std::vector<int> b6 = ConvertBase(v.z, base_digits, 6);
         vll a(a6.begin(), a6.end());
         vll b(b6.begin(), b6.end());
         while (a.size() < b.size())
@@ -480,7 +480,7 @@ struct BigInt
 
     BigInt RandomBigInt(int n)
     {
-        string s;
+        std::string s;
         for (int i = 0; i < n; i++)
         {
             s += rand() % 10 + '0';

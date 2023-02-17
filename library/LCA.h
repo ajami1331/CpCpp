@@ -1,11 +1,13 @@
-#include <algorithm>
-#include <cmath>
-#include <cstdio>
-#include <vector>
 #ifndef LCA_H
 #define LCA_H 1
+
+#include <algorithm>
+#include <cmath>
+#include <vector>
+
 namespace library
 {
+
 struct LCA
 {
     int n;
@@ -24,11 +26,13 @@ struct LCA
     ~LCA()
     {
     }
+
     void AddEdge(int from, int to)
     {
         graph[from].emplace_back(to);
         graph[to].emplace_back(from);
     }
+
     void Build(int root)
     {
         level[root] = 0;
@@ -37,6 +41,7 @@ struct LCA
         {
             sparse_table[0][i] = tour[i];
         }
+
         for (int i = 1; i < log2n; i++)
         {
             for (int j = 0; j + (1 << i) <= tour.size(); j++)
@@ -47,6 +52,7 @@ struct LCA
             }
         }
     }
+
     void Dfs(int u, int prev)
     {
         parent[u] = prev;
@@ -62,6 +68,7 @@ struct LCA
             }
         }
     }
+
     int Query(int u, int v)
     {
         int l = position[u];
@@ -73,11 +80,13 @@ struct LCA
         int y = sparse_table[k][r - (1 << k) + 1];
         return level[x] < level[y] ? x : y;
     }
+
     int Distance(int u, int v)
     {
         int lca = Query(u, v);
         return level[u] + level[v] - 2 * level[lca];
     }
+
     int KthAncestor(int u, int k)
     {
         for (int i = 0; i < log2n; i++)
@@ -89,6 +98,7 @@ struct LCA
         }
         return u;
     }
+
     int KthAncestor(int u, int v, int k)
     {
         int lca = Query(u, v);
@@ -104,38 +114,5 @@ struct LCA
     }
 };
 } // namespace library
+
 #endif
-#ifndef solution_h
-#define solution_h 1
-namespace solution
-{
-using namespace std;
-const int sz = 2e5 + 10;
-const int INF = 1e9 + 10;
-void Solve()
-{
-    int n, q;
-    scanf("%d %d", &n, &q);
-    library::LCA lca(n);
-    for (int i = 1; i < n; i++)
-    {
-        int v;
-        scanf("%d", &v);
-        lca.AddEdge(i, v);
-    }
-    lca.Build(0);
-    while (q--)
-    {
-        int u, v;
-        scanf("%d %d", &u, &v);
-        printf("%d\n", lca.Query(u, v));
-    }
-}
-} // namespace solution
-#endif
-#define _CRT_SECURE_NO_WARNINGS
-int main(int argc, char *argv[])
-{
-    solution::Solve();
-    return 0;
-}
