@@ -1,6 +1,9 @@
 #ifndef StringUtils_h
 #define StringUtils_h 1
 
+#include <algorithm>
+#include <string>
+
 namespace library
 {
 static inline void ltrim(std::string &s)

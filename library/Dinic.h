@@ -7,9 +7,6 @@
 namespace library
 {
 
-using namespace std;
-using ll = long long;
-
 struct Edge
 {
     int from, to, cap, flow, index;
@@ -21,9 +18,9 @@ struct Edge
 template <int INF> struct Dinic
 {
     int N;
-    vector<vector<Edge>> G;
-    vector<Edge *> dad;
-    vector<int> Q;
+    std::vector<std::vector<Edge>> G;
+    std::vector<Edge *> dad;
+    std::vector<int> Q;
 
     Dinic(int N) : N(N), G(N), dad(N), Q(N)
     {
@@ -37,9 +34,9 @@ template <int INF> struct Dinic
         G[to].emplace_back(to, from, 0, 0, G[from].size() - 1);
     }
 
-    ll BlockingFlow(int s, int t)
+    long long BlockingFlow(int s, int t)
     {
-        fill(dad.begin(), dad.end(), (Edge *)NULL);
+        std::fill(dad.begin(), dad.end(), (Edge *)NULL);
         dad[s] = &G[0][0] - 1;
 
         int head = 0, tail = 0;
@@ -60,7 +57,7 @@ template <int INF> struct Dinic
         if (!dad[t])
             return 0;
 
-        ll totflow = 0;
+        long long totflow = 0;
         for (int i = 0; i < G[t].size(); i++)
         {
             Edge *start = &G[G[t][i].to][G[t][i].index];
@@ -72,7 +69,7 @@ template <int INF> struct Dinic
                     amt = 0;
                     break;
                 }
-                amt = min(amt, e->cap - e->flow);
+                amt = std::min(amt, e->cap - e->flow);
             }
             if (amt == 0)
                 continue;
@@ -86,10 +83,10 @@ template <int INF> struct Dinic
         return totflow;
     }
 
-    ll MaxFlow(int s, int t)
+    long long MaxFlow(int s, int t)
     {
-        ll totflow = 0;
-        while (ll flow = BlockingFlow(s, t))
+        long long totflow = 0;
+        while (long long flow = BlockingFlow(s, t))
             totflow += flow;
         return totflow;
     }

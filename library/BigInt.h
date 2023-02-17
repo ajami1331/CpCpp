@@ -15,8 +15,6 @@
 
 namespace library
 {
-using ll = ll;
-using vll = std::vector<ll>;
 const int base = 1000000000;
 const int base_digits = 9;
 
@@ -29,7 +27,7 @@ struct BigInt
     {
     }
 
-    BigInt(ll v)
+    BigInt(long long v)
     {
         *this = v;
     }
@@ -45,7 +43,7 @@ struct BigInt
         z = v.z;
     }
 
-    void operator=(ll v)
+    void operator=(long long v)
     {
         sign = 1;
         if (v < 0)
@@ -105,7 +103,7 @@ struct BigInt
         {
             if (i == (int)z.size())
                 z.push_back(0);
-            ll cur = z[i] * (ll)v + carry;
+            long long cur = z[i] * (long long)v + carry;
             carry = (int)(cur / base);
             z[i] = (int)(cur % base);
             // asm("divl %%ecx" : "=a"(carry), "=d"(a[i]) : "A"(cur), "c"(base));
@@ -120,7 +118,7 @@ struct BigInt
         return res;
     }
 
-    friend pair<BigInt, BigInt> DivMod(const BigInt &a1, const BigInt &b1)
+    friend std::pair<BigInt, BigInt> DivMod(const BigInt &a1, const BigInt &b1)
     {
         int norm = base / (b1.z.back() + 1);
         BigInt a = a1.Abs() * norm;
@@ -134,7 +132,7 @@ struct BigInt
             r += a.z[i];
             int s1 = b.z.size() < r.z.size() ? r.z[b.z.size()] : 0;
             int s2 = b.z.size() - 1 < r.z.size() ? r.z[b.z.size() - 1] : 0;
-            int d = ((ll)s1 * base + s2) / b.z.back();
+            int d = ((long long)s1 * base + s2) / b.z.back();
             r -= b * d;
             while (r < 0)
                 r += b, --d;
@@ -156,15 +154,15 @@ struct BigInt
 
         int n = a.z.size();
 
-        int firstDigit = (int)Sqrt((double)a.z[n - 1] * base + a.z[n - 2]);
+        int firstDigit = (int)sqrt((double)a.z[n - 1] * base + a.z[n - 2]);
         int norm = base / (firstDigit + 1);
         a *= norm;
         a *= norm;
         while (a.z.empty() || a.z.size() % 2 == 1)
             a.z.push_back(0);
 
-        BigInt r = (ll)a.z[n - 1] * base + a.z[n - 2];
-        firstDigit = (int)Sqrt((double)a.z[n - 1] * base + a.z[n - 2]);
+        BigInt r = (long long)a.z[n - 1] * base + a.z[n - 2];
+        firstDigit = (int)sqrt((double)a.z[n - 1] * base + a.z[n - 2]);
         int q = firstDigit;
         BigInt res;
 
@@ -173,7 +171,7 @@ struct BigInt
             for (;; --q)
             {
                 BigInt r1 = (r - (res * 2 * base + q) * q) * base * base +
-                            (j > 0 ? (ll)a.z[2 * j - 1] * base + a.z[2 * j - 2] : 0);
+                            (j > 0 ? (long long)a.z[2 * j - 1] * base + a.z[2 * j - 2] : 0);
                 if (r1 >= 0)
                 {
                     r = r1;
@@ -188,7 +186,7 @@ struct BigInt
                 int d1 = res.z.size() + 2 < r.z.size() ? r.z[res.z.size() + 2] : 0;
                 int d2 = res.z.size() + 1 < r.z.size() ? r.z[res.z.size() + 1] : 0;
                 int d3 = res.z.size() < r.z.size() ? r.z[res.z.size()] : 0;
-                q = ((ll)d1 * base * base + (ll)d2 * base + d3) / (firstDigit * 2);
+                q = ((long long)d1 * base * base + (long long)d2 * base + d3) / (firstDigit * 2);
             }
         }
 
@@ -212,7 +210,7 @@ struct BigInt
             sign = -sign, v = -v;
         for (int i = (int)z.size() - 1, rem = 0; i >= 0; --i)
         {
-            ll cur = z[i] + rem * (ll)base;
+            long long cur = z[i] + rem * (long long)base;
             z[i] = (int)(cur / v);
             rem = (int)(cur % v);
         }
@@ -232,7 +230,7 @@ struct BigInt
             v = -v;
         int m = 0;
         for (int i = z.size() - 1; i >= 0; --i)
-            m = (z[i] + m * (ll)base) % v;
+            m = (z[i] + m * (long long)base) % v;
         return m * sign;
     }
 
@@ -313,9 +311,9 @@ struct BigInt
         return res;
     }
 
-    ll LongValue() const
+    long long LongValue() const
     {
-        ll res = 0;
+        long long res = 0;
         for (int i = z.size() - 1; i >= 0; i--)
             res = res * base + z[i];
         return res * sign;
@@ -344,7 +342,7 @@ struct BigInt
         for (int i = s.size() - 1; i >= pos; i -= base_digits)
         {
             int x = 0;
-            for (int j = max(pos, i - base_digits + 1); j <= i; j++)
+            for (int j = std::max(pos, i - base_digits + 1); j <= i; j++)
                 x = x * 10 + s[j] - '0';
             z.push_back(x);
         }
@@ -371,12 +369,12 @@ struct BigInt
 
     static std::vector<int> ConvertBase(const std::vector<int> &a, int old_digits, int new_digits)
     {
-        std::vector<ll> p(std::max(old_digits, new_digits) + 1);
+        std::vector<long long> p(std::max(old_digits, new_digits) + 1);
         p[0] = 1;
         for (int i = 1; i < (int)p.size(); i++)
             p[i] = p[i - 1] * 10;
         std::vector<int> res;
-        ll cur = 0;
+        long long cur = 0;
         int cur_digits = 0;
         for (int i = 0; i < (int)a.size(); i++)
         {
@@ -395,10 +393,10 @@ struct BigInt
         return res;
     }
 
-    static vll KaratsubaMultiply(const vll &a, const vll &b)
+    static std::vector<long long> KaratsubaMultiply(const std::vector<long long> &a, const std::vector<long long> &b)
     {
         int n = a.size();
-        vll res(n + n);
+        std::vector<long long> res(n + n);
         if (n <= 32)
         {
             for (int i = 0; i < n; i++)
@@ -408,20 +406,20 @@ struct BigInt
         }
 
         int k = n >> 1;
-        vll a1(a.begin(), a.begin() + k);
-        vll a2(a.begin() + k, a.end());
-        vll b1(b.begin(), b.begin() + k);
-        vll b2(b.begin() + k, b.end());
+        std::vector<long long> a1(a.begin(), a.begin() + k);
+        std::vector<long long> a2(a.begin() + k, a.end());
+        std::vector<long long> b1(b.begin(), b.begin() + k);
+        std::vector<long long> b2(b.begin() + k, b.end());
 
-        vll a1b1 = KaratsubaMultiply(a1, b1);
-        vll a2b2 = KaratsubaMultiply(a2, b2);
+        std::vector<long long> a1b1 = KaratsubaMultiply(a1, b1);
+        std::vector<long long> a2b2 = KaratsubaMultiply(a2, b2);
 
         for (int i = 0; i < k; i++)
             a2[i] += a1[i];
         for (int i = 0; i < k; i++)
             b2[i] += b1[i];
 
-        vll r = KaratsubaMultiply(a2, b2);
+        std::vector<long long> r = KaratsubaMultiply(a2, b2);
         for (int i = 0; i < (int)a1b1.size(); i++)
             r[i] -= a1b1[i];
         for (int i = 0; i < (int)a2b2.size(); i++)
@@ -440,20 +438,20 @@ struct BigInt
     {
         std::vector<int> a6 = ConvertBase(this->z, base_digits, 6);
         std::vector<int> b6 = ConvertBase(v.z, base_digits, 6);
-        vll a(a6.begin(), a6.end());
-        vll b(b6.begin(), b6.end());
+        std::vector<long long> a(a6.begin(), a6.end());
+        std::vector<long long> b(b6.begin(), b6.end());
         while (a.size() < b.size())
             a.push_back(0);
         while (b.size() < a.size())
             b.push_back(0);
         while (a.size() & (a.size() - 1))
             a.push_back(0), b.push_back(0);
-        vll c = KaratsubaMultiply(a, b);
+        std::vector<long long> c = KaratsubaMultiply(a, b);
         BigInt res;
         res.sign = sign * v.sign;
         for (int i = 0, carry = 0; i < (int)c.size(); i++)
         {
-            ll cur = c[i] + carry;
+            long long cur = c[i] + carry;
             res.z.push_back((int)(cur % 1000000));
             carry = (int)(cur / 1000000);
         }
@@ -462,10 +460,10 @@ struct BigInt
         return res;
     }
 
-    ll SumOfDigits()
+    long long SumOfDigits()
     {
-        ll res = 0;
-        ll ret = 0;
+        long long res = 0;
+        long long ret = 0;
         for (int i = z.size() - 1; i >= 0; i--)
         {
             res = res * base + z[i];

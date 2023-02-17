@@ -8,44 +8,42 @@
 namespace library
 {
 
-using namespace std;
-
 template <int INF> struct EdmondsKarp
 {
     int n;
-    vector<int> par;
-    vector<bool> vis;
-    vector<vector<int>> graph;
+    std::vector<int> par;
+    std::vector<bool> vis;
+    std::vector<std::vector<int>> graph;
 
     EdmondsKarp()
     {
     }
-    EdmondsKarp(int _n) : n(_n), par(_n), vis(_n), graph(_n, vector<int>(_n, 0))
+    EdmondsKarp(int _n) : n(_n), par(_n), vis(_n), graph(_n, std::vector<int>(_n, 0))
     {
     }
     ~EdmondsKarp()
     {
     }
 
-    void AddEdge(int from, int to, int cap, bool directed)
+    void AddEdge(int from, int to, int cap, bool undirected)
     {
         graph[from][to] += cap;
-        graph[to][from] = directed ? graph[to][from] + cap : graph[to][from];
+        graph[to][from] = undirected ? graph[to][from] + cap : graph[to][from];
     }
 
-    void SetEdgeCapacity(int from, int to, int cap, bool directed)
+    void SetEdgeCapacity(int from, int to, int cap, bool undirected)
     {
         graph[from][to] = cap;
-        graph[to][from] = directed ? cap : graph[to][from];
+        graph[to][from] = undirected ? cap : graph[to][from];
     }
 
     bool Bfs(int src, int sink)
     {
         int u;
-        fill(vis.begin(), vis.end(), false);
-        fill(par.begin(), par.end(), -1);
+        std::fill(vis.begin(), vis.end(), false);
+        std::fill(par.begin(), par.end(), -1);
         vis[src] = true;
-        queue<int> q;
+        std::queue<int> q;
         q.push(src);
         while (!q.empty())
         {
@@ -71,7 +69,7 @@ template <int INF> struct EdmondsKarp
         int ret = INF;
         for (; par[i] != -1; i = par[i])
         {
-            ret = min(ret, graph[par[i]][i]);
+            ret = std::min(ret, graph[par[i]][i]);
         }
         return ret;
     }
