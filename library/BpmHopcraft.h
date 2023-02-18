@@ -2,16 +2,14 @@
 #define BpmHopcraft_h 1
 
 #include <algorithm>
+#include <vector>
 
 namespace library
-{    
+{
 // Esqrt(V) Complexity
 // 0 Based
 // Edge from set a to set b
-const int MAXN1 = 50010; // nodes in set a
-const int MAXN2 = 50010; // nodes in set b
-const int MAXM = 150010; // number of edges
-struct BpmHopcraft
+template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
 {
 
     int n1, n2, edges, last[MAXN1], prev[MAXM], head[MAXM];
@@ -100,6 +98,15 @@ struct BpmHopcraft
                 return res;
             res += f;
         }
+    }
+
+    std::vector<std::pair<int, int>> GetMatching()
+    {
+        std::vector<std::pair<int, int>> res;
+        for (int i = 0; i < n2; ++i)
+            if (matching[i] != -1)
+                res.emplace_back(matching[i], i);
+        return res;
     }
 };
 } // namespace library

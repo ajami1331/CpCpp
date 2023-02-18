@@ -2,14 +2,12 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include <vector>
 #ifndef BpmHopcraft_h
 #define BpmHopcraft_h 1
 namespace library
 {
-const int MAXN1 = 50010; // nodes in set a
-const int MAXN2 = 50010; // nodes in set b
-const int MAXM = 150010; // number of edges
-struct BpmHopcraft
+template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
 {
     int n1, n2, edges, last[MAXN1], prev[MAXM], head[MAXM];
     int matching[MAXN2], dist[MAXN1], Q[MAXN1];
@@ -91,6 +89,14 @@ struct BpmHopcraft
             res += f;
         }
     }
+    std::vector<std::pair<int, int>> GetMatching()
+    {
+        std::vector<std::pair<int, int>> res;
+        for (int i = 0; i < n2; ++i)
+            if (matching[i] != -1)
+                res.emplace_back(matching[i], i);
+        return res;
+    }
 };
 } // namespace library
 #endif
@@ -99,25 +105,23 @@ struct BpmHopcraft
 namespace solution
 {
 using namespace std;
-const int sz = 1005;
-library::BpmHopcraft bpm;
+const int sz = 1e5 + 10;
+library::BpmHopcraft<sz, sz, sz + sz> bpm;
 void Solve()
 {
-    int t, n, m;
-    scanf("%d", &t);
-    for (int cs = 1; cs <= t; cs++)
+    int l, r, m;
+    scanf("%d%d%d", &l, &r, &m);
+    bpm.Init(l, r);
+    while (m--)
     {
-        scanf("%d %d", &n, &m);
-        bpm.Init(n, n);
-        while (m--)
-        {
-            int x, y;
-            scanf("%d %d", &x, &y);
-            --x, --y;
-            bpm.AddEdge(x, y);
-            bpm.AddEdge(y, x);
-        }
-        printf("Case %d: %d\n", cs, n - (bpm.MaxMatching() / 2));
+        int u, v;
+        scanf("%d%d", &u, &v);
+        bpm.AddEdge(u, v);
+    }
+    printf("%d\n", bpm.MaxMatching());
+    for (auto [x, y] : bpm.GetMatching())
+    {
+        printf("%d %d\n", x, y);
     }
 }
 } // namespace solution
