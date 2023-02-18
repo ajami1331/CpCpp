@@ -2,10 +2,10 @@
 #ifndef solution_h
 #define solution_h 1
 
+#include "../library/DisjointSet.h"
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "../library/DisjointSet.h"
 
 namespace solution
 {

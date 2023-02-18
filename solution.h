@@ -4,30 +4,35 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "library/DisjointSet.h"
+#include "library/BpmHopcraft.h"
 
 namespace solution
 {
 using namespace std;
-const int sz = 2e5 + 10;
-library::DisjointSet<sz> dsu;
+const int sz = 1005;
+library::BpmHopcraft bpm;
 void Solve()
 {
-    int n, q;
-    cin >> n >> q;
-    dsu.Resize(n);
-    while (q--)
+    int t, n, m;
+    scanf("%d", &t);
+
+    for (int cs = 1; cs <= t; cs++)
     {
-        int t, a, b;
-        cin >> t >> a >> b;
-        if (!t)
+
+        scanf("%d %d", &n, &m);
+
+        bpm.Init(n, n);
+
+        while (m--)
         {
-            dsu.MergeSet(a, b);
+            int x, y;
+            scanf("%d %d", &x, &y);
+            --x, --y;
+            bpm.AddEdge(x, y);
+            bpm.AddEdge(y, x);
         }
-        else
-        {
-            cout << dsu.IsSameSet(a, b) << "\n";
-        }
+
+        printf("Case %d: %d\n", cs, n - (bpm.MaxMatching() / 2));
     }
 }
 } // namespace solution

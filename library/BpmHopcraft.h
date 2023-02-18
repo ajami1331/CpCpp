@@ -1,19 +1,24 @@
-#include <algorithm>
-#include <cstdio>
-#include <cstring>
-#include <iostream>
 #ifndef BpmHopcraft_h
 #define BpmHopcraft_h 1
+
+#include <algorithm>
+
 namespace library
-{
+{    
+// Esqrt(V) Complexity
+// 0 Based
+// Edge from set a to set b
 const int MAXN1 = 50010; // nodes in set a
 const int MAXN2 = 50010; // nodes in set b
 const int MAXM = 150010; // number of edges
 struct BpmHopcraft
 {
+
     int n1, n2, edges, last[MAXN1], prev[MAXM], head[MAXM];
     int matching[MAXN2], dist[MAXN1], Q[MAXN1];
     bool used[MAXN1], vis[MAXN1]; // vis is cleared in each Dfs
+
+    // n1 = number of nodes in set a, n2 = number of nodes in set b
     void Init(int _n1, int _n2)
     {
         n1 = _n1;
@@ -21,12 +26,14 @@ struct BpmHopcraft
         edges = 0;
         std::fill(last, last + n1, -1);
     }
+
     void AddEdge(int u, int v)
     {
         head[edges] = v;
         prev[edges] = last[u];
         last[u] = edges++;
     }
+
     void Bfs()
     {
         std::fill(dist, dist + n1, -1);
@@ -53,6 +60,7 @@ struct BpmHopcraft
             }
         }
     }
+
     bool Dfs(int u1)
     {
         vis[u1] = true;
@@ -69,6 +77,7 @@ struct BpmHopcraft
         }
         return false;
     }
+
     int AugmentPath()
     {
         Bfs();
@@ -79,6 +88,7 @@ struct BpmHopcraft
                 ++f;
         return f;
     }
+
     int MaxMatching()
     {
         std::fill(used, used + n1, false);
@@ -94,37 +104,3 @@ struct BpmHopcraft
 };
 } // namespace library
 #endif
-#ifndef solution_h
-#define solution_h 1
-namespace solution
-{
-using namespace std;
-const int sz = 1005;
-library::BpmHopcraft bpm;
-void Solve()
-{
-    int t, n, m;
-    scanf("%d", &t);
-    for (int cs = 1; cs <= t; cs++)
-    {
-        scanf("%d %d", &n, &m);
-        bpm.Init(n, n);
-        while (m--)
-        {
-            int x, y;
-            scanf("%d %d", &x, &y);
-            --x, --y;
-            bpm.AddEdge(x, y);
-            bpm.AddEdge(y, x);
-        }
-        printf("Case %d: %d\n", cs, n - (bpm.MaxMatching() / 2));
-    }
-}
-} // namespace solution
-#endif
-#define _CRT_SECURE_NO_WARNINGS
-int main(int argc, char *argv[])
-{
-    solution::Solve();
-    return 0;
-}
