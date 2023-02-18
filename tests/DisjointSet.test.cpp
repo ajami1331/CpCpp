@@ -1,10 +1,11 @@
+#define PROBLEM "https://judge.yosupo.jp/problem/unionfind"
 #ifndef solution_h
 #define solution_h 1
 
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "library/DisjointSet.h"
+#include "../library/DisjointSet.h"
 
 namespace solution
 {
@@ -32,3 +33,9 @@ void Solve()
 }
 } // namespace solution
 #endif
+
+int main(int argc, char *argv[])
+{
+    solution::Solve();
+    return 0;
+}

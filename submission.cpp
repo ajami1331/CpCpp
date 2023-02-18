@@ -1,78 +1,67 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
-#include <queue>
-#include <vector>
-#ifndef AhoCorasick_h
-#define AhoCorasick_h 1
+#include <iostream>
+#ifndef DisjointSet_h
+#define DisjointSet_h 1
 namespace library
 {
-template <int MAX> struct AhoCorasick
+template <int sz> struct DisjointSet
 {
-    std::vector<int> mark[MAX + 7];
-    int state, failure[MAX + 7];
-    int trie[MAX + 7][26];
-    AhoCorasick()
+    int n;
+    int par[sz];
+    int cnt[sz];
+    int rnk[sz];
+    DisjointSet()
     {
-        Init();
     }
-    void Init()
+    DisjointSet(int n) : n(n)
     {
-        mark[0].clear();
-        std::fill(trie[0], trie[0] + 26, -1);
-        state = 0;
+        this->Reset();
     }
-    int Value(char c)
+    ~DisjointSet()
     {
-        return c - 'a';
     }
-    void Add(char *s, int t)
+    void Resize(int n)
     {
-        int root = 0, id;
-        for (int i = 0; s[i]; i++)
+        this->n = n;
+        this->Reset();
+    }
+    void Reset()
+    {
+        for (int i = 0; i < n; i++)
         {
-            id = Value(s[i]);
-            if (trie[root][id] == -1)
-            {
-                trie[root][id] = ++state;
-                mark[state].clear();
-                std::fill(trie[state], trie[state + 1] + 26, -1);
-            }
-            root = trie[root][id];
+            par[i] = i;
+            cnt[i] = 1;
+            rnk[i] = 0;
         }
-        mark[root].push_back(t);
     }
-    void ComputeFailure()
+    int FindParent(int u)
     {
-        std::queue<int> Q;
-        failure[0] = 0;
-        for (int i = 0; i < 26; i++)
+        if (par[u] == u)
         {
-            if (trie[0][i] != -1)
-            {
-                failure[trie[0][i]] = 0;
-                Q.push(trie[0][i]);
-            }
-            else
-                trie[0][i] = 0;
+            return u;
         }
-        while (!Q.empty())
+        return par[u] = FindParent(par[u]);
+    }
+    bool IsSameSet(int u, int v)
+    {
+        return FindParent(u) == FindParent(v);
+    }
+    void MergeSet(int u, int v)
+    {
+        if (IsSameSet(u, v))
         {
-            int u = Q.front();
-            Q.pop();
-            for (int v : mark[failure[u]])
-                mark[u].push_back(v);
-            for (int i = 0; i < 26; i++)
-            {
-                if (trie[u][i] != -1)
-                {
-                    failure[trie[u][i]] = trie[failure[u]][i];
-                    Q.push(trie[u][i]);
-                }
-                else
-                    trie[u][i] = trie[failure[u]][i];
-            }
+            return;
         }
+        u = FindParent(u);
+        v = FindParent(v);
+        if (cnt[u] < cnt[v])
+        {
+            std::swap(u, v);
+        }
+        par[u] = par[v];
+        cnt[v] += cnt[u];
     }
 };
 } // namespace library
@@ -82,44 +71,24 @@ template <int MAX> struct AhoCorasick
 namespace solution
 {
 using namespace std;
-const int sz = 1e6 + 10;
-const int MAX = 505 * 505 + 100;
-char inp[sz], s[505][505];
-int cnt[505];
-library::AhoCorasick<MAX> automata;
-void countFreq()
-{
-    for (int i = 0, root = 0, id; inp[i]; i++)
-    {
-        id = automata.Value(inp[i]);
-        root = automata.trie[root][id];
-        if (root == 0)
-            continue;
-        for (int i = 0; i < automata.mark[root].size(); i++)
-            cnt[automata.mark[root][i]]++;
-    }
-}
+const int sz = 2e5 + 10;
+library::DisjointSet<sz> dsu;
 void Solve()
 {
-    int t, n, cs;
-    scanf("%d", &t);
-    for (int cs = 1; cs <= t; cs++)
+    int n, q;
+    cin >> n >> q;
+    dsu.Resize(n);
+    while (q--)
     {
-        scanf("%d", &n);
-        scanf("%s", inp);
-        automata.Init();
-        for (int i = 0; i < n; i++)
+        int t, a, b;
+        cin >> t >> a >> b;
+        if (!t)
         {
-            scanf("%s", s[i]);
-            automata.Add(s[i], i);
+            dsu.MergeSet(a, b);
         }
-        automata.ComputeFailure();
-        memset(cnt, 0, sizeof cnt);
-        countFreq();
-        printf("Case %d:\n", cs);
-        for (int i = 0; i < n; i++)
+        else
         {
-            printf("%d\n", cnt[i]);
+            cout << dsu.IsSameSet(a, b) << "\n";
         }
     }
 }
