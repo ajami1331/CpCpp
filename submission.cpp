@@ -24,30 +24,53 @@ template <typename T> inline T ReadInt()
     return flag * ret;
 }
 static const int buf_size = 4096;
-inline int GetChar() {
-	static char buf[buf_size];
-	static int len = 0, pos = 0;
-	if (pos == len)
-		pos = 0, len = fread(buf, 1, buf_size, stdin);
-	if (pos == len)
-		return -1;
-	return buf[pos++];
+inline int GetChar()
+{
+    static char buf[buf_size];
+    static int len = 0, pos = 0;
+    if (pos == len)
+        pos = 0, len = fread(buf, 1, buf_size, stdin);
+    if (pos == len)
+        return -1;
+    return buf[pos++];
 }
-inline int ReadChar() {
-	int c = GetChar();
-	while (c <= 32)
-		c = GetChar();
-	return c;
+inline int ReadChar()
+{
+    int c = GetChar();
+    while (c <= 32)
+        c = GetChar();
+    return c;
 }
-template <typename T>
-inline T ReadIntBuffered() {
-	int s = 1, c = ReadChar();
-	T x = 0;
-	if (c == '-')
-		s = -1, c = GetChar();
-	while ('0' <= c && c <= '9')
-		x = x * 10 + c - '0', c = GetChar();
-	return s == 1 ? x : -x;
+template <typename T> inline T ReadIntBuffered()
+{
+    int s = 1, c = ReadChar();
+    T x = 0;
+    if (c == '-')
+        s = -1, c = GetChar();
+    while ('0' <= c && c <= '9')
+        x = x * 10 + c - '0', c = GetChar();
+    return s == 1 ? x : -x;
+}
+} // namespace library
+#endif
+#ifndef Math_h
+#define Math_h 1
+namespace library
+{
+template <long long mod> long long ModuloPower(long long b, long long p)
+{
+    long long ret = 1;
+    for (; p > 0; p >>= 1)
+    {
+        if (p & 1)
+            ret = (ret * b) % mod;
+        b = (b * b) % mod;
+    }
+    return ret % mod;
+}
+template <long long mod> long long ModuloInverse(long long b)
+{
+    return ModuloPower<mod>(b, mod - 2);
 }
 } // namespace library
 #endif
@@ -55,7 +78,6 @@ inline T ReadIntBuffered() {
 #define SparseTable_h 1
 namespace library
 {
-#define LOG2(x) (32 - __builtin_clz(x) - 1)
 template <typename T> struct SparseTable
 {
     int n;
@@ -79,7 +101,7 @@ template <typename T> struct SparseTable
     SparseTable(const std::vector<T> &arr)
     {
         n = arr.size();
-        log2n = LOG2(n) + 1;
+        log2n = std::__lg(n) + 1;
         table[0] = arr;
         for (int i = 1; i < log2n; ++i)
         {
@@ -100,7 +122,7 @@ template <typename T> struct SparseTable
     }
     T Query(int l, int r)
     {
-        int k = LOG2(r - l + 1);
+        int k = std::__lg(r - l + 1);
         int x = table[k][l];
         int y = table[k][r - (1 << k) + 1];
         return Combine(x, y);

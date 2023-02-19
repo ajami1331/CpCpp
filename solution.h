@@ -5,8 +5,8 @@
 #include <cstring>
 #include <iostream>
 #include "library/FastIO.h"
+#include "library/Math.h"
 #include "library/SparseTable.h"
-// #include "library/LCA.h"
 
 namespace solution
 {

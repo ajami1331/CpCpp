@@ -9,8 +9,6 @@
 namespace library
 {
 
-#define LOG2(x) (32 - __builtin_clz(x) - 1)
-
 struct LCA
 {
     int n;
@@ -21,7 +19,8 @@ struct LCA
     std::vector<int> tour;
     std::vector<int> position;
     SparseTable<int> sparse_table;
-    LCA(int n) : n(n), log2n(LOG2(2 * n - 1) + 1), graph(n, std::vector<int>()), level(n), parent(n), position(n, -1)
+    LCA(int n)
+        : n(n), log2n(std::__lg(2 * n - 1) + 1), graph(n, std::vector<int>()), level(n), parent(n), position(n, -1)
     {
     }
     ~LCA()
