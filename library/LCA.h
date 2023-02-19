@@ -59,10 +59,7 @@ struct LCA
 
     int Query(int u, int v)
     {
-        int l = position[u];
-        int r = position[v];
-        if (l > r)
-            std::swap(l, r);
+        auto [l, r] = std::minmax(position[u], position[v]);
         return sparse_table.Query(l, r);
     }
 
