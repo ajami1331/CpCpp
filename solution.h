@@ -6,7 +6,6 @@
 #include <iostream>
 #include "library/FastIO.h"
 #include "library/SparseTable.h"
-// #include "library/LCA.h"
 
 namespace solution
 {
