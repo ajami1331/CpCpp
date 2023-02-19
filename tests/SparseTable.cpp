@@ -2,10 +2,10 @@
 #ifndef solution_h
 #define solution_h 1
 
+#include "../library/SparseTable.h"
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "../library/SparseTable.h"
 
 namespace solution
 {
@@ -29,7 +29,6 @@ void Solve()
         scanf("%d %d", &u, &v);
         printf("%d\n", st.Query(u, v - 1));
     }
-    
 }
 } // namespace solution
 #endif

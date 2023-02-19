@@ -4,7 +4,9 @@
 #include <cstdio>
 #include <cstring>
 #include <iostream>
+#include "library/FastIO.h"
 #include "library/SparseTable.h"
+// #include "library/LCA.h"
 
 namespace solution
 {
@@ -14,10 +16,11 @@ int ar[sz];
 void Solve()
 {
     int n, q;
-    scanf("%d %d", &n, &q);
+    n = library::ReadInt<int>();
+    q = library::ReadInt<int>();
     for (int i = 0; i < n; ++i)
     {
-        scanf("%d", &ar[i]);
+        ar[i] = library::ReadInt<int>();
     }
 
     library::SparseTable<int> st(ar, n);
@@ -25,10 +28,10 @@ void Solve()
     while (q--)
     {
         int u, v;
-        scanf("%d %d", &u, &v);
-        printf("%d\n", st.Query(u, v - 1));
+        u = library::ReadInt<int>();
+        v = library::ReadInt<int>() - 1;
+        printf("%d\n", st.Query(u, v));
     }
-    
 }
 } // namespace solution
 #endif
