@@ -65,7 +65,7 @@ template <typename T, size_t sz, T outOfBound, T defaultValue> class SegmentTree
     inline T Query(int node, int b, int e, int l, int r)
     {
         if (r < b || e < l)
-            return outOfBound;
+            return -1;
         if (b >= l && e <= r)
         {
             return tr[node];
