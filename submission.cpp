@@ -1,131 +1,81 @@
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
 #include <functional>
 #include <iostream>
-#include <vector>
-#ifndef FastIO_h
-#define FastIO_h 1
+#ifndef SegmentTree_h
+#define SegmentTree_h 1
 namespace library
 {
-template <typename T> inline T ReadInt()
+template <typename T, size_t sz, T outOfBound, T defaultValue> class SegmentTree
 {
-    T ret = 0, flag = 1, ip = getchar();
-    for (; ip < 48 || ip > 57; ip = getchar())
-    {
-        if (ip == 45)
-        {
-            flag = -1;
-            ip = getchar();
-            break;
-        }
-    }
-    for (; ip > 47 && ip < 58; ip = getchar())
-        ret = ret * 10 + ip - 48;
-    return flag * ret;
-}
-static const int buf_size = 4096;
-inline int GetChar()
-{
-    static char buf[buf_size];
-    static int len = 0, pos = 0;
-    if (pos == len)
-        pos = 0, len = fread(buf, 1, buf_size, stdin);
-    if (pos == len)
-        return -1;
-    return buf[pos++];
-}
-inline int ReadChar()
-{
-    int c = GetChar();
-    while (c <= 32)
-        c = GetChar();
-    return c;
-}
-template <typename T> inline T ReadIntBuffered()
-{
-    int s = 1, c = ReadChar();
-    T x = 0;
-    if (c == '-')
-        s = -1, c = GetChar();
-    while ('0' <= c && c <= '9')
-        x = x * 10 + c - '0', c = GetChar();
-    return s == 1 ? x : -x;
-}
-} // namespace library
-#endif
-#ifndef Math_h
-#define Math_h 1
-namespace library
-{
-template <long long mod> long long ModuloPower(long long b, long long p)
-{
-    long long ret = 1;
-    for (; p > 0; p >>= 1)
-    {
-        if (p & 1)
-            ret = (ret * b) % mod;
-        b = (b * b) % mod;
-    }
-    return ret % mod;
-}
-template <long long mod> long long ModuloInverse(long long b)
-{
-    return ModuloPower<mod>(b, mod - 2);
-}
-} // namespace library
-#endif
-#ifndef SparseTable_h
-#define SparseTable_h 1
-namespace library
-{
-template <typename T> struct SparseTable
-{
-    int n;
-    int log2n;
+  private:
+    T tr[sz * 4];
     std::function<T(T, T)> combine;
-    std::vector<T> table[32];
-    SparseTable()
+  public:
+    SegmentTree()
+    {
+        Reset();
+    }
+    SegmentTree(std::function<T(T, T)> combine) : SegmentTree()
+    {
+        SetCombine(combine);
+    }
+    ~SegmentTree()
     {
     }
-    SparseTable(T *arr, int len, std::function<T(T, T)> combine) : SparseTable(arr, len)
+    void SetCombine(std::function<T(T, T)> combine)
     {
         this->combine = combine;
     }
-    SparseTable(T *arr, int len) : SparseTable(std::vector<T>(arr, arr + len))
+    void Reset()
     {
+        std::fill(tr, tr + sz * 4, outOfBound);
     }
-    SparseTable(const std::vector<T> &arr, std::function<T(T, T)> combine) : SparseTable(arr)
+    inline void Build(int node, int b, int e)
     {
-        this->combine = combine;
-    }
-    SparseTable(const std::vector<T> &arr)
-    {
-        n = arr.size();
-        log2n = std::__lg(n) + 1;
-        table[0] = arr;
-        for (int i = 1; i < log2n; ++i)
+        if (b == e)
         {
-            table[i].resize(n - (1 << i) + 1);
-            for (int j = 0; j + (1 << i) <= n; j++)
-            {
-                int x = table[i - 1][j];
-                int y = table[i - 1][j + (1 << (i - 1))];
-                table[i][j] = Combine(x, y);
-            }
+            tr[node] = defaultValue;
+            return;
         }
+        int left = node << 1;
+        int right = left | 1;
+        int mid = (b + e) >> 1;
+        Build(left, b, mid);
+        Build(right, mid + 1, e);
+        tr[node] = this->combine(tr[left], tr[right]);
     }
-    T Combine(T x, T y)
+    inline void Update(int node, int b, int e, int idx, T x)
     {
-        if (this->combine != nullptr)
-            return this->combine(x, y);
-        return std::min(x, y);
+        if (b == e)
+        {
+            tr[node] = x;
+            return;
+        }
+        int left = node << 1;
+        int right = left | 1;
+        int mid = (b + e) >> 1;
+        if (idx <= mid)
+            Update(left, b, mid, idx, x);
+        else
+            Update(right, mid + 1, e, idx, x);
+        tr[node] = this->combine(tr[left], tr[right]);
     }
-    T Query(int l, int r)
+    inline T Query(int node, int b, int e, int l, int r)
     {
-        int k = std::__lg(r - l + 1);
-        int x = table[k][l];
-        int y = table[k][r - (1 << k) + 1];
-        return Combine(x, y);
+        if (r < b || e < l)
+            return -1;
+        if (b >= l && e <= r)
+        {
+            return tr[node];
+        }
+        int left = node << 1;
+        int right = left | 1;
+        int mid = (b + e) >> 1;
+        T p1 = Query(left, b, mid, l, r);
+        T p2 = Query(right, mid + 1, e, l, r);
+        return this->combine(p1, p2);
     }
 };
 } // namespace library
@@ -135,25 +85,86 @@ template <typename T> struct SparseTable
 namespace solution
 {
 using namespace std;
-const int sz = 5e5 + 10;
-int ar[sz];
+const int sz = 1e5 + 10;
+struct Fountain
+{
+    int beauty;
+    int price;
+    char type;
+    bool operator<(const Fountain &other) const
+    {
+        return price < other.price;
+    }
+};
+library::SegmentTree<int, sz, -1, 0> coins([](int x, int y) { return max(x, y); });
+library::SegmentTree<int, sz, -1, 0> diamonds([](int x, int y) { return max(x, y); });
+Fountain fountains[sz];
+int n, c, d, ans;
+int last[sz];
 void Solve()
 {
-    int n, q;
-    n = library::ReadInt<int>();
-    q = library::ReadInt<int>();
-    for (int i = 0; i < n; ++i)
+    cin >> n >> c >> d;
+    for (int i = 0; i < n; i++)
+        cin >> fountains[i].beauty >> fountains[i].price >> fountains[i].type;
+    coins.Reset();
+    diamonds.Reset();
+    sort(fountains, fountains + n);
+    memset(last, -1, sizeof last);
+    for (int i = 0; i < n; i++)
     {
-        ar[i] = library::ReadInt<int>();
+        last[fountains[i].price] = i;
+        if (fountains[i].type == 'C')
+        {
+            coins.Update(1, 0, n - 1, i, fountains[i].beauty);
+        }
+        else
+        {
+            diamonds.Update(1, 0, n - 1, i, fountains[i].beauty);
+        }
     }
-    library::SparseTable<int> st(ar, n);
-    while (q--)
+    for (int i = 1; i < sz; i++)
+        if (last[i] == -1)
+            last[i] = last[i - 1];
+    ans = 0;
+    for (int i = 0; i < n; i++)
     {
-        int u, v;
-        u = library::ReadInt<int>();
-        v = library::ReadInt<int>() - 1;
-        printf("%d\n", st.Query(u, v));
+        int baki_c = c;
+        int baki_d = d;
+        if (fountains[i].type == 'C')
+            baki_c -= fountains[i].price;
+        if (fountains[i].type == 'D')
+            baki_d -= fountains[i].price;
+        if (baki_c < 0 || baki_d < 0)
+            continue;
+        int hand_1, hand_2;
+        hand_1 = fountains[i].beauty;
+        if (fountains[i].type == 'C')
+            coins.Update(1, 0, n - 1, i, -1);
+        else
+            diamonds.Update(1, 0, n - 1, i, -1);
+        int l, r;
+        l = 0;
+        r = last[baki_c];
+        if (r != -1)
+        {
+            hand_2 = coins.Query(1, 0, n - 1, l, r);
+            if (hand_2 != -1)
+                ans = max(ans, hand_1 + hand_2);
+        }
+        l = 0;
+        r = last[baki_d];
+        if (r != -1)
+        {
+            hand_2 = diamonds.Query(1, 0, n - 1, l, r);
+            if (hand_2 != -1)
+                ans = max(ans, hand_1 + hand_2);
+        }
+        if (fountains[i].type == 'C')
+            coins.Update(1, 0, n - 1, i, fountains[i].beauty);
+        else
+            diamonds.Update(1, 0, n - 1, i, fountains[i].beauty);
     }
+    cout << ans << "\n";
 }
 } // namespace solution
 #endif
