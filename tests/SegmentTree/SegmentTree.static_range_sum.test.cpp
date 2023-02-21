@@ -1,10 +1,11 @@
+#define PROBLEM "https://judge.yosupo.jp/problem/static_range_sum"
 #ifndef solution_h
 #define solution_h 1
 
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "library/SegmentTree.h"
+#include "../../library/SegmentTree.h"
 
 namespace solution
 {
@@ -14,7 +15,7 @@ using ll = long long;
 
 library::SegmentTree<ll, sz, 0LL, 0LL> seg_tree([](ll x, ll y) { return x + y; });
 int n, q;
-ll ar[sz];
+int ar[sz];
 
 void Solve()
 {
@@ -33,3 +34,9 @@ void Solve()
 }
 } // namespace solution
 #endif
+
+int main(int argc, char *argv[])
+{
+    solution::Solve();
+    return 0;
+}
