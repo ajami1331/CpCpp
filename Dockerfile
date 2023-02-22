@@ -8,4 +8,6 @@ RUN pip3 install online-judge-verify-helper
 
 COPY . .
 
+RUN git config --global pull.rebase false
+
 RUN oj-verify run
