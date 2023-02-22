@@ -13,14 +13,10 @@ template <typename T, size_t sz, T identityElem> class SegmentTree
     std::function<T(T, T)> combine;
 
   public:
-    SegmentTree()
-    {
-        Reset();
-    }
-
-    SegmentTree(std::function<T(T, T)> combine) : SegmentTree()
+    SegmentTree(std::function<T(T, T)> combine = [](T a, T b) { return a + b; })
     {
         SetCombine(combine);
+        Reset();
     }
 
     ~SegmentTree()

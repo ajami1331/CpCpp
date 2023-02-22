@@ -1,12 +1,12 @@
-#include <cstdio>
-#include <cstring>
-#include <functional>
-#include <iostream>
-#include <vector>
 #ifndef PersistentSegmentTree_h
 #define PersistentSegmentTree_h 1
+
+#include <functional>
+#include <vector>
+
 namespace library
 {
+
 template <typename T, size_t sz> class PersistentSegmentTree
 {
   private:
@@ -19,6 +19,7 @@ template <typename T, size_t sz> class PersistentSegmentTree
     } nodes[sz * 32];
     std::function<T(T, T)> combine;
     std::function<T(T, T)> replace;
+
     size_t UpdateInternal(size_t node_idx, int l, int r, int idx, T x)
     {
         auto &cur_node = nodes[node_idx];
@@ -46,6 +47,7 @@ template <typename T, size_t sz> class PersistentSegmentTree
         n_node.val = combine(n_node_left.val, n_node_right.val);
         return n_node_idx;
     }
+
     void BuildInternal(size_t node_idx, int l, int r, T defaultValue)
     {
         auto &cur_node = nodes[node_idx];
@@ -65,6 +67,7 @@ template <typename T, size_t sz> class PersistentSegmentTree
         auto &node_right = nodes[right_idx];
         cur_node.val = combine(node_left.val, node_right.val);
     }
+
     void BuildInternal(size_t node_idx, int l, int r, T *arr)
     {
         auto &cur_node = nodes[node_idx];
@@ -87,6 +90,7 @@ template <typename T, size_t sz> class PersistentSegmentTree
 
   public:
     std::vector<size_t> roots;
+
     PersistentSegmentTree(
         std::function<T(T, T)> combine = [](T a, T b) { return a + b; },
         std::function<T(T, T)> replace = [](T a, T b) { return a + b; })
@@ -95,22 +99,27 @@ template <typename T, size_t sz> class PersistentSegmentTree
         SetReplace(replace);
         Reset();
     }
+
     ~PersistentSegmentTree()
     {
     }
+
     void SetCombine(std::function<T(T, T)> combine)
     {
         this->combine = combine;
     }
+
     void SetReplace(std::function<T(T, T)> replace)
     {
         this->replace = replace;
     }
+
     void Reset()
     {
         nxt = 0;
         roots.clear();
     }
+
     size_t Build(int l, int r, T defaultValue)
     {
         Reset();
@@ -118,6 +127,7 @@ template <typename T, size_t sz> class PersistentSegmentTree
         BuildInternal(roots.back(), l, r, defaultValue);
         return roots.back();
     }
+
     size_t Build(int l, int r, T *arr)
     {
         Reset();
@@ -125,11 +135,13 @@ template <typename T, size_t sz> class PersistentSegmentTree
         BuildInternal(roots.back(), l, r, arr);
         return roots.back();
     }
+
     size_t Update(size_t node_idx, int l, int r, int idx, T x)
     {
         roots.emplace_back(UpdateInternal(node_idx, l, r, idx, x));
         return roots.back();
     }
+
     T Query(size_t node_idx, int l, int r, int i, int j)
     {
         auto &cur_node = nodes[node_idx];
@@ -147,37 +159,3 @@ template <typename T, size_t sz> class PersistentSegmentTree
 };
 } // namespace library
 #endif
-#ifndef solution_h
-#define solution_h 1
-namespace solution
-{
-using namespace std;
-const int sz = 5e5 + 10;
-using ll = long long;
-library::PersistentSegmentTree<ll, sz> pst;
-int n, q;
-ll ar[sz];
-void Solve()
-{
-    cin >> n >> q;
-    pst.Reset();
-    for (int i = 0; i < n; i++)
-    {
-        cin >> ar[i];
-    }
-    pst.Build(0, n - 1, ar);
-    while (q--)
-    {
-        int x, y;
-        cin >> x >> y;
-        cout << pst.Query(pst.roots.back(), 0, n - 1, x, y - 1) << "\n";
-    }
-}
-} // namespace solution
-#endif
-#define _CRT_SECURE_NO_WARNINGS
-int main(int argc, char *argv[])
-{
-    solution::Solve();
-    return 0;
-}
