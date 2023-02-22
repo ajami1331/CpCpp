@@ -7,11 +7,12 @@
 #define SegmentTree_h 1
 namespace library
 {
-template <typename T, size_t sz, T outOfBound, T defaultValue> class SegmentTree
+template <typename T, size_t sz, T identityElem> class SegmentTree
 {
   private:
     T tr[sz * 4];
     std::function<T(T, T)> combine;
+
   public:
     SegmentTree()
     {
@@ -30,20 +31,20 @@ template <typename T, size_t sz, T outOfBound, T defaultValue> class SegmentTree
     }
     void Reset()
     {
-        std::fill(tr, tr + sz * 4, outOfBound);
+        std::fill(tr, tr + sz * 4, identityElem);
     }
-    inline void Build(int node, int b, int e)
+    inline void Build(int node, int b, int e, T *arr)
     {
         if (b == e)
         {
-            tr[node] = defaultValue;
+            tr[node] = arr[b];
             return;
         }
         int left = node << 1;
         int right = left | 1;
         int mid = (b + e) >> 1;
-        Build(left, b, mid);
-        Build(right, mid + 1, e);
+        Build(left, b, mid, arr);
+        Build(right, mid + 1, e, arr);
         tr[node] = this->combine(tr[left], tr[right]);
     }
     inline void Update(int node, int b, int e, int idx, T x)
@@ -65,7 +66,7 @@ template <typename T, size_t sz, T outOfBound, T defaultValue> class SegmentTree
     inline T Query(int node, int b, int e, int l, int r)
     {
         if (r < b || e < l)
-            return outOfBound;
+            return identityElem;
         if (b >= l && e <= r)
         {
             return tr[node];
@@ -87,26 +88,23 @@ namespace solution
 using namespace std;
 const int sz = 5e5 + 10;
 using ll = long long;
-library::SegmentTree<ll, sz, 0LL, 0LL> seg_tree([](ll x, ll y) { return x + y; });
+library::SegmentTree<ll, sz, 0LL> seg_tree([](ll x, ll y) { return x + y; });
 int n, q;
 ll ar[sz];
 void Solve()
 {
     cin >> n >> q;
     seg_tree.Reset();
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         cin >> ar[i];
-        seg_tree.Update(1, 0, n - 1, i, ar[i]);
     }
-    while (q--) {
-        int type, x, y;
-        cin >> type >> x >> y;
-        if (type == 0) {
-            ar[x] += y;
-            seg_tree.Update(1, 0, n - 1, x, ar[x]);
-        } else {
-            cout << seg_tree.Query(1, 0, n - 1, x, y - 1) << "\n";
-        }
+    seg_tree.Build(1, 0, n - 1, ar);
+    while (q--)
+    {
+        int x, y;
+        cin >> x >> y;
+        cout << seg_tree.Query(1, 0, n - 1, x, y - 1) << "\n";
     }
 }
 } // namespace solution
