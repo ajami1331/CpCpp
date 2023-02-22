@@ -2,10 +2,10 @@
 #ifndef solution_h
 #define solution_h 1
 
+#include "../../library/SegmentTree.h"
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "../../library/SegmentTree.h"
 
 namespace solution
 {
@@ -21,18 +21,23 @@ void Solve()
 {
     cin >> n >> q;
     seg_tree.Reset();
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++)
+    {
         cin >> ar[i];
         seg_tree.Update(1, 0, n - 1, i, ar[i]);
     }
 
-    while (q--) {
+    while (q--)
+    {
         int type, x, y;
         cin >> type >> x >> y;
-        if (type == 0) {
+        if (type == 0)
+        {
             ar[x] += y;
             seg_tree.Update(1, 0, n - 1, x, ar[x]);
-        } else {
+        }
+        else
+        {
             cout << seg_tree.Query(1, 0, n - 1, x, y - 1) << "\n";
         }
     }
