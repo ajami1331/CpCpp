@@ -1,10 +1,11 @@
+#define PROBLEM "https://judge.yosupo.jp/problem/point_add_range_sum"
 #ifndef solution_h
 #define solution_h 1
 
+#include "../../library/FenwickTree.h"
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "library/FenwickTree.h"
 
 namespace solution
 {
@@ -38,3 +39,9 @@ void Solve()
 }
 } // namespace solution
 #endif
+
+int main(int argc, char *argv[])
+{
+    solution::Solve();
+    return 0;
+}

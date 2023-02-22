@@ -17,7 +17,6 @@ class FenwickTree
     op_combine_type op_combine;
     op_decombine_type op_decombine;
     less_type less;
-
   public:
     FenwickTree()
     {
@@ -74,48 +73,6 @@ class FenwickTree
 };
 } // namespace library
 #endif
-#ifndef FenwickTreeRangeSum_h
-#define FenwickTreeRangeSum_h 1
-namespace library
-{
-template <typename T, size_t sz> class FenwickTreeRangeSum
-{
-  private:
-    FenwickTree<T, sz> ft1;
-    FenwickTree<T, sz> ft2;
-
-  public:
-    FenwickTreeRangeSum()
-    {
-        Reset();
-    }
-    void Reset()
-    {
-        ft1.Reset();
-        ft2.Reset();
-    }
-    void Update(size_t x, T v)
-    {
-        RangeUpdate(x, x, v);
-    }
-    void RangeUpdate(size_t l, size_t r, T v)
-    {
-        ft1.Update(l, v);
-        ft1.Update(r + 1, -v);
-        ft2.Update(l, v * (l - 1));
-        ft2.Update(r + 1, -v * r);
-    }
-    T Query(size_t x)
-    {
-        return ft1.Query(x) * x - ft2.Query(x);
-    }
-    T QueryRange(size_t l, size_t r)
-    {
-        return Query(r) - Query(l - 1);
-    }
-};
-} // namespace library
-#endif
 #ifndef solution_h
 #define solution_h 1
 namespace solution
@@ -123,7 +80,7 @@ namespace solution
 using namespace std;
 const int sz = 5e5 + 10;
 using ll = long long;
-library::FenwickTreeRangeSum<ll, sz> ft;
+library::FenwickTree<ll, sz> ft;
 int n, q;
 ll ar[sz];
 void Solve()
@@ -137,9 +94,12 @@ void Solve()
     }
     while (q--)
     {
-        int x, y;
-        cin >> x >> y;
-        cout << ft.QueryRange(x + 1, y) << "\n";
+        int type, x, y;
+        cin >> type >> x >> y;
+        if (type == 0)
+            ft.Update(x + 1, y);
+        else if (type == 1)
+            cout << ft.QueryRange(x + 1, y) << "\n";
     }
 }
 } // namespace solution
