@@ -6,7 +6,7 @@
 
 namespace library
 {
-template <typename T, size_t sz, T outOfBound, T defaultValue> class SegmentTree
+template <typename T, size_t sz, T identityElem> class SegmentTree
 {
   private:
     T tr[sz * 4];
@@ -34,21 +34,21 @@ template <typename T, size_t sz, T outOfBound, T defaultValue> class SegmentTree
 
     void Reset()
     {
-        std::fill(tr, tr + sz * 4, outOfBound);
+        std::fill(tr, tr + sz * 4, identityElem);
     }
 
-    inline void Build(int node, int b, int e)
+    inline void Build(int node, int b, int e, T *arr)
     {
         if (b == e)
         {
-            tr[node] = defaultValue;
+            tr[node] = arr[b];
             return;
         }
         int left = node << 1;
         int right = left | 1;
         int mid = (b + e) >> 1;
-        Build(left, b, mid);
-        Build(right, mid + 1, e);
+        Build(left, b, mid, arr);
+        Build(right, mid + 1, e, arr);
         tr[node] = this->combine(tr[left], tr[right]);
     }
 
@@ -72,7 +72,7 @@ template <typename T, size_t sz, T outOfBound, T defaultValue> class SegmentTree
     inline T Query(int node, int b, int e, int l, int r)
     {
         if (r < b || e < l)
-            return outOfBound;
+            return identityElem;
         if (b >= l && e <= r)
         {
             return tr[node];

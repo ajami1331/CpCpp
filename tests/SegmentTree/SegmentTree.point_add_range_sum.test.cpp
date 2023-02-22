@@ -13,7 +13,7 @@ using namespace std;
 const int sz = 5e5 + 10;
 using ll = long long;
 
-library::SegmentTree<ll, sz, 0LL, 0LL> seg_tree([](ll x, ll y) { return x + y; });
+library::SegmentTree<ll, sz, 0LL> seg_tree([](ll x, ll y) { return x + y; });
 int n, q;
 ll ar[sz];
 
@@ -24,8 +24,9 @@ void Solve()
     for (int i = 0; i < n; i++)
     {
         cin >> ar[i];
-        seg_tree.Update(1, 0, n - 1, i, ar[i]);
     }
+
+    seg_tree.Build(1, 0, n - 1, ar);
 
     while (q--)
     {
