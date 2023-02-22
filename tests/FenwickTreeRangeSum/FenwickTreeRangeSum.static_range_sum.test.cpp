@@ -2,10 +2,10 @@
 #ifndef solution_h
 #define solution_h 1
 
+#include "../../library/FenwickTreeRangeSum.h"
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "../../library/FenwickTree.h"
 
 namespace solution
 {
@@ -13,7 +13,7 @@ using namespace std;
 const int sz = 5e5 + 10;
 using ll = long long;
 
-library::FenwickTree<ll, sz> ft;
+library::FenwickTreeRangeSum<ll, sz> ft;
 int n, q;
 ll ar[sz];
 

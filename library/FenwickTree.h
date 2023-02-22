@@ -24,7 +24,7 @@ class FenwickTree
         Reset();
     }
 
-    void Reset() 
+    void Reset()
     {
         memset(tr, 0, sizeof tr);
     }
@@ -47,9 +47,17 @@ class FenwickTree
         return ret;
     }
 
-    T QueryRange(int l, int r)
+    /// @brief: Only works with point updates
+    T QueryRange(size_t l, size_t r)
     {
         return op_decombine(Query(r), Query(l - 1));
+    }
+
+    /// @brief: Only works with point queries
+    T RangeUpdate(size_t l, size_t r, T v)
+    {
+        Update(l, v);
+        Update(r + 1, op_decombine(0, v));
     }
 
     size_t BinarySearch(T v)

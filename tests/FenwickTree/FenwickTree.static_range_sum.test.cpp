@@ -1,10 +1,11 @@
+#define PROBLEM "https://judge.yosupo.jp/problem/static_range_sum"
 #ifndef solution_h
 #define solution_h 1
 
+#include "../../library/FenwickTree.h"
 #include <cstdio>
 #include <cstring>
 #include <iostream>
-#include "library/FenwickTreeRangeSum.h"
 
 namespace solution
 {
@@ -12,7 +13,7 @@ using namespace std;
 const int sz = 5e5 + 10;
 using ll = long long;
 
-library::FenwickTreeRangeSum<ll, sz> ft;
+library::FenwickTree<ll, sz> ft;
 int n, q;
 ll ar[sz];
 
@@ -35,3 +36,9 @@ void Solve()
 }
 } // namespace solution
 #endif
+
+int main(int argc, char *argv[])
+{
+    solution::Solve();
+    return 0;
+}
