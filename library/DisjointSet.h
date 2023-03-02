@@ -11,6 +11,7 @@ template <int sz> struct DisjointSet
     int par[sz];
     int cnt[sz];
     int rnk[sz];
+    int components;
 
     DisjointSet()
     {
@@ -39,21 +40,23 @@ template <int sz> struct DisjointSet
             cnt[i] = 1;
             rnk[i] = 0;
         }
+
+        components = n;
     }
 
-    int FindParent(int u)
+    int FindSet(int u)
     {
         if (par[u] == u)
         {
             return u;
         }
 
-        return par[u] = FindParent(par[u]);
+        return par[u] = FindSet(par[u]);
     }
 
     bool IsSameSet(int u, int v)
     {
-        return FindParent(u) == FindParent(v);
+        return FindSet(u) == FindSet(v);
     }
 
     void MergeSet(int u, int v)
@@ -63,8 +66,8 @@ template <int sz> struct DisjointSet
             return;
         }
 
-        u = FindParent(u);
-        v = FindParent(v);
+        u = FindSet(u);
+        v = FindSet(v);
         if (cnt[u] < cnt[v])
         {
             std::swap(u, v);
@@ -72,6 +75,22 @@ template <int sz> struct DisjointSet
 
         par[u] = par[v];
         cnt[v] += cnt[u];
+
+        components--;
+    }
+
+    std::vector<int> GetComponents()
+    {
+        std::vector<int> ret;
+        for (int i = 0; i < n; i++)
+        {
+            if (FindSet(i) == i)
+            {
+                ret.emplace_back(i);
+            }
+        }
+
+        return ret;
     }
 };
 } // namespace library

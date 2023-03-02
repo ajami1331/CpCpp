@@ -1,148 +1,85 @@
+#include <algorithm>
 #include <cstdio>
 #include <cstring>
-#include <functional>
 #include <iostream>
+#include <map>
+#include <set>
 #include <vector>
-#ifndef PersistentSegmentTree_h
-#define PersistentSegmentTree_h 1
+#ifndef DisjointSet_h
+#define DisjointSet_h 1
 namespace library
 {
-template <typename T, size_t sz> class PersistentSegmentTree
+template <int sz> struct DisjointSet
 {
-  private:
-    int nxt = 0;
-    struct node
-    {
-        size_t left;
-        size_t right;
-        T val;
-    } nodes[sz * 32];
-    std::function<T(T, T)> combine;
-    std::function<T(T, T)> replace;
-    size_t UpdateInternal(size_t node_idx, int l, int r, int idx, T x)
-    {
-        auto &cur_node = nodes[node_idx];
-        if (r < idx || idx < l)
-        {
-            return node_idx;
-        }
-        if (l == r)
-        {
-            size_t n_node_idx = ++nxt;
-            auto &n_node = nodes[n_node_idx];
-            n_node.val = this->replace(cur_node.val, x);
-            n_node.left = cur_node.left;
-            n_node.right = cur_node.right;
-            return n_node_idx;
-        }
-        int mid = (l + r) >> 1;
-        size_t n_node_idx = ++nxt;
-        auto &n_node = nodes[n_node_idx];
-        n_node.val = cur_node.val;
-        n_node.left = UpdateInternal(cur_node.left, l, mid, idx, x);
-        n_node.right = UpdateInternal(cur_node.right, mid + 1, r, idx, x);
-        auto &n_node_left = nodes[n_node.left];
-        auto &n_node_right = nodes[n_node.right];
-        n_node.val = combine(n_node_left.val, n_node_right.val);
-        return n_node_idx;
-    }
-    void BuildInternal(size_t node_idx, int l, int r, T defaultValue)
-    {
-        auto &cur_node = nodes[node_idx];
-        if (l == r)
-        {
-            cur_node.val = defaultValue;
-            return;
-        }
-        int mid = (l + r) >> 1;
-        cur_node.left = ++nxt;
-        cur_node.right = ++nxt;
-        size_t left_idx = cur_node.left;
-        size_t right_idx = cur_node.right;
-        BuildInternal(left_idx, l, mid, defaultValue);
-        BuildInternal(right_idx, mid + 1, r, defaultValue);
-        auto &node_left = nodes[left_idx];
-        auto &node_right = nodes[right_idx];
-        cur_node.val = combine(node_left.val, node_right.val);
-    }
-    void BuildInternal(size_t node_idx, int l, int r, T *arr)
-    {
-        auto &cur_node = nodes[node_idx];
-        if (l == r)
-        {
-            cur_node.val = arr[l];
-            return;
-        }
-        int mid = (l + r) >> 1;
-        cur_node.left = ++nxt;
-        cur_node.right = ++nxt;
-        size_t left_idx = cur_node.left;
-        size_t right_idx = cur_node.right;
-        BuildInternal(left_idx, l, mid, arr);
-        BuildInternal(right_idx, mid + 1, r, arr);
-        auto &node_left = nodes[left_idx];
-        auto &node_right = nodes[right_idx];
-        cur_node.val = combine(node_left.val, node_right.val);
-    }
-
-  public:
-    std::vector<size_t> roots;
-    PersistentSegmentTree(
-        std::function<T(T, T)> combine = [](T a, T b) { return a + b; },
-        std::function<T(T, T)> replace = [](T a, T b) { return a + b; })
-    {
-        SetCombine(combine);
-        SetReplace(replace);
-        Reset();
-    }
-    ~PersistentSegmentTree()
+    int n;
+    int par[sz];
+    int cnt[sz];
+    int rnk[sz];
+    int components;
+    DisjointSet()
     {
     }
-    void SetCombine(std::function<T(T, T)> combine)
+    DisjointSet(int n) : n(n)
     {
-        this->combine = combine;
+        this->Reset();
     }
-    void SetReplace(std::function<T(T, T)> replace)
+    ~DisjointSet()
     {
-        this->replace = replace;
+    }
+    void Resize(int n)
+    {
+        this->n = n;
+        this->Reset();
     }
     void Reset()
     {
-        nxt = 0;
-        roots.clear();
-    }
-    size_t Build(int l, int r, T defaultValue)
-    {
-        Reset();
-        roots.emplace_back(++nxt);
-        BuildInternal(roots.back(), l, r, defaultValue);
-        return roots.back();
-    }
-    size_t Build(int l, int r, T *arr)
-    {
-        Reset();
-        roots.emplace_back(++nxt);
-        BuildInternal(roots.back(), l, r, arr);
-        return roots.back();
-    }
-    size_t Update(size_t node_idx, int l, int r, int idx, T x)
-    {
-        roots.emplace_back(UpdateInternal(node_idx, l, r, idx, x));
-        return roots.back();
-    }
-    T Query(size_t node_idx, int l, int r, int i, int j)
-    {
-        auto &cur_node = nodes[node_idx];
-        if (r < i || l > j)
+        for (int i = 0; i < n; i++)
         {
-            return 0;
+            par[i] = i;
+            cnt[i] = 1;
+            rnk[i] = 0;
         }
-        if (i <= l && r <= j)
+        components = n;
+    }
+    int FindSet(int u)
+    {
+        if (par[u] == u)
         {
-            return cur_node.val;
+            return u;
         }
-        int mid = (l + r) >> 1;
-        return combine(Query(cur_node.left, l, mid, i, j), Query(cur_node.right, mid + 1, r, i, j));
+        return par[u] = FindSet(par[u]);
+    }
+    bool IsSameSet(int u, int v)
+    {
+        return FindSet(u) == FindSet(v);
+    }
+    void MergeSet(int u, int v)
+    {
+        if (IsSameSet(u, v))
+        {
+            return;
+        }
+        u = FindSet(u);
+        v = FindSet(v);
+        if (cnt[u] < cnt[v])
+        {
+            std::swap(u, v);
+        }
+        par[u] = par[v];
+        cnt[v] += cnt[u];
+        components--;
+    }
+    std::vector<int> GetComponents()
+    {
+        std::vector<int> ret;
+        for (int i = 0; i < n; i++)
+        {
+            if (FindSet(i) == i)
+            {
+                ret.emplace_back(i);
+            }
+        }
+        return ret;
     }
 };
 } // namespace library
@@ -152,25 +89,56 @@ template <typename T, size_t sz> class PersistentSegmentTree
 namespace solution
 {
 using namespace std;
-const int sz = 5e5 + 10;
+const int sz = 3e5 + 10;
 using ll = long long;
-library::PersistentSegmentTree<ll, sz> pst;
-int n, q;
-ll ar[sz];
+int t, n, k, cs;
+library::DisjointSet<sz> ds;
+map <int, string> mp1, mp2;
+int mask1[sz], mask2[sz];
+string a, b;
 void Solve()
 {
-    cin >> n >> q;
-    pst.Reset();
-    for (int i = 0; i < n; i++)
+    scanf("%d", &t);
+    for (cs = 1; cs <= t; cs++)
     {
-        cin >> ar[i];
-    }
-    pst.Build(0, n - 1, ar);
-    while (q--)
-    {
-        int x, y;
-        cin >> x >> y;
-        cout << pst.Query(pst.roots.back(), 0, n - 1, x, y - 1) << "\n";
+        scanf("%d %d", &n, &k);
+        ds.Resize(n);
+        ds.Reset();
+        mp1.clear();
+        mp2.clear();
+        fill(mask1, mask1 + n, 0);
+        fill(mask2, mask2 + n, 0);
+        cin >> a >> b;
+        for (int i = 0; i < n; i++)
+        {
+            if (i + k < n)
+            {
+                ds.MergeSet(i, i + k);
+            }
+            if (i + k + 1 < n)
+            {
+                ds.MergeSet(i, i + k + 1);
+            }
+        }
+        for (int i = 0; i < n; i++)
+        {
+            mp1[ds.FindSet(i)].push_back(a[i]);
+            mp2[ds.FindSet(i)].push_back(b[i]);
+            mask1[ds.FindSet(i)] ^= (1 << (a[i] - 'a'));
+            mask2[ds.FindSet(i)] ^= (1 << (b[i] - 'a'));
+        }
+        bool fl = true;
+        for (int x: ds.GetComponents())
+        {
+            sort(mp1[x].begin(), mp1[x].end());
+            sort(mp2[x].begin(), mp2[x].end());
+            if (mask1[x] != mask2[x])
+            {
+                fl = false;
+                break;
+            }
+        }
+        puts(fl ? "YES" : "NO");
     }
 }
 } // namespace solution
