@@ -35,7 +35,7 @@ void Process(std::filesystem::path filePath);
 bool IsComment(std::string line)
 {
     library::trim(line);
-    return line.rfind("//") == 0;
+    return line.rfind("//") == 0 || line.rfind("///") == 0;
 }
 
 void ProcessIncludes(std::string line, std::filesystem::path filePath)
