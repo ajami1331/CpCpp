@@ -1,3 +1,4 @@
+/// src: https://github.com/sgtlaugh/algovault/blob/master/code_library/hashing.cpp
 #ifndef PolyHash_h
 #define PolyHash_h 1
 
