@@ -1,87 +1,30 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <deque>
 #include <iostream>
 #include <map>
 #include <set>
 #include <vector>
-#ifndef DisjointSet_h
-#define DisjointSet_h 1
+#ifndef Math_h
+#define Math_h 1
 namespace library
 {
-template <int sz> struct DisjointSet
+template <long long mod> long long ModuloPower(long long b, long long p)
 {
-    int n;
-    int par[sz];
-    int cnt[sz];
-    int rnk[sz];
-    int components;
-    DisjointSet()
+    long long ret = 1;
+    for (; p > 0; p >>= 1)
     {
+        if (p & 1)
+            ret = (ret * b) % mod;
+        b = (b * b) % mod;
     }
-    DisjointSet(int n) : n(n)
-    {
-        this->Reset();
-    }
-    ~DisjointSet()
-    {
-    }
-    void Resize(int n)
-    {
-        this->n = n;
-        this->Reset();
-    }
-    void Reset()
-    {
-        for (int i = 0; i < n; i++)
-        {
-            par[i] = i;
-            cnt[i] = 1;
-            rnk[i] = 0;
-        }
-        components = n;
-    }
-    int FindSet(int u)
-    {
-        if (par[u] == u)
-        {
-            return u;
-        }
-        return par[u] = FindSet(par[u]);
-    }
-    bool IsSameSet(int u, int v)
-    {
-        return FindSet(u) == FindSet(v);
-    }
-    void MergeSet(int u, int v)
-    {
-        if (IsSameSet(u, v))
-        {
-            return;
-        }
-        u = FindSet(u);
-        v = FindSet(v);
-        if (cnt[u] < cnt[v])
-        {
-            std::swap(u, v);
-        }
-        par[u] = par[v];
-        cnt[v] += cnt[u];
-        components--;
-    }
-    std::vector<int> GetComponents()
-    {
-        std::vector<int> ret;
-        for (int i = 0; i < n; i++)
-        {
-            if (FindSet(i) == i)
-            {
-                ret.emplace_back(i);
-            }
-        }
-        return ret;
-    }
-};
+    return ret % mod;
+}
+template <long long mod> long long ModuloInverse(long long b)
+{
+    return ModuloPower<mod>(b, mod - 2);
+}
 } // namespace library
 #endif
 #ifndef solution_h
@@ -89,57 +32,105 @@ template <int sz> struct DisjointSet
 namespace solution
 {
 using namespace std;
-const int sz = 3e5 + 10;
+const int sz = 5050;
 using ll = long long;
-int t, n, k, cs;
-library::DisjointSet<sz> ds;
-map <int, string> mp1, mp2;
-int mask1[sz], mask2[sz];
-string a, b;
+int t, n, cs;
+int ar[sz];
+vector <int> primesTaken;
+vector <int> others;
+const ll mod = 998244353LL;
+ll fac[sz];
+ll facInv[sz];
+ll dp[sz][sz];
+map <int, int> cnt;
+bool isPrime(int x);
+ll rec(int pos, int rem);
 void Solve()
 {
-    scanf("%d", &t);
-    for (cs = 1; cs <= t; cs++)
+    memset(dp, -1, sizeof dp);
+    fac[0] = 1;
+    facInv[0] = library::ModuloInverse<mod>(fac[0]);
+    for (ll i = 1; i < sz; i++)
     {
-        scanf("%d %d", &n, &k);
-        ds.Resize(n);
-        ds.Reset();
-        mp1.clear();
-        mp2.clear();
-        fill(mask1, mask1 + n, 0);
-        fill(mask2, mask2 + n, 0);
-        cin >> a >> b;
-        for (int i = 0; i < n; i++)
-        {
-            if (i + k < n)
-            {
-                ds.MergeSet(i, i + k);
-            }
-            if (i + k + 1 < n)
-            {
-                ds.MergeSet(i, i + k + 1);
-            }
-        }
-        for (int i = 0; i < n; i++)
-        {
-            mp1[ds.FindSet(i)].push_back(a[i]);
-            mp2[ds.FindSet(i)].push_back(b[i]);
-            mask1[ds.FindSet(i)] ^= (1 << (a[i] - 'a'));
-            mask2[ds.FindSet(i)] ^= (1 << (b[i] - 'a'));
-        }
-        bool fl = true;
-        for (int x: ds.GetComponents())
-        {
-            sort(mp1[x].begin(), mp1[x].end());
-            sort(mp2[x].begin(), mp2[x].end());
-            if (mask1[x] != mask2[x])
-            {
-                fl = false;
-                break;
-            }
-        }
-        puts(fl ? "YES" : "NO");
+        fac[i] = (fac[i - 1] * i) % mod;
+        facInv[i] = library::ModuloInverse<mod>(fac[i]);
     }
+    scanf("%d", &n);
+    primesTaken.clear();
+    others.clear();
+    cnt.clear();
+    for (int i = 0; i < n + n; i++)
+    {
+        scanf("%d", &ar[i]);
+        cnt[ar[i]]++;
+        if (isPrime(ar[i]))
+        {
+            primesTaken.push_back(ar[i]);
+        }
+        else
+        {
+            others.push_back(ar[i]);
+        }
+    }
+    sort(primesTaken.begin(), primesTaken.end());
+    sort(others.begin(), others.end());
+    primesTaken.resize(unique(primesTaken.begin(), primesTaken.end()) - primesTaken.begin());
+    others.resize(unique(others.begin(), others.end()) - others.begin());
+    if (primesTaken.size() < n)
+    {
+        printf("0\n");
+    }
+    else
+    {
+        ll ans = rec(0, n);
+        for (int i = 0; i < others.size(); i++)
+        {
+            if (!isPrime(others[i]))
+            {
+                ans = (ans * facInv[cnt[others[i]]]) % mod;
+            }
+        }
+        ans = (ans * fac[n]) % mod;
+        printf("%lld\n", ans);
+    }
+}
+ll rec(int pos, int rem)
+{
+    if (rem == 0)
+    {
+        return 1;
+    }
+    if (pos == primesTaken.size())
+    {
+        return 0;
+    }
+    auto &ret = dp[pos][rem];
+    if (ret != -1)
+    {
+        return ret;
+    }
+    ret = (rec(pos + 1, rem) * facInv[cnt[primesTaken[pos]]]) % mod;
+    ret = (ret + ((rec(pos + 1, rem - 1) * facInv[cnt[primesTaken[pos]] - 1]) % mod)) % mod;
+    return ret;
+}
+bool isPrime(int x)
+{
+    if (x == 1)
+    {
+        return false;
+    }
+    if (x == 2)
+    {
+        return true;
+    }
+    for (int i = 2; i * i <= x; i++)
+    {
+        if (x % i == 0)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 } // namespace solution
 #endif

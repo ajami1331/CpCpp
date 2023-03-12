@@ -5,6 +5,8 @@
 
 out
 build 
+cmake_build_Debug
+cmake_build_Release
 
 # User-specific files
 *.rsuser
