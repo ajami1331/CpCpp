@@ -6,7 +6,7 @@
 
 namespace library
 {
-
+#define LOG2(x) (32 - __builtin_clz(x) - 1)
 template <typename T> struct SparseTable
 {
     int n;
@@ -35,7 +35,7 @@ template <typename T> struct SparseTable
     SparseTable(const std::vector<T> &arr)
     {
         n = arr.size();
-        log2n = std::__lg(n) + 1;
+        log2n = LOG2(n) + 1;
         table[0] = arr;
         for (int i = 1; i < log2n; ++i)
         {
@@ -58,7 +58,7 @@ template <typename T> struct SparseTable
 
     T Query(int l, int r)
     {
-        int k = std::__lg(r - l + 1);
+        int k = LOG2(r - l + 1);
         int x = table[k][l];
         int y = table[k][r - (1 << k) + 1];
         return Combine(x, y);
