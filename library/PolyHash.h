@@ -27,8 +27,11 @@ long long modmul(unsigned long long a, unsigned long long b)
 
 template <size_t MAXLEN> struct PolyHash
 {
-    /// Remove suff vector and usage if reverse hash is not required for more speed
-    std::vector<long long> pref, suff;
+    std::vector<long long> pref;
+/// Removes the suff vector and usage if reverse hash is not required for more speed
+#ifdef IMPLEMENT_REV_HASH
+    std::vector<long long> suff;
+#endif
     inline static unsigned long long base_pow[MAXLEN];
 
     PolyHash()
@@ -42,7 +45,7 @@ template <size_t MAXLEN> struct PolyHash
 
         int n = ar.size();
         assert(n < MAXLEN);
-        pref.resize(n + 3, 0), suff.resize(n + 3, 0);
+        pref.resize(n + 3, 0);
 
         for (int i = 1; i <= n; i++)
         {
@@ -51,12 +54,15 @@ template <size_t MAXLEN> struct PolyHash
                 pref[i] -= mod;
         }
 
+#ifdef IMPLEMENT_REV_HASH
+        suff.resize(n + 3, 0);
         for (int i = n; i >= 1; i--)
         {
             suff[i] = modmul(suff[i + 1], base) + ar[i - 1] + 997;
             if (suff[i] >= mod)
                 suff[i] -= mod;
         }
+#endif
     }
 
     PolyHash(const char *str) : PolyHash(std::vector<char>(str, str + strlen(str)))
@@ -69,11 +75,13 @@ template <size_t MAXLEN> struct PolyHash
         return h < 0 ? h + mod : h;
     }
 
+#ifdef IMPLEMENT_REV_HASH
     unsigned long long rev_hash(int l, int r)
     {
         long long h = suff[l + 1] - modmul(base_pow[r - l + 1], suff[r + 2]);
         return h < 0 ? h + mod : h;
     }
+#endif
 
     unsigned long long get_hash(int l, int r, int x, int y)
     {
