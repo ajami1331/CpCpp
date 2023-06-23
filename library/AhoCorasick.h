@@ -8,11 +8,11 @@
 namespace library
 {
 
-template <int MAX> struct AhoCorasick
+template <size_t MAXLEN> struct AhoCorasick
 {
-    std::vector<int> mark[MAX + 7];
-    int state, failure[MAX + 7];
-    int trie[MAX + 7][26];
+    std::vector<int> mark[MAXLEN + 7];
+    int state, failure[MAXLEN + 7];
+    int trie[MAXLEN + 7][26];
 
     AhoCorasick()
     {
@@ -45,7 +45,7 @@ template <int MAX> struct AhoCorasick
             }
             root = trie[root][id];
         }
-        mark[root].push_back(t);
+        mark[root].emplace_back(t);
     }
 
     void ComputeFailure()
@@ -67,7 +67,7 @@ template <int MAX> struct AhoCorasick
             int u = Q.front();
             Q.pop();
             for (int v : mark[failure[u]])
-                mark[u].push_back(v);
+                mark[u].emplace_back(v);
             for (int i = 0; i < 26; i++)
             {
                 if (trie[u][i] != -1)
