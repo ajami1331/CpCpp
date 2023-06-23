@@ -3,24 +3,27 @@
 
 #include <algorithm>
 #include <cstring>
+#include <vector>
 
 namespace library
 {
 
-template <typename T, size_t MAXLEN, T outOfBound> struct ZAlgo
+template <class T, size_t MAXLEN> struct ZAlgo
 {
-public:
+  public:
+    T outOfBound;
     T s[MAXLEN];
     int z[MAXLEN];
     int occurrence[MAXLEN];
     int n;
     int maxZ;
 
-    void Init(const T *a, int aLen, const T *b, int bLen)
+    void Init(const T *a, int aLen, const T *b, int bLen, const T &_outOfBound)
     {
         n = 0;
         for (int i = 0; i < aLen; i++)
             s[n++] = a[i];
+        outOfBound = _outOfBound;
         s[n++] = outOfBound;
         for (int i = 0; i < bLen; i++)
             s[n++] = b[i];
@@ -30,7 +33,22 @@ public:
         Compute();
     }
 
-private:
+    void Init(const std::vector<T> &a, const std::vector<T> &b, const T &_outOfBound)
+    {
+        n = 0;
+        for (int i = 0; i < a.size(); i++)
+            s[n++] = a[i];
+        outOfBound = _outOfBound;
+        s[n++] = outOfBound;
+        for (int i = 0; i < b.size(); i++)
+            s[n++] = b[i];
+        maxZ = 0;
+        memset(occurrence, 0, sizeof(occurrence));
+        memset(z, 0, sizeof(z));
+        Compute();
+    }
+
+  private:
     void Compute()
     {
         int l = 0;

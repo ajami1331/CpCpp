@@ -10,19 +10,21 @@
 #define ZAlgo_H 1
 namespace library
 {
-template <typename T, size_t MAXLEN, T outOfBound> struct ZAlgo
+template <class T, size_t MAXLEN> struct ZAlgo
 {
-public:
+  public:
+    T outOfBound;
     T s[MAXLEN];
     int z[MAXLEN];
     int occurrence[MAXLEN];
     int n;
     int maxZ;
-    void Init(const T *a, int aLen, const T *b, int bLen)
+    void Init(const T *a, int aLen, const T *b, int bLen, const T &_outOfBound)
     {
         n = 0;
         for (int i = 0; i < aLen; i++)
             s[n++] = a[i];
+        outOfBound = _outOfBound;
         s[n++] = outOfBound;
         for (int i = 0; i < bLen; i++)
             s[n++] = b[i];
@@ -31,7 +33,21 @@ public:
         memset(z, 0, sizeof(z));
         Compute();
     }
-private:
+    void Init(const std::vector<T> &a, const std::vector<T> &b, const T &_outOfBound)
+    {
+        n = 0;
+        for (int i = 0; i < a.size(); i++)
+            s[n++] = a[i];
+        outOfBound = _outOfBound;
+        s[n++] = outOfBound;
+        for (int i = 0; i < b.size(); i++)
+            s[n++] = b[i];
+        maxZ = 0;
+        memset(occurrence, 0, sizeof(occurrence));
+        memset(z, 0, sizeof(z));
+        Compute();
+    }
+  private:
     void Compute()
     {
         int l = 0;
@@ -84,35 +100,115 @@ private:
 namespace solution
 {
 using namespace std;
+using ll = long long;
 const int sz = 1e6 + 10;
-int n;
-char s[sz];
-char t[sz];
-library::ZAlgo<char, sz + sz + sz, '$'> z;
+int sLen, tLen;
+struct Elem
+{
+    ll len;
+    char c;
+    Elem() {}
+    Elem(int len, char c) : len(len), c(c) {}
+    bool operator==(const Elem &rhs) const
+    {
+        return len == rhs.len && c == rhs.c;
+    }
+    bool operator<=(const Elem &rhs) const
+    {
+        return len <= rhs.len && c == rhs.c;
+    }
+    bool operator>=(const Elem &rhs) const
+    {
+        return len >= rhs.len && c == rhs.c;
+    }
+    bool operator!=(const Elem &rhs) const
+    {
+        return !(*this == rhs);
+    }
+} const outOfBound = Elem(0, '$');
+Elem s[sz], t[sz];
+vector <Elem> sVec, tVec;
+library::ZAlgo<Elem, sz + sz + sz> zAlgo;
 void Solve()
 {
-    scanf("%d", &n);
-    while (n-- && scanf("%s", s))
+    scanf("%d %d", &sLen, &tLen);
+    for (int i = 0; i < sLen; i++)
     {
-        int len = strlen(s);
-        for (int i = 0; i < len; i++)
+        scanf("%lld-%c", &s[i].len, &s[i].c);
+    }
+    for (int i = 0; i < tLen; i++)
+    {
+        scanf("%lld-%c", &t[i].len, &t[i].c);
+    }
+    sVec.clear();
+    tVec.clear();
+    for (int i = 0; i < sLen; i++)
+    {
+        if (sVec.empty() || sVec.back().c != s[i].c)
         {
-            t[i] = s[len - i - 1];
+            sVec.push_back(s[i]);
         }
-        z.Init(s, len, t, len);
-        for (int i = len + 1; i < z.n; i++)
+        else
         {
-            if (z.z[i] == z.maxZ)
+            sVec.back().len += s[i].len;
+        }
+    }
+    for (int i = 0; i < tLen; i++)
+    {
+        if (tVec.empty() || tVec.back().c != t[i].c)
+        {
+            tVec.push_back(t[i]);
+        }
+        else
+        {
+            tVec.back().len += t[i].len;
+        }
+    }
+    if (tVec.size() == 1)
+    {
+        ll ans = 0;
+        for (int i = 0; i < sVec.size(); i++)
+        {
+            if (sVec[i] >= tVec[0])
             {
-                for (int j = i + z.maxZ - 1; j >= i; j--)
-                {
-                    putchar(z.s[j]);
-                }
-                putchar('\n');
-                break;
+                ans += sVec[i].len - tVec[0].len + 1;
+            }
+        }
+        printf("%lld\n", ans);
+        return;
+    }
+    if (tVec.size() == 2)
+    {
+        ll ans = 0;
+        for (int i = 0; i + 1 < sVec.size(); i++)
+        {
+            if (sVec[i] >= tVec[0] && sVec[i + 1] >= tVec[1])
+            {
+                ans++;
+            }
+        }
+        printf("%lld\n", ans);
+        return;
+    }
+    auto last = tVec.back();
+    auto first = tVec.front();
+    tVec.pop_back();
+    reverse(tVec.begin(), tVec.end());
+    tVec.pop_back();
+    reverse(tVec.begin(), tVec.end());
+    zAlgo.Init(tVec, sVec, outOfBound);
+    ll ans = 0;
+    for (int i = tVec.size() + 2; i < zAlgo.n; i++)
+    {
+        if (zAlgo.z[i] == tVec.size())
+        {
+            if (i + tVec.size() < zAlgo.n && zAlgo.s[i - 1] >= first && zAlgo.s[i + tVec.size()] >= last)
+            {
+                ans++;
             }
         }
     }
+    printf("%lld\n", ans);
 }
 } // namespace solution
 #endif
