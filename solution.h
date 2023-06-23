@@ -4,130 +4,47 @@
 #include <algorithm>
 #include <cstdio>
 #include <cstring>
+#include <deque>
 #include <iostream>
 #include <map>
 #include <set>
 #include <vector>
-#include <deque>
-#include "library/Math.h"
+#include "library/ZAlgo.h"
 
 namespace solution
 {
 using namespace std;
-const int sz = 5050;
-using ll = long long;
-int t, n, cs;
-int ar[sz];
-vector <int> primesTaken;
-vector <int> others;
-const ll mod = 998244353LL;
-ll fac[sz];
-ll facInv[sz];
-ll dp[sz][sz];
-map <int, int> cnt;
 
-bool isPrime(int x);
-ll rec(int pos, int rem);
+const int sz = 1e6 + 10;
+int n;
+char s[sz];
+char t[sz];
+library::ZAlgo<char, sz + sz + sz, '$'> z;
 
 void Solve()
 {
-    memset(dp, -1, sizeof dp);
-
-    fac[0] = 1;
-    facInv[0] = library::ModuloInverse<mod>(fac[0]);
-
-    for (ll i = 1; i < sz; i++)
-    {
-        fac[i] = (fac[i - 1] * i) % mod;
-        facInv[i] = library::ModuloInverse<mod>(fac[i]);
-    }
-
     scanf("%d", &n);
-    primesTaken.clear();
-    others.clear();
-    cnt.clear();
-    for (int i = 0; i < n + n; i++)
+    while (n-- && scanf("%s", s))
     {
-        scanf("%d", &ar[i]);
-        cnt[ar[i]]++;
-        if (isPrime(ar[i]))
+        int len = strlen(s);
+        for (int i = 0; i < len; i++)
         {
-            primesTaken.push_back(ar[i]);
-        } 
-        else
-        {
-            others.push_back(ar[i]);
+            t[i] = s[len - i - 1];
         }
-    }
-
-    sort(primesTaken.begin(), primesTaken.end());
-    sort(others.begin(), others.end());
-
-    primesTaken.resize(unique(primesTaken.begin(), primesTaken.end()) - primesTaken.begin());
-    others.resize(unique(others.begin(), others.end()) - others.begin());
-
-    if (primesTaken.size() < n)
-    {
-        printf("0\n");
-    }
-    else
-    {
-        ll ans = rec(0, n);
-        for (int i = 0; i < others.size(); i++)
+        z.Init(s, len, t, len);
+        for (int i = len + 1; i < z.n; i++)
         {
-            if (!isPrime(others[i]))
+            if (z.z[i] == z.maxZ)
             {
-                ans = (ans * facInv[cnt[others[i]]]) % mod;
+                for (int j = i + z.maxZ - 1; j >= i; j--)
+                {
+                    putchar(z.s[j]);
+                }
+                putchar('\n');
+                break;
             }
         }
-        ans = (ans * fac[n]) % mod;
-        printf("%lld\n", ans);
     }
-}
-
-ll rec(int pos, int rem)
-{
-    if (rem == 0) 
-    {
-        return 1;
-    }
-
-    if (pos == primesTaken.size())
-    {
-        return 0;
-    }
-
-    auto &ret = dp[pos][rem];
-    if (ret != -1)
-    {
-        return ret;
-    }
-
-    ret = (rec(pos + 1, rem) * facInv[cnt[primesTaken[pos]]]) % mod;
-    
-    ret = (ret + ((rec(pos + 1, rem - 1) * facInv[cnt[primesTaken[pos]] - 1]) % mod)) % mod;
-
-    return ret;
-}
-
-bool isPrime(int x)
-{
-    if (x == 1)
-    {
-        return false;
-    }
-    if (x == 2)
-    {
-        return true;
-    }
-    for (int i = 2; i * i <= x; i++)
-    {
-        if (x % i == 0)
-        {
-            return false;
-        }
-    }
-    return true;
 }
 
 } // namespace solution

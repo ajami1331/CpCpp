@@ -10,6 +10,8 @@ template <size_t MAXLEN> struct Manacher
     char str[MAXLEN];
     int LPS[MAXLEN], len;
 
+    /// @brief Initialize the Manacher algorithm.
+    /// @param s The string to be processed. Expects it to be null terminated.
     void Init(const char *s)
     {
         len = 0;
