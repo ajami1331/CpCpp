@@ -7,12 +7,11 @@
 
 namespace library
 {
-
-template <size_t MAXLEN> struct AhoCorasick
+template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
 {
     std::vector<int> mark[MAXLEN + 7];
     int state, failure[MAXLEN + 7];
-    int trie[MAXLEN + 7][26];
+    int trie[MAXLEN + 7][AC_ALPHABET_SIZE];
 
     AhoCorasick()
     {
@@ -22,7 +21,7 @@ template <size_t MAXLEN> struct AhoCorasick
     void Init()
     {
         mark[0].clear();
-        std::fill(trie[0], trie[0] + 26, -1);
+        std::fill(trie[0], trie[0] + AC_ALPHABET_SIZE, -1);
         state = 0;
     }
 
@@ -41,7 +40,7 @@ template <size_t MAXLEN> struct AhoCorasick
             {
                 trie[root][id] = ++state;
                 mark[state].clear();
-                std::fill(trie[state], trie[state + 1] + 26, -1);
+                std::fill(trie[state], trie[state + 1] + AC_ALPHABET_SIZE, -1);
             }
             root = trie[root][id];
         }
@@ -52,7 +51,7 @@ template <size_t MAXLEN> struct AhoCorasick
     {
         std::queue<int> Q;
         failure[0] = 0;
-        for (int i = 0; i < 26; i++)
+        for (int i = 0; i < AC_ALPHABET_SIZE; i++)
         {
             if (trie[0][i] != -1)
             {
@@ -68,7 +67,7 @@ template <size_t MAXLEN> struct AhoCorasick
             Q.pop();
             for (int v : mark[failure[u]])
                 mark[u].emplace_back(v);
-            for (int i = 0; i < 26; i++)
+            for (int i = 0; i < AC_ALPHABET_SIZE; i++)
             {
                 if (trie[u][i] != -1)
                 {
