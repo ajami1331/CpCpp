@@ -1,79 +1,15 @@
 #include <algorithm>
+#include <cmath>
 #include <cstdio>
 #include <cstring>
 #include <deque>
 #include <iostream>
 #include <map>
+#include <queue>
 #include <set>
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#ifndef KnuthMorrisPrattMatcher_h
-#define KnuthMorrisPrattMatcher_h 1
-template <size_t MAXLEN> struct KnuthMorrisPrattMatcher
-{
-    char m[MAXLEN];
-    int table[MAXLEN], lenM;
-    void Init(const char *str, int n)
-    {
-        strncpy(m, str, n);
-        lenM = n;
-        table[0] = 0;
-        int i = 1, j = 0;
-        while (i < lenM)
-        {
-            if (m[i] == m[j])
-            {
-                j++;
-                table[i] = j;
-                i++;
-            }
-            else
-            {
-                if (j)
-                {
-                    j = table[j - 1];
-                }
-                else
-                {
-                    table[i] = 0;
-                    i++;
-                }
-            }
-        }
-    }
-    std::vector<int> MatchString(const char *s, int lenS)
-    {
-        int i = 0, j = 0;
-        std::vector <int> matches;
-        while (i < lenS)
-        {
-            while (i < lenS && j < lenM && s[i] == m[j])
-            {
-                i++;
-                j++;
-            }
-            if (j == lenM)
-            {
-                j = table[j - 1];
-                matches.emplace_back(i - lenM);
-            }
-            else if (i < lenS && s[i] != m[j])
-            {
-                if (j)
-                {
-                    j = table[j - 1];
-                }
-                else
-                {
-                    i++;
-                }
-            }
-        }
-        return matches;
-    }
-};
-#endif
 #ifndef solution_h
 #define solution_h 1
 namespace solution
@@ -81,27 +17,66 @@ namespace solution
 using namespace std;
 using ll = long long;
 using ull = unsigned long long;
-const int sz = 1e6 + 10;
-int n;
-char s[sz];
+const int sz = 2e5 + 105;
+int t, n, m;
+vector<pair<int, int>> g[sz];
+bool vis[sz];
+int color[sz];
+bool dfs(int u, int c)
+{
+    vis[u] = true;
+    color[u] = c;
+    for (auto &v : g[u])
+    {
+        if (!vis[v.first])
+        {
+            dfs(v.first, c + v.second);
+        }
+        else if (color[v.first] != c + v.second)
+        {
+            return false;
+        }
+    }
+    return true;
+}
 void Solve()
 {
-    int cs = 0;
-    while (cin >> n && n > 0)
+    scanf("%d", &t);
+    while (t-- && scanf("%d %d", &n, &m) == 2)
     {
-        cin >> s;
-        KnuthMorrisPrattMatcher<sz> matcher;
-        matcher.Init(s, n);
-        cout << "Test case #" << (++cs) << "\n";
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i <= n; i++)
         {
-            int len = i + 1 - matcher.table[i];
-            if ((i + 1) % len == 0 && (i + 1) / len > 1)
+            g[i].clear();
+            vis[i] = false;
+            color[i] = 0;
+        }
+        for (int i = 0; i < m; i++)
+        {
+            int x, y, w;
+            scanf("%d %d %d", &x, &y, &w);
+            g[x].emplace_back(y, w);
+            g[y].emplace_back(x, -w);
+        }
+        bool ok = true;
+        for (int i = 1; i <= n && ok; i++)
+        {
+            if (!vis[i])
             {
-                cout << (i + 1) << " " << (i + 1) / len << "\n";
+                ok = ok && dfs(i, 1);
             }
         }
-        cout << "\n";
+        for (int i = 1; i <=n && ok ;i++)
+        {
+            for (auto &v : g[i])
+            {
+                if (color[v.first] != color[i] + v.second)
+                {
+                    ok = false;
+                    break;
+                }
+            }
+        }
+        puts(ok ? "YES" : "NO");
     }
 }
 } // namespace solution

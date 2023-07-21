@@ -82,7 +82,7 @@ void Process(bool validateTestCases)
         freopen(outputFileForTestcaseName.c_str(), "w", stdout);
         const clock_t tStart = clock();
         solution::Solve();
-        totalRuntime = static_cast<double>(clock() - tStart) / CLOCKS_PER_SEC;
+        totalRuntime += static_cast<double>(clock() - tStart) / CLOCKS_PER_SEC;
         fflush(stdout);
         std::ifstream outputFileForTestcase(outputFileForTestcaseName);
         std::string outputLine;
