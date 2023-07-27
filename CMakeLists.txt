@@ -18,6 +18,8 @@ add_compile_definitions(INPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/input.txt")
 add_compile_definitions(OUTPUT_FILE="${CMAKE_CURRENT_SOURCE_DIR}/output.txt")
 add_compile_definitions(VALID_FILE="${CMAKE_CURRENT_SOURCE_DIR}/valid.txt")
 add_compile_definitions(TEST_CASES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test_cases/")
+add_compile_definitions(CP_LIBRARY_PATH="${CMAKE_CURRENT_SOURCE_DIR}/library/")
 
+add_subdirectory(tools)
 
 # TODO: Add tests and install targets if needed.

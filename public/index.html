@@ -1,0 +1,2706 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Algorithms</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
+</head>
+
+<body>
+    <h1>Algorithms</h1>
+    <h2 id="table-of-content">Table of Contents</h2>
+    <ul>
+        <li><a href="#FenwickTree.h">FenwickTree.h</a></li>
+        <li><a href="#FastIO.h">FastIO.h</a></li>
+        <li><a href="#FenwickTreeRangeSum.h">FenwickTreeRangeSum.h</a></li>
+        <li><a href="#EdmondsKarp.h">EdmondsKarp.h</a></li>
+        <li><a href="#AhoCorasick.h">AhoCorasick.h</a></li>
+        <li><a href="#StringUtils.h">StringUtils.h</a></li>
+        <li><a href="#PolyHash.h">PolyHash.h</a></li>
+        <li><a href="#Matrix.h">Matrix.h</a></li>
+        <li><a href="#KnuthMorrisPrattMatcher.h">KnuthMorrisPrattMatcher.h</a></li>
+        <li><a href="#Manacher.h">Manacher.h</a></li>
+        <li><a href="#PersistentSegmentTree.h">PersistentSegmentTree.h</a></li>
+        <li><a href="#SegmentTree.h">SegmentTree.h</a></li>
+        <li><a href="#LCA.h">LCA.h</a></li>
+        <li><a href="#SuffixArray.h">SuffixArray.h</a></li>
+        <li><a href="#SmallestStringRotation.h">SmallestStringRotation.h</a></li>
+        <li><a href="#BpmDfs.h">BpmDfs.h</a></li>
+        <li><a href="#SparseTable.h">SparseTable.h</a></li>
+        <li><a href="#ModInt.h">ModInt.h</a></li>
+        <li><a href="#Math.h">Math.h</a></li>
+        <li><a href="#ZAlgo.h">ZAlgo.h</a></li>
+        <li><a href="#BigInt.h">BigInt.h</a></li>
+        <li><a href="#DisjointSet.h">DisjointSet.h</a></li>
+        <li><a href="#BpmHopcraft.h">BpmHopcraft.h</a></li>
+        <li><a href="#Dinic.h">Dinic.h</a></li>
+    </ul>
+    <h2 id="FenwickTree.h">FenwickTree.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef FenwickTree_h
+#define FenwickTree_h 1
+
+#include <cstring>
+#include <functional>
+#include <numeric>
+
+namespace library
+{
+template <typename T, size_t sz, typename op_combine_type = std::plus<T>, typename op_decombine_type = std::minus<T>,
+          typename less_type = std::less<T>>
+class FenwickTree
+{
+  private:
+    T tr[sz];
+    int LOGN = std::__lg(sz);
+    op_combine_type op_combine;
+    op_decombine_type op_decombine;
+    less_type less;
+
+  public:
+    FenwickTree()
+    {
+        Reset();
+    }
+
+    void Reset()
+    {
+        memset(tr, 0, sizeof tr);
+    }
+
+    void Update(size_t x, T v)
+    {
+        for (; x < sz; x += (x & -x))
+        {
+            tr[x] = op_combine(tr[x], v);
+        }
+    }
+
+    T Query(size_t x)
+    {
+        T ret = 0;
+        for (; x > 0; x -= (x & -x))
+        {
+            ret = op_combine(ret, tr[x]);
+        }
+        return ret;
+    }
+
+    /// @brief: Only works with point updates
+    T QueryRange(size_t l, size_t r)
+    {
+        return op_decombine(Query(r), Query(l - 1));
+    }
+
+    /// @brief: Only works with point queries
+    T RangeUpdate(size_t l, size_t r, T v)
+    {
+        Update(l, v);
+        Update(r + 1, op_decombine(0, v));
+    }
+
+    size_t BinarySearch(T v)
+    {
+        T sum = 0;
+        size_t pos = 0;
+
+        for (int i = LOGN; i >= 0; i--)
+        {
+            if (pos + (1 << i) >= sz)
+                continue;
+
+            T newSum = op_combine(sum, tr[pos + (1 << i)]);
+            if (less(newSum, v))
+            {
+                sum = newSum;
+                pos += (1 << i);
+            }
+        }
+        return pos + 1;
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="FastIO.h">FastIO.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef FastIO_h
+#define FastIO_h 1
+
+namespace library
+{
+template <typename T> inline T ReadInt()
+{
+    T ret = 0, flag = 1, ip = getchar();
+    for (; ip < 48 || ip > 57; ip = getchar())
+    {
+        if (ip == 45)
+        {
+            flag = -1;
+            ip = getchar();
+            break;
+        }
+    }
+    for (; ip > 47 && ip < 58; ip = getchar())
+        ret = ret * 10 + ip - 48;
+    return flag * ret;
+}
+
+static const int buf_size = 4096;
+
+inline int GetChar()
+{
+    static char buf[buf_size];
+    static int len = 0, pos = 0;
+    if (pos == len)
+        pos = 0, len = fread(buf, 1, buf_size, stdin);
+    if (pos == len)
+        return -1;
+    return buf[pos++];
+}
+
+inline int ReadChar()
+{
+    int c = GetChar();
+    while (c <= 32)
+        c = GetChar();
+    return c;
+}
+
+template <typename T> inline T ReadIntBuffered()
+{
+    int s = 1, c = ReadChar();
+    T x = 0;
+    if (c == '-')
+        s = -1, c = GetChar();
+    while ('0' <= c && c <= '9')
+        x = x * 10 + c - '0', c = GetChar();
+    return s == 1 ? x : -x;
+}
+
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="FenwickTreeRangeSum.h">FenwickTreeRangeSum.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef FenwickTreeRangeSum_h
+#define FenwickTreeRangeSum_h 1
+
+#include "./FenwickTree.h"
+
+namespace library
+{
+template <typename T, size_t sz> class FenwickTreeRangeSum
+{
+  private:
+    FenwickTree<T, sz> ft1;
+    FenwickTree<T, sz> ft2;
+
+  public:
+    FenwickTreeRangeSum()
+    {
+        Reset();
+    }
+
+    void Reset()
+    {
+        ft1.Reset();
+        ft2.Reset();
+    }
+
+    void Update(size_t x, T v)
+    {
+        RangeUpdate(x, x, v);
+    }
+
+    void RangeUpdate(size_t l, size_t r, T v)
+    {
+        ft1.Update(l, v);
+        ft1.Update(r + 1, -v);
+        ft2.Update(l, v * (l - 1));
+        ft2.Update(r + 1, -v * r);
+    }
+
+    T Query(size_t x)
+    {
+        return ft1.Query(x) * x - ft2.Query(x);
+    }
+
+    T QueryRange(size_t l, size_t r)
+    {
+        return Query(r) - Query(l - 1);
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="EdmondsKarp.h">EdmondsKarp.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef EdmondsKarp_h
+#define EdmondsKarp_h 1
+
+#include <algorithm>
+#include <queue>
+#include <vector>
+
+namespace library
+{
+
+template <int INF> struct EdmondsKarp
+{
+    int n;
+    std::vector<int> par;
+    std::vector<bool> vis;
+    std::vector<std::vector<int>> graph;
+
+    EdmondsKarp()
+    {
+    }
+    EdmondsKarp(int _n) : n(_n), par(_n), vis(_n), graph(_n, std::vector<int>(_n, 0))
+    {
+    }
+    ~EdmondsKarp()
+    {
+    }
+
+    void AddEdge(int from, int to, int cap, bool undirected)
+    {
+        graph[from][to] += cap;
+        graph[to][from] = undirected ? graph[to][from] + cap : graph[to][from];
+    }
+
+    void SetEdgeCapacity(int from, int to, int cap, bool undirected)
+    {
+        graph[from][to] = cap;
+        graph[to][from] = undirected ? cap : graph[to][from];
+    }
+
+    bool Bfs(int src, int sink)
+    {
+        int u;
+        std::fill(vis.begin(), vis.end(), false);
+        std::fill(par.begin(), par.end(), -1);
+        vis[src] = true;
+        std::queue<int> q;
+        q.push(src);
+        while (!q.empty())
+        {
+            u = q.front();
+            q.pop();
+            if (u == sink)
+                return true;
+            for (int i = 0; i < n; i++)
+            {
+                if (graph[u][i] > 0 && !vis[i])
+                {
+                    q.push(i);
+                    vis[i] = true;
+                    par[i] = u;
+                }
+            }
+        }
+        return par[sink] != -1;
+    }
+
+    int MinVal(int i)
+    {
+        int ret = INF;
+        for (; par[i] != -1; i = par[i])
+        {
+            ret = std::min(ret, graph[par[i]][i]);
+        }
+        return ret;
+    }
+
+    void AugmentPath(int val, int i)
+    {
+        for (; par[i] != -1; i = par[i])
+        {
+            graph[par[i]][i] -= val;
+            graph[i][par[i]] += val;
+        }
+    }
+
+    int MaxFlow(int src, int sink)
+    {
+        int min_cap, ret = 0;
+        while (this->Bfs(src, sink))
+        {
+            this->AugmentPath(min_cap = this->MinVal(sink), sink);
+            ret += min_cap;
+        }
+        return ret;
+    }
+};
+} // namespace library
+#endif
+</code></pre>
+    <h2 id="AhoCorasick.h">AhoCorasick.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef AhoCorasick_h
+#define AhoCorasick_h 1
+
+#include <algorithm>
+#include <queue>
+#include <vector>
+
+namespace library
+{
+template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
+{
+    std::vector<int> mark[MAXLEN + 7];
+    int state, failure[MAXLEN + 7];
+    int trie[MAXLEN + 7][AC_ALPHABET_SIZE];
+
+    AhoCorasick()
+    {
+        Init();
+    }
+
+    void Init()
+    {
+        mark[0].clear();
+        std::fill(trie[0], trie[0] + AC_ALPHABET_SIZE, -1);
+        state = 0;
+    }
+
+    int Value(char c)
+    {
+        return c - 'a';
+    }
+
+    void Add(char *s, int t)
+    {
+        int root = 0, id;
+        for (int i = 0; s[i]; i++)
+        {
+            id = Value(s[i]);
+            if (trie[root][id] == -1)
+            {
+                trie[root][id] = ++state;
+                mark[state].clear();
+                std::fill(trie[state], trie[state + 1] + AC_ALPHABET_SIZE, -1);
+            }
+            root = trie[root][id];
+        }
+        mark[root].emplace_back(t);
+    }
+
+    void ComputeFailure()
+    {
+        std::queue<int> Q;
+        failure[0] = 0;
+        for (int i = 0; i < AC_ALPHABET_SIZE; i++)
+        {
+            if (trie[0][i] != -1)
+            {
+                failure[trie[0][i]] = 0;
+                Q.push(trie[0][i]);
+            }
+            else
+                trie[0][i] = 0;
+        }
+        while (!Q.empty())
+        {
+            int u = Q.front();
+            Q.pop();
+            for (int v : mark[failure[u]])
+                mark[u].emplace_back(v);
+            for (int i = 0; i < AC_ALPHABET_SIZE; i++)
+            {
+                if (trie[u][i] != -1)
+                {
+                    failure[trie[u][i]] = trie[failure[u]][i];
+                    Q.push(trie[u][i]);
+                }
+                else
+                    trie[u][i] = trie[failure[u]][i];
+            }
+        }
+    }
+};
+
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="StringUtils.h">StringUtils.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef StringUtils_h
+#define StringUtils_h 1
+
+#include <algorithm>
+#include <string>
+#include <vector>
+
+namespace library
+{
+static inline void ltrim(std::string &s)
+{
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char c) -> bool { return !std::isspace(c); }));
+}
+
+static inline void rtrim(std::string &s)
+{
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+}
+
+static inline void trim(std::string &s)
+{
+    ltrim(s);
+    rtrim(s);
+}
+
+static inline std::string &trim_i(std::string &s)
+{
+    ltrim(s);
+    rtrim(s);
+    return s;
+}
+
+static inline std::string trim_n(std::string s)
+{
+    ltrim(s);
+    rtrim(s);
+    return s;
+}
+
+std::vector<std::string> split(const std::string &s, char splitChar)
+{
+    std::vector<std::string> splittedString;
+    std::string hand = "";
+    for (char c : s)
+    {
+        if (c == splitChar)
+        {
+            splittedString.emplace_back(hand);
+            hand.clear();
+            continue;
+        }
+        hand.push_back(c);
+    }
+    splittedString.emplace_back(hand);
+    return splittedString;
+}
+} // namespace library
+#endif</code></pre>
+    <h2 id="PolyHash.h">PolyHash.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+/// src: https://github.com/sgtlaugh/algovault/blob/master/code_library/hashing.cpp
+#ifndef PolyHash_h
+#define PolyHash_h 1
+
+#include <chrono>
+#include <random>
+#include <vector>
+#include <cassert>
+
+// #define IMPLEMENT_REV_HASH
+
+namespace library
+{
+
+constexpr unsigned long long mod = (1ULL << 61) - 1;
+
+const unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
+const unsigned long long base = std::mt19937_64(seed)() % (mod / 3) + (mod / 3);
+
+long long ModMul(unsigned long long a, unsigned long long b)
+{
+    unsigned long long l1 = (unsigned int)a, h1 = a >> 32, l2 = (unsigned int)b, h2 = b >> 32;
+    unsigned long long l = l1 * l2, m = l1 * h2 + l2 * h1, h = h1 * h2;
+    unsigned long long ret = (l & mod) + (l >> 61) + (h << 3) + (m >> 29) + (m << 35 >> 3) + 1;
+    ret = (ret & mod) + (ret >> 61);
+    ret = (ret & mod) + (ret >> 61);
+    return ret - 1;
+}
+
+template <size_t MAXLEN> struct PolyHash
+{
+    std::vector<long long> pref;
+/// Removes the suff vector and usage if reverse hash is not required for more speed
+#ifdef IMPLEMENT_REV_HASH
+    std::vector<long long> suff;
+#endif
+    inline static unsigned long long base_pow[MAXLEN];
+
+    PolyHash()
+    {
+    }
+
+    template <typename T> PolyHash(const std::vector<T> &ar)
+    {
+        if (!base_pow[0])
+            init();
+
+        int n = ar.size();
+        assert(n < MAXLEN);
+        pref.resize(n + 3, 0);
+
+        for (int i = 1; i <= n; i++)
+        {
+            pref[i] = ModMul(pref[i - 1], base) + ar[i - 1] + 997;
+            if (pref[i] >= mod)
+                pref[i] -= mod;
+        }
+
+#ifdef IMPLEMENT_REV_HASH
+        suff.resize(n + 3, 0);
+        for (int i = n; i >= 1; i--)
+        {
+            suff[i] = ModMul(suff[i + 1], base) + ar[i - 1] + 997;
+            if (suff[i] >= mod)
+                suff[i] -= mod;
+        }
+#endif
+    }
+
+    PolyHash(const char *str) : PolyHash(std::vector<char>(str, str + strlen(str)))
+    {
+    }
+
+    unsigned long long GetHash(int l, int r)
+    {
+        long long h = pref[r + 1] - ModMul(base_pow[r - l + 1], pref[l]);
+        return h < 0 ? h + mod : h;
+    }
+
+#ifdef IMPLEMENT_REV_HASH
+    unsigned long long ReverseHash(int l, int r)
+    {
+        long long h = suff[l + 1] - ModMul(base_pow[r - l + 1], suff[r + 2]);
+        return h < 0 ? h + mod : h;
+    }
+#endif
+
+    unsigned long long GetHash(int l, int r, int x, int y)
+    {
+        return (ModMul(GetHash(l, r), base_pow[y - x + 1]) + GetHash(x, y)) % mod;
+    }
+
+    void init()
+    {
+        base_pow[0] = 1;
+        for (int i = 1; i < MAXLEN; i++)
+        {
+            base_pow[i] = ModMul(base_pow[i - 1], base);
+        }
+    }
+};
+} // namespace library
+
+#endif
+</code></pre>
+    <h2 id="Matrix.h">Matrix.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef Matrix_h
+#define Matrix_h 1
+
+#include <algorithm>
+#include <vector>
+
+namespace library
+{
+template <long long mod> struct Matrix
+{
+    int mat_sz;
+    std::vector<std::vector<int>> a;
+
+    Matrix(int _mat_sz) : mat_sz(_mat_sz), a(std::vector<std::vector<int>>(_mat_sz, std::vector<int>(_mat_sz, 0)))
+    {
+    }
+
+    ~Matrix()
+    {
+    }
+
+    void Clear()
+    {
+        for (int i = 0; i < mat_sz; i++)
+        {
+            std::fill(a[i].begin(), a[i].end(), 0);
+        }
+    }
+
+    void One()
+    {
+        for (int i = 0; i < mat_sz; i++)
+        {
+            for (int j = 0; j < mat_sz; j++)
+            {
+                a[i][j] = (i == j);
+            }
+        }
+    }
+
+    Matrix operator+(const Matrix &b) const
+    {
+        Matrix tmp(mat_sz);
+        tmp.Clear();
+        for (int i = 0; i < mat_sz; i++)
+        {
+            for (int j = 0; j < mat_sz; j++)
+            {
+                tmp.a[i][j] = a[i][j] + b.a[i][j];
+                if (tmp.a[i][j] >= mod)
+                {
+                    tmp.a[i][j] -= mod;
+                }
+            }
+        }
+        return tmp;
+    }
+
+    Matrix operator*(const Matrix &b) const
+    {
+        Matrix tmp(mat_sz);
+        tmp.Clear();
+        for (int i = 0; i < mat_sz; i++)
+        {
+            for (int j = 0; j < mat_sz; j++)
+            {
+                for (int k = 0; k < mat_sz; k++)
+                {
+                    tmp.a[i][k] += (long long)a[i][j] * b.a[j][k] % mod;
+                    if (tmp.a[i][k] >= mod)
+                    {
+                        tmp.a[i][k] -= mod;
+                    }
+                }
+            }
+        }
+        return tmp;
+    }
+
+    Matrix operator^(long long x) const
+    {
+        return Pow(x);
+    }
+
+    Matrix operator^=(long long x) const
+    {
+        return *this = Pow(x);
+    }
+
+    Matrix Pow(long long x)
+    {
+        Matrix ans(mat_sz), num = *this;
+        ans.One();
+        while (x > 0)
+        {
+            if (x & 1)
+            {
+                ans = ans * num;
+            }
+            num = num * num;
+            x >>= 1;
+        }
+        return ans;
+    }
+};
+
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="KnuthMorrisPrattMatcher.h">KnuthMorrisPrattMatcher.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef KnuthMorrisPrattMatcher_h
+#define KnuthMorrisPrattMatcher_h 1
+
+#include <algorithm>
+#include <cstring>
+#include <vector>
+
+template <size_t MAXLEN> struct KnuthMorrisPrattMatcher
+{
+    char m[MAXLEN];
+    int table[MAXLEN], lenM;
+
+    void Init(const char *str, int n)
+    {
+        strncpy(m, str, n);
+        lenM = n;
+        table[0] = 0;
+        int i = 1, j = 0;
+        while (i < lenM)
+        {
+            if (m[i] == m[j])
+            {
+                j++;
+                table[i] = j;
+                i++;
+            }
+            else
+            {
+                if (j)
+                {
+                    j = table[j - 1];
+                }
+                else
+                {
+                    table[i] = 0;
+                    i++;
+                }
+            }
+        }
+    }
+
+    std::vector<int> MatchString(const char *s, int lenS)
+    {
+        int i = 0, j = 0;
+        std::vector <int> matches;
+        while (i < lenS)
+        {
+            while (i < lenS && j < lenM && s[i] == m[j])
+            {
+                i++;
+                j++;
+            }
+            if (j == lenM)
+            {
+                j = table[j - 1];
+                matches.emplace_back(i - lenM);
+            }
+            else if (i < lenS && s[i] != m[j])
+            {
+                if (j)
+                {
+                    j = table[j - 1];
+                }
+                else
+                {
+                    i++;
+                }
+            }
+        }
+        return matches;
+    }
+};
+
+#endif</code></pre>
+    <h2 id="Manacher.h">Manacher.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef Manacher_h
+#define Manacher_h 1
+
+#include <algorithm>
+
+namespace library
+{
+template <size_t MAXLEN> struct Manacher
+{
+    char str[MAXLEN];
+    int LPS[MAXLEN], len;
+
+    /// @brief Initialize the Manacher algorithm.
+    /// @param s The string to be processed. Expects it to be null terminated.
+    void Init(const char *s)
+    {
+        len = 0;
+        str[len++] = '*';
+        for (int i = 0; s[i]; i++)
+        {
+            str[len++] = s[i];
+            str[len++] = '*';
+        }
+        str[len] = '\0';
+    }
+
+    int GetLpsLength()
+    {
+        int c = 0, r = 0, ans = 0;
+        for (int i = 1; i < len - 1; i++)
+        {
+            int _i = c - (i - c);
+            if (r > i)
+                LPS[i] = std::min(LPS[_i], r - i);
+            else
+                LPS[i] = 0;
+            while (i - 1 - LPS[i] >= 0 && str[i - 1 - LPS[i]] == str[i + 1 + LPS[i]])
+            {
+                LPS[i]++;
+            }
+            if (i + LPS[i] > r)
+            {
+                r = i + LPS[i];
+                c = i;
+            }
+            ans = std::max(ans, LPS[i]);
+        }
+        return ans;
+    }
+};
+} // namespace library
+#endif
+</code></pre>
+    <h2 id="PersistentSegmentTree.h">PersistentSegmentTree.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef PersistentSegmentTree_h
+#define PersistentSegmentTree_h 1
+
+#include <functional>
+#include <vector>
+
+namespace library
+{
+
+template <typename T, size_t sz> class PersistentSegmentTree
+{
+  private:
+    int nxt = 0;
+    struct node
+    {
+        size_t left;
+        size_t right;
+        T val;
+    } nodes[sz * 32];
+    std::function<T(T, T)> combine;
+    std::function<T(T, T)> replace;
+
+    size_t UpdateInternal(size_t node_idx, int l, int r, int idx, T x)
+    {
+        auto &cur_node = nodes[node_idx];
+        if (r < idx || idx < l)
+        {
+            return node_idx;
+        }
+        if (l == r)
+        {
+            size_t n_node_idx = ++nxt;
+            auto &n_node = nodes[n_node_idx];
+            n_node.val = this->replace(cur_node.val, x);
+            n_node.left = cur_node.left;
+            n_node.right = cur_node.right;
+            return n_node_idx;
+        }
+        int mid = (l + r) >> 1;
+        size_t n_node_idx = ++nxt;
+        auto &n_node = nodes[n_node_idx];
+        n_node.val = cur_node.val;
+        n_node.left = UpdateInternal(cur_node.left, l, mid, idx, x);
+        n_node.right = UpdateInternal(cur_node.right, mid + 1, r, idx, x);
+        auto &n_node_left = nodes[n_node.left];
+        auto &n_node_right = nodes[n_node.right];
+        n_node.val = combine(n_node_left.val, n_node_right.val);
+        return n_node_idx;
+    }
+
+    void BuildInternal(size_t node_idx, int l, int r, T defaultValue)
+    {
+        auto &cur_node = nodes[node_idx];
+        if (l == r)
+        {
+            cur_node.val = defaultValue;
+            return;
+        }
+        int mid = (l + r) >> 1;
+        cur_node.left = ++nxt;
+        cur_node.right = ++nxt;
+        size_t left_idx = cur_node.left;
+        size_t right_idx = cur_node.right;
+        BuildInternal(left_idx, l, mid, defaultValue);
+        BuildInternal(right_idx, mid + 1, r, defaultValue);
+        auto &node_left = nodes[left_idx];
+        auto &node_right = nodes[right_idx];
+        cur_node.val = combine(node_left.val, node_right.val);
+    }
+
+    void BuildInternal(size_t node_idx, int l, int r, T *arr)
+    {
+        auto &cur_node = nodes[node_idx];
+        if (l == r)
+        {
+            cur_node.val = arr[l];
+            return;
+        }
+        int mid = (l + r) >> 1;
+        cur_node.left = ++nxt;
+        cur_node.right = ++nxt;
+        size_t left_idx = cur_node.left;
+        size_t right_idx = cur_node.right;
+        BuildInternal(left_idx, l, mid, arr);
+        BuildInternal(right_idx, mid + 1, r, arr);
+        auto &node_left = nodes[left_idx];
+        auto &node_right = nodes[right_idx];
+        cur_node.val = combine(node_left.val, node_right.val);
+    }
+
+  public:
+    std::vector<size_t> roots;
+
+    PersistentSegmentTree(
+        std::function<T(T, T)> combine = [](T a, T b) { return a + b; },
+        std::function<T(T, T)> replace = [](T a, T b) { return a + b; })
+    {
+        SetCombine(combine);
+        SetReplace(replace);
+        Reset();
+    }
+
+    ~PersistentSegmentTree()
+    {
+    }
+
+    void SetCombine(std::function<T(T, T)> combine)
+    {
+        this->combine = combine;
+    }
+
+    void SetReplace(std::function<T(T, T)> replace)
+    {
+        this->replace = replace;
+    }
+
+    void Reset()
+    {
+        nxt = 0;
+        roots.clear();
+    }
+
+    size_t Build(int l, int r, T defaultValue)
+    {
+        Reset();
+        roots.emplace_back(++nxt);
+        BuildInternal(roots.back(), l, r, defaultValue);
+        return roots.back();
+    }
+
+    size_t Build(int l, int r, T *arr)
+    {
+        Reset();
+        roots.emplace_back(++nxt);
+        BuildInternal(roots.back(), l, r, arr);
+        return roots.back();
+    }
+
+    size_t Update(size_t node_idx, int l, int r, int idx, T x)
+    {
+        roots.emplace_back(UpdateInternal(node_idx, l, r, idx, x));
+        return roots.back();
+    }
+
+    T Query(size_t node_idx, int l, int r, int i, int j)
+    {
+        auto &cur_node = nodes[node_idx];
+        if (r < i || l > j)
+        {
+            return 0;
+        }
+        if (i <= l && r <= j)
+        {
+            return cur_node.val;
+        }
+        int mid = (l + r) >> 1;
+        return combine(Query(cur_node.left, l, mid, i, j), Query(cur_node.right, mid + 1, r, i, j));
+    }
+};
+} // namespace library
+#endif</code></pre>
+    <h2 id="SegmentTree.h">SegmentTree.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef SegmentTree_h
+#define SegmentTree_h 1
+
+#include <algorithm>
+#include <functional>
+
+namespace library
+{
+template <typename T, size_t sz, T identityElem> class SegmentTree
+{
+  private:
+    T tr[sz * 4];
+    std::function<T(T, T)> combine;
+
+  public:
+    SegmentTree(std::function<T(T, T)> combine = [](T a, T b) { return a + b; })
+    {
+        SetCombine(combine);
+        Reset();
+    }
+
+    ~SegmentTree()
+    {
+    }
+
+    void SetCombine(std::function<T(T, T)> combine)
+    {
+        this->combine = combine;
+    }
+
+    void Reset()
+    {
+        std::fill(tr, tr + sz * 4, identityElem);
+    }
+
+    inline void Build(int node, int b, int e, T *arr)
+    {
+        if (b == e)
+        {
+            tr[node] = arr[b];
+            return;
+        }
+        int left = node << 1;
+        int right = left | 1;
+        int mid = (b + e) >> 1;
+        Build(left, b, mid, arr);
+        Build(right, mid + 1, e, arr);
+        tr[node] = this->combine(tr[left], tr[right]);
+    }
+
+    inline void Update(int node, int b, int e, int idx, T x)
+    {
+        if (b == e)
+        {
+            tr[node] = x;
+            return;
+        }
+        int left = node << 1;
+        int right = left | 1;
+        int mid = (b + e) >> 1;
+        if (idx <= mid)
+            Update(left, b, mid, idx, x);
+        else
+            Update(right, mid + 1, e, idx, x);
+        tr[node] = this->combine(tr[left], tr[right]);
+    }
+
+    inline T Query(int node, int b, int e, int l, int r)
+    {
+        if (r < b || e < l)
+            return identityElem;
+        if (b >= l && e <= r)
+        {
+            return tr[node];
+        }
+
+        int left = node << 1;
+        int right = left | 1;
+        int mid = (b + e) >> 1;
+
+        T p1 = Query(left, b, mid, l, r);
+        T p2 = Query(right, mid + 1, e, l, r);
+
+        return this->combine(p1, p2);
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="LCA.h">LCA.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef LCA_H
+#define LCA_H 1
+
+#include <algorithm>
+#include <functional>
+#include <vector>
+#include "SparseTable.h"
+
+namespace library
+{
+#define LOG2(x) (32 - __builtin_clz(x) - 1)
+struct LCA
+{
+    int n;
+    int log2n;
+    std::vector<std::vector<int>> graph;
+    std::vector<int> parent;
+    std::vector<int> level;
+    std::vector<int> tour;
+    std::vector<int> position;
+    SparseTable<int> sparse_table;
+    LCA(int n)
+        : n(n), log2n(LOG2(2 * n - 1) + 1), graph(n, std::vector<int>()), level(n), parent(n), position(n, -1)
+    {
+    }
+    ~LCA()
+    {
+    }
+
+    void AddEdge(int from, int to)
+    {
+        graph[from].emplace_back(to);
+        graph[to].emplace_back(from);
+    }
+
+    void Build(int root)
+    {
+        level[root] = 0;
+        Dfs(root, -1);
+        sparse_table = SparseTable<int>(tour, [level = level](int x, int y) { return level[x] < level[y] ? x : y; });
+    }
+
+    void Dfs(int u, int prev)
+    {
+        parent[u] = prev;
+        level[u] = level[prev] + 1;
+        position[u] = tour.size();
+        tour.emplace_back(u);
+        for (int v : graph[u])
+        {
+            if (v != prev)
+            {
+                Dfs(v, u);
+                tour.emplace_back(u);
+            }
+        }
+    }
+
+    int Query(int u, int v)
+    {
+        auto [l, r] = std::minmax(position[u], position[v]);
+        return sparse_table.Query(l, r);
+    }
+
+    int Distance(int u, int v)
+    {
+        int lca = Query(u, v);
+        return level[u] + level[v] - 2 * level[lca];
+    }
+
+    int KthAncestor(int u, int k)
+    {
+        for (int i = 0; i < log2n; i++)
+        {
+            if (k & (1 << i))
+            {
+                u = parent[u];
+            }
+        }
+        return u;
+    }
+
+    int KthAncestor(int u, int v, int k)
+    {
+        int lca = Query(u, v);
+        int d = level[u] + level[v] - 2 * level[lca];
+        if (k <= level[u] - level[lca])
+        {
+            return KthAncestor(u, k);
+        }
+        else
+        {
+            return KthAncestor(v, d - k);
+        }
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="SuffixArray.h">SuffixArray.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef SuffixArray_h
+#define SuffixArray_h 1
+
+#include <algorithm>
+#include <cstring>
+#include <utility>
+
+namespace library
+{
+template <size_t MAXLEN> struct SuffixArray
+{                                   // second approach: O(n log n)
+    char T[MAXLEN];                 // the input string, up to 100K characters
+    int n;                          // the length of input string
+    int RA[MAXLEN], tempRA[MAXLEN]; // rank array and temporary rank array
+    int SA[MAXLEN], tempSA[MAXLEN]; // suffix array and temporary suffix array
+    int c[MAXLEN];                  // for counting/radix sort
+
+    char P[MAXLEN]; // the pattern string (for string matching)
+    int m;          // the length of pattern string
+
+    int Phi[MAXLEN]; // for computing longest common prefix
+    int PLCP[MAXLEN];
+    int LCP[MAXLEN]; // LCP[i] stores the LCP between previous suffix T+SA[i-1]
+    // and current suffix T+SA[i]
+
+    void Init(const char *str)
+    {
+        n = strlen(str);
+        for (int i = 0; i < n; i++)
+            T[i] = str[i];
+        T[n++] = '$';
+        T[n] = '\0';
+    }
+
+    void CountingSort(int k) // O(n)
+    {
+        int i, sum, maxi = std::max(300, n); // up to 255 ASCII chars or length of n
+        memset(c, 0, sizeof c);         // clear frequency table
+        for (i = 0; i < n; i++)         // count the frequency of each integer rank
+            c[i + k < n ? RA[i + k] : 0]++;
+        for (i = sum = 0; i < maxi; i++)
+        {
+            int t = c[i];
+            c[i] = sum;
+            sum += t;
+        }
+        for (i = 0; i < n; i++) // shuffle the suffix array if necessary
+            tempSA[c[SA[i] + k < n ? RA[SA[i] + k] : 0]++] = SA[i];
+        for (i = 0; i < n; i++) // update the suffix array SA
+            SA[i] = tempSA[i];
+    }
+
+    void ConstructSA() // this version can go up to 100000 characters
+    {
+        int i, k, r;
+        for (i = 0; i < n; i++)
+            RA[i] = T[i]; // initial rankings
+        for (i = 0; i < n; i++)
+            SA[i] = i;              // initial SA: {0, 1, 2, ..., n-1}
+        for (k = 1; k < n; k <<= 1) // repeat sorting process log n times
+        {
+            CountingSort(k);        // actually radix sort: sort based on the second item
+            CountingSort(0);        // then (stable) sort based on the first item
+            tempRA[SA[0]] = r = 0;  // re-ranking; start from rank r = 0
+            for (i = 1; i < n; i++) // compare adjacent suffixes
+                tempRA[SA[i]] =     // if same pair => same rank r; otherwise, increase r
+                    (RA[SA[i]] == RA[SA[i - 1]] && RA[SA[i] + k] == RA[SA[i - 1] + k]) ? r : ++r;
+            for (i = 0; i < n; i++) // update the rank array RA
+                RA[i] = tempRA[i];
+            if (RA[SA[n - 1]] == n - 1)
+                break; // nice optimization trick
+        }
+    }
+
+    void ComputeLCP()
+    {
+        int i, L;
+        Phi[SA[0]] = -1;            // default value
+        for (i = 1; i < n; i++)     // compute Phi in O(n)
+            Phi[SA[i]] = SA[i - 1]; // remember which suffix is behind this suffix
+        for (i = L = 0; i < n; i++) // compute Permuted LCP in O(n)
+        {
+            if (Phi[i] == -1)
+            {
+                PLCP[i] = 0; // special case
+                continue;
+            }
+            while (T[i + L] == T[Phi[i] + L])
+                L++; // L increased max n times
+            PLCP[i] = L;
+            L = std::max(L - 1, 0); // L decreased max n times
+        }
+        for (i = 0; i < n; i++)   // compute LCP in O(n)
+            LCP[i] = PLCP[SA[i]]; // put the permuted LCP to the correct position
+    }
+
+    std::pair<int, int> StringMatching() // string matching in O(m log n)
+    {
+        int lo = 0, hi = n - 1, mid = lo; // valid matching = [0..n-1]
+        while (lo < hi)                   // find lower bound
+        {
+            mid = (lo + hi) / 2;                  // this is round down
+            int res = strncmp(T + SA[mid], P, m); // try to find P in suffix 'mid'
+            if (res >= 0)
+                hi = mid; // prune upper half (notice the >= sign)
+            else
+                lo = mid + 1; // prune lower half including mid
+        }                     // observe `=' in "res >= 0" above
+        if (strncmp(T + SA[lo], P, m) != 0)
+            return std::pair<int, int>(-1, -1); // if not found
+        std::pair<int, int> ans;
+        ans.first = lo;
+        lo = 0;
+        hi = n - 1;
+        mid = lo;
+        while (lo < hi) // if lower bound is found, find upper bound
+        {
+            mid = (lo + hi) / 2;
+            int res = strncmp(T + SA[mid], P, m);
+            if (res > 0)
+                hi = mid; // prune upper half
+            else
+                lo = mid + 1; // prune lower half including mid
+        }                     // (notice the selected branch when res == 0)
+        if (strncmp(T + SA[hi], P, m) != 0)
+            hi--; // special case
+        ans.second = hi;
+        return ans;
+    } // return lower/upperbound as first/second item of the pair, respectively
+
+    std::pair<int, int> LRS() // returns a pair (the LRS length and its index)
+    {
+        int i, idx = 0, maxLCP = -1;
+        for (i = 1; i < n; i++) // O(n), start from i = 1
+            if (LCP[i] > maxLCP)
+                maxLCP = LCP[i], idx = i;
+        return std::pair<int, int>(maxLCP, idx);
+    }
+
+    int Owner(int idx)
+    {
+        return (idx < n - m - 1) ? 1 : 2;
+    }
+
+    std::pair<int, int> LCS() // returns a pair (the LCS length and its index)
+    {
+        int i, idx = 0, maxLCP = -1;
+        for (i = 1; i < n; i++) // O(n), start from i = 1
+            if (Owner(SA[i]) != Owner(SA[i - 1]) && LCP[i] > maxLCP)
+                maxLCP = LCP[i], idx = i;
+        return std::pair<int, int>(maxLCP, idx);
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="SmallestStringRotation.h">SmallestStringRotation.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef SmallestStringRotation_h
+#define SmallestStringRotation_h 1
+
+#include <algorithm>
+#include <cassert>
+#include <cstring>
+#include <string>
+
+namespace library
+{
+
+template <size_t MAXLEN> struct SmallestStringRotation
+{
+    int f[MAXLEN];
+    int operator()(const std::string &s)
+    {
+        int n = s.size();
+        std::string t = s + s;
+        memset(f, -1, sizeof f);
+        int k = 0;
+        for (int j = 1; j < 2 * n; ++j)
+        {
+            int i = f[j - k - 1];
+            while (i != -1 && t[j] != t[k + i + 1])
+            {
+                if (t[j] < t[k + i + 1])
+                {
+                    k = j - i - 1;
+                }
+                i = f[i];
+            }
+            if (i == -1 && t[j] != t[k + i + 1])
+            {
+                if (t[j] < t[k + i + 1])
+                {
+                    k = j;
+                }
+                f[j - k] = -1;
+            }
+            else
+            {
+                f[j - k] = i + 1;
+            }
+        }
+        return k;
+    }
+};
+
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="BpmDfs.h">BpmDfs.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef BpmDfs_h
+#define BpmDfs_h 1
+
+#include <cstring>
+
+namespace library
+{
+
+template <size_t sz> struct BpmDfs
+{
+    int n;
+    bool fl[sz];
+    int match[sz];
+    bool g[sz][sz];
+
+    BpmDfs()
+    {
+    }
+
+    BpmDfs(int n)
+    {
+        Init(n);
+    }
+
+    ~BpmDfs()
+    {
+    }
+
+    void Init(int n)
+    {
+        this->n = n;
+    }
+
+    void AddEdge(int u, int v)
+    {
+        g[u][v] = true;
+    }
+
+    void Clear()
+    {
+        memset(g, 0, sizeof g);
+    }
+
+    bool Dfs(int u)
+    {
+        for (int v = 0; v < n; v++)
+        {
+            if (g[u][v] && !fl[v])
+            {
+                fl[v] = true;
+                if (match[v] == -1 || Dfs(match[v]))
+                {
+                    match[v] = u;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    int MaxMatching()
+    {
+        memset(match, -1, sizeof match);
+        int ret = 0;
+        for (int i = 0; i < n; i++)
+        {
+            memset(fl, 0, sizeof fl);
+            if (Dfs(i))
+            {
+                ret++;
+            }
+        }
+        return ret;
+    }
+};
+
+} // namespace library
+#endif</code></pre>
+    <h2 id="SparseTable.h">SparseTable.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef SparseTable_h
+#define SparseTable_h 1
+
+#include <functional>
+#include <vector>
+
+namespace library
+{
+#define LOG2(x) (32 - __builtin_clz(x) - 1)
+template <typename T> struct SparseTable
+{
+    int n;
+    int log2n;
+    std::function<T(T, T)> combine;
+    std::vector<T> table[32];
+
+    SparseTable()
+    {
+    }
+
+    SparseTable(T *arr, int len, std::function<T(T, T)> combine) : SparseTable(arr, len)
+    {
+        this->combine = combine;
+    }
+
+    SparseTable(T *arr, int len) : SparseTable(std::vector<T>(arr, arr + len))
+    {
+    }
+
+    SparseTable(const std::vector<T> &arr, std::function<T(T, T)> combine) : SparseTable(arr)
+    {
+        this->combine = combine;
+    }
+
+    SparseTable(const std::vector<T> &arr)
+    {
+        n = arr.size();
+        log2n = LOG2(n) + 1;
+        table[0] = arr;
+        for (int i = 1; i < log2n; ++i)
+        {
+            table[i].resize(n - (1 << i) + 1);
+            for (int j = 0; j + (1 << i) <= n; j++)
+            {
+                int x = table[i - 1][j];
+                int y = table[i - 1][j + (1 << (i - 1))];
+                table[i][j] = Combine(x, y);
+            }
+        }
+    }
+
+    T Combine(T x, T y)
+    {
+        if (this->combine != nullptr)
+            return this->combine(x, y);
+        return std::min(x, y);
+    }
+
+    T Query(int l, int r)
+    {
+        int k = LOG2(r - l + 1);
+        int x = table[k][l];
+        int y = table[k][r - (1 << k) + 1];
+        return Combine(x, y);
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="ModInt.h">ModInt.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef ModInt_h
+#define ModInt_h 1
+
+#include <algorithm>
+#include <iomanip>
+#include <iostream>
+
+namespace library
+{
+
+struct ModInt
+{
+    int val;
+    int mod = 1e9 + 7;
+
+    ModInt()
+    {
+        val = 0;
+    }
+    ModInt(int _val)
+    {
+        val = _val % mod;
+    }
+    ModInt(long long _val)
+    {
+        val = _val % mod;
+    }
+
+    ModInt &operator=(int _val)
+    {
+        val = _val % mod;
+        return *this;
+    }
+    ModInt &operator=(long long _val)
+    {
+        val = _val % mod;
+        return *this;
+    }
+    ModInt &operator=(const ModInt &other)
+    {
+        val = other.val % mod;
+        return *this;
+    }
+
+    ModInt &operator+=(int _val)
+    {
+        _val %= mod;
+        val += _val;
+        if (val >= mod)
+            val -= mod;
+        return *this;
+    }
+
+    ModInt &operator+=(long long _val)
+    {
+        _val %= mod;
+        val += _val;
+        if (val >= mod)
+            val -= mod;
+        return *this;
+    }
+
+    ModInt &operator+=(const ModInt &other)
+    {
+        int _val = other.val % mod;
+        val += _val;
+        if (val >= mod)
+            val -= mod;
+        return *this;
+    }
+
+    friend ModInt operator+(ModInt lhs, const int &rhs)
+    {
+        lhs += rhs;
+        return lhs;
+    }
+
+    friend ModInt operator+(ModInt lhs, const long long &rhs)
+    {
+        lhs += rhs;
+        return lhs;
+    }
+
+    friend ModInt operator+(ModInt lhs, const ModInt &rhs)
+    {
+        lhs += rhs;
+        return lhs;
+    }
+
+    ModInt &operator-=(int _val)
+    {
+        _val %= mod;
+        val -= _val;
+        while (val < 0)
+            val += mod;
+        if (val >= mod)
+            val -= mod;
+        return *this;
+    }
+
+    ModInt &operator-=(long long _val)
+    {
+        _val %= mod;
+        val -= _val;
+        while (val < 0)
+            val += mod;
+        if (val >= mod)
+            val -= mod;
+        return *this;
+    }
+
+    ModInt &operator-=(const ModInt &other)
+    {
+        int _val = other.val % mod;
+        val -= _val;
+        while (val < 0)
+            val += mod;
+        if (val >= mod)
+            val -= mod;
+        return *this;
+    }
+
+    friend ModInt operator-(ModInt lhs, const int &rhs)
+    {
+        lhs -= rhs;
+        return lhs;
+    }
+
+    friend ModInt operator-(ModInt lhs, const long long &rhs)
+    {
+        lhs -= rhs;
+        return lhs;
+    }
+
+    friend ModInt operator-(ModInt lhs, const ModInt &rhs)
+    {
+        lhs -= rhs;
+        return lhs;
+    }
+
+    ModInt &operator*=(int _val)
+    {
+        _val %= mod;
+        val = ((long long)val * val) % mod;
+        return *this;
+    }
+
+    ModInt &operator*=(const ModInt &other)
+    {
+        int _val = other.val % mod;
+        val = ((long long)val * val) % mod;
+        return *this;
+    }
+
+    friend ModInt operator*(ModInt lhs, const int &rhs)
+    {
+        lhs *= rhs;
+        return lhs;
+    }
+
+    friend ModInt operator*(ModInt lhs, const ModInt &rhs)
+    {
+        lhs *= rhs;
+        return lhs;
+    }
+
+    friend istream &operator>>(istream &in, ModInt &inp)
+    {
+        return in >> inp.val;
+    }
+
+    friend ostream &operator<<(ostream &out, const ModInt &pr)
+    {
+        return out << pr.val;
+    }
+};
+
+} // namespace library
+#endif</code></pre>
+    <h2 id="Math.h">Math.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef Math_h
+#define Math_h 1
+
+namespace library
+{
+template <long long mod> long long ModuloPower(long long b, long long p)
+{
+    long long ret = 1;
+    for (; p > 0; p >>= 1)
+    {
+        if (p & 1)
+            ret = (ret * b) % mod;
+        b = (b * b) % mod;
+    }
+    return ret % mod;
+}
+
+template <long long mod> long long ModuloInverse(long long b)
+{
+    return ModuloPower<mod>(b, mod - 2);
+}
+
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="ZAlgo.h">ZAlgo.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef ZAlgo_H
+#define ZAlgo_H 1
+
+#include <algorithm>
+#include <cstring>
+#include <vector>
+
+namespace library
+{
+
+template <class T, size_t MAXLEN> struct ZAlgo
+{
+  public:
+    T outOfBound;
+    T s[MAXLEN];
+    int z[MAXLEN];
+    int occurrence[MAXLEN];
+    int n;
+    int maxZ;
+
+    void Init(const T *a, int aLen, const T *b, int bLen, const T &_outOfBound)
+    {
+        n = 0;
+        for (int i = 0; i < aLen; i++)
+            s[n++] = a[i];
+        outOfBound = _outOfBound;
+        s[n++] = outOfBound;
+        for (int i = 0; i < bLen; i++)
+            s[n++] = b[i];
+        maxZ = 0;
+        memset(occurrence, 0, sizeof(occurrence));
+        memset(z, 0, sizeof(z));
+        Compute();
+    }
+
+    void Init(const std::vector<T> &a, const std::vector<T> &b, const T &_outOfBound)
+    {
+        n = 0;
+        for (int i = 0; i < a.size(); i++)
+            s[n++] = a[i];
+        outOfBound = _outOfBound;
+        s[n++] = outOfBound;
+        for (int i = 0; i < b.size(); i++)
+            s[n++] = b[i];
+        maxZ = 0;
+        memset(occurrence, 0, sizeof(occurrence));
+        memset(z, 0, sizeof(z));
+        Compute();
+    }
+
+  private:
+    void Compute()
+    {
+        int l = 0;
+        int r = 0;
+        for (int i = 1; i < n; i++)
+        {
+            if (i > r)
+            {
+                l = r = i;
+                while (r < n && s[r - l] == s[r])
+                {
+                    r++;
+                }
+
+                z[i] = r - l;
+                r--;
+            }
+            else
+            {
+                int k = i - l;
+                if (z[k] < r - i + 1)
+                {
+                    z[i] = z[k];
+                }
+                else
+                {
+                    l = i;
+                    while (r < n && s[r - l] == s[r])
+                    {
+                        r++;
+                    }
+
+                    z[i] = r - l;
+                    r--;
+                }
+            }
+        }
+
+        int iter = 0;
+        while (s[iter] != outOfBound)
+            iter++;
+        for (int i = iter + 1; i < n; i++)
+        {
+            maxZ = std::max(maxZ, z[i]);
+            occurrence[z[i]]++;
+        }
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+    <h2 id="BigInt.h">BigInt.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef BigInt_h
+#define BigInt_h 1
+
+#include <algorithm>
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
+namespace library
+{
+const int base = 1000000000;
+const int base_digits = 9;
+
+struct BigInt
+{
+    std::vector<int> z;
+    int sign;
+
+    BigInt() : sign(1)
+    {
+    }
+
+    BigInt(long long v)
+    {
+        *this = v;
+    }
+
+    BigInt(const std::string &s)
+    {
+        Read(s);
+    }
+
+    void operator=(const BigInt &v)
+    {
+        sign = v.sign;
+        z = v.z;
+    }
+
+    void operator=(long long v)
+    {
+        sign = 1;
+        if (v < 0)
+            sign = -1, v = -v;
+        z.clear();
+        for (; v > 0; v = v / base)
+            z.push_back(v % base);
+    }
+
+    BigInt operator+(const BigInt &v) const
+    {
+        if (sign == v.sign)
+        {
+            BigInt res = v;
+
+            for (int i = 0, carry = 0; i < (int)std::max(z.size(), v.z.size()) || carry; ++i)
+            {
+                if (i == (int)res.z.size())
+                    res.z.push_back(0);
+                res.z[i] += carry + (i < (int)z.size() ? z[i] : 0);
+                carry = res.z[i] >= base;
+                if (carry)
+                    res.z[i] -= base;
+            }
+            return res;
+        }
+        return *this - (-v);
+    }
+
+    BigInt operator-(const BigInt &v) const
+    {
+        if (sign == v.sign)
+        {
+            if (Abs() >= v.Abs())
+            {
+                BigInt res = *this;
+                for (int i = 0, carry = 0; i < (int)v.z.size() || carry; ++i)
+                {
+                    res.z[i] -= carry + (i < (int)v.z.size() ? v.z[i] : 0);
+                    carry = res.z[i] < 0;
+                    if (carry)
+                        res.z[i] += base;
+                }
+                res.Trim();
+                return res;
+            }
+            return -(v - *this);
+        }
+        return *this + (-v);
+    }
+
+    void operator*=(int v)
+    {
+        if (v < 0)
+            sign = -sign, v = -v;
+        for (int i = 0, carry = 0; i < (int)z.size() || carry; ++i)
+        {
+            if (i == (int)z.size())
+                z.push_back(0);
+            long long cur = z[i] * (long long)v + carry;
+            carry = (int)(cur / base);
+            z[i] = (int)(cur % base);
+            // asm("divl %%ecx" : "=a"(carry), "=d"(a[i]) : "A"(cur), "c"(base));
+        }
+        Trim();
+    }
+
+    BigInt operator*(int v) const
+    {
+        BigInt res = *this;
+        res *= v;
+        return res;
+    }
+
+    friend std::pair<BigInt, BigInt> DivMod(const BigInt &a1, const BigInt &b1)
+    {
+        int norm = base / (b1.z.back() + 1);
+        BigInt a = a1.Abs() * norm;
+        BigInt b = b1.Abs() * norm;
+        BigInt q, r;
+        q.z.resize(a.z.size());
+
+        for (int i = a.z.size() - 1; i >= 0; i--)
+        {
+            r *= base;
+            r += a.z[i];
+            int s1 = b.z.size() < r.z.size() ? r.z[b.z.size()] : 0;
+            int s2 = b.z.size() - 1 < r.z.size() ? r.z[b.z.size() - 1] : 0;
+            int d = ((long long)s1 * base + s2) / b.z.back();
+            r -= b * d;
+            while (r < 0)
+                r += b, --d;
+            q.z[i] = d;
+        }
+
+        q.sign = a1.sign * b1.sign;
+        r.sign = a1.sign;
+        q.Trim();
+        r.Trim();
+        return std::make_pair(q, r / norm);
+    }
+
+    friend BigInt Sqrt(const BigInt &a1)
+    {
+        BigInt a = a1;
+        while (a.z.empty() || a.z.size() % 2 == 1)
+            a.z.push_back(0);
+
+        int n = a.z.size();
+
+        int firstDigit = (int)sqrt((double)a.z[n - 1] * base + a.z[n - 2]);
+        int norm = base / (firstDigit + 1);
+        a *= norm;
+        a *= norm;
+        while (a.z.empty() || a.z.size() % 2 == 1)
+            a.z.push_back(0);
+
+        BigInt r = (long long)a.z[n - 1] * base + a.z[n - 2];
+        firstDigit = (int)sqrt((double)a.z[n - 1] * base + a.z[n - 2]);
+        int q = firstDigit;
+        BigInt res;
+
+        for (int j = n / 2 - 1; j >= 0; j--)
+        {
+            for (;; --q)
+            {
+                BigInt r1 = (r - (res * 2 * base + q) * q) * base * base +
+                            (j > 0 ? (long long)a.z[2 * j - 1] * base + a.z[2 * j - 2] : 0);
+                if (r1 >= 0)
+                {
+                    r = r1;
+                    break;
+                }
+            }
+            res *= base;
+            res += q;
+
+            if (j > 0)
+            {
+                int d1 = res.z.size() + 2 < r.z.size() ? r.z[res.z.size() + 2] : 0;
+                int d2 = res.z.size() + 1 < r.z.size() ? r.z[res.z.size() + 1] : 0;
+                int d3 = res.z.size() < r.z.size() ? r.z[res.z.size()] : 0;
+                q = ((long long)d1 * base * base + (long long)d2 * base + d3) / (firstDigit * 2);
+            }
+        }
+
+        res.Trim();
+        return res / norm;
+    }
+
+    BigInt operator/(const BigInt &v) const
+    {
+        return DivMod(*this, v).first;
+    }
+
+    BigInt operator%(const BigInt &v) const
+    {
+        return DivMod(*this, v).second;
+    }
+
+    void operator/=(int v)
+    {
+        if (v < 0)
+            sign = -sign, v = -v;
+        for (int i = (int)z.size() - 1, rem = 0; i >= 0; --i)
+        {
+            long long cur = z[i] + rem * (long long)base;
+            z[i] = (int)(cur / v);
+            rem = (int)(cur % v);
+        }
+        Trim();
+    }
+
+    BigInt operator/(int v) const
+    {
+        BigInt res = *this;
+        res /= v;
+        return res;
+    }
+
+    int operator%(int v) const
+    {
+        if (v < 0)
+            v = -v;
+        int m = 0;
+        for (int i = z.size() - 1; i >= 0; --i)
+            m = (z[i] + m * (long long)base) % v;
+        return m * sign;
+    }
+
+    void operator+=(const BigInt &v)
+    {
+        *this = *this + v;
+    }
+    void operator-=(const BigInt &v)
+    {
+        *this = *this - v;
+    }
+    void operator*=(const BigInt &v)
+    {
+        *this = *this * v;
+    }
+    void operator/=(const BigInt &v)
+    {
+        *this = *this / v;
+    }
+
+    bool operator<(const BigInt &v) const
+    {
+        if (sign != v.sign)
+            return sign < v.sign;
+        if (z.size() != v.z.size())
+            return z.size() * sign < v.z.size() * v.sign;
+        for (int i = z.size() - 1; i >= 0; i--)
+            if (z[i] != v.z[i])
+                return z[i] * sign < v.z[i] * sign;
+        return false;
+    }
+
+    bool operator>(const BigInt &v) const
+    {
+        return v < *this;
+    }
+    bool operator<=(const BigInt &v) const
+    {
+        return !(v < *this);
+    }
+    bool operator>=(const BigInt &v) const
+    {
+        return !(*this < v);
+    }
+    bool operator==(const BigInt &v) const
+    {
+        return !(*this < v) && !(v < *this);
+    }
+    bool operator!=(const BigInt &v) const
+    {
+        return *this < v || v < *this;
+    }
+
+    void Trim()
+    {
+        while (!z.empty() && z.back() == 0)
+            z.pop_back();
+        if (z.empty())
+            sign = 1;
+    }
+
+    bool IsZero() const
+    {
+        return z.empty() || (z.size() == 1 && !z[0]);
+    }
+
+    BigInt operator-() const
+    {
+        BigInt res = *this;
+        res.sign = -sign;
+        return res;
+    }
+
+    BigInt Abs() const
+    {
+        BigInt res = *this;
+        res.sign *= res.sign;
+        return res;
+    }
+
+    long long LongValue() const
+    {
+        long long res = 0;
+        for (int i = z.size() - 1; i >= 0; i--)
+            res = res * base + z[i];
+        return res * sign;
+    }
+
+    friend BigInt Gcd(const BigInt &a, const BigInt &b)
+    {
+        return b.IsZero() ? a : Gcd(b, a % b);
+    }
+    friend BigInt Lcm(const BigInt &a, const BigInt &b)
+    {
+        return a / Gcd(a, b) * b;
+    }
+
+    void Read(const std::string &s)
+    {
+        sign = 1;
+        z.clear();
+        int pos = 0;
+        while (pos < (int)s.size() && (s[pos] == '-' || s[pos] == '+'))
+        {
+            if (s[pos] == '-')
+                sign = -sign;
+            ++pos;
+        }
+        for (int i = s.size() - 1; i >= pos; i -= base_digits)
+        {
+            int x = 0;
+            for (int j = std::max(pos, i - base_digits + 1); j <= i; j++)
+                x = x * 10 + s[j] - '0';
+            z.push_back(x);
+        }
+        Trim();
+    }
+
+    friend std::istream &operator>>(std::istream &stream, BigInt &v)
+    {
+        std::string s;
+        stream >> s;
+        v.Read(s);
+        return stream;
+    }
+
+    friend std::ostream &operator<<(std::ostream &stream, const BigInt &v)
+    {
+        if (v.sign == -1)
+            stream << '-';
+        stream << (v.z.empty() ? 0 : v.z.back());
+        for (int i = (int)v.z.size() - 2; i >= 0; --i)
+            stream << std::setw(base_digits) << std::setfill('0') << v.z[i];
+        return stream;
+    }
+
+    static std::vector<int> ConvertBase(const std::vector<int> &a, int old_digits, int new_digits)
+    {
+        std::vector<long long> p(std::max(old_digits, new_digits) + 1);
+        p[0] = 1;
+        for (int i = 1; i < (int)p.size(); i++)
+            p[i] = p[i - 1] * 10;
+        std::vector<int> res;
+        long long cur = 0;
+        int cur_digits = 0;
+        for (int i = 0; i < (int)a.size(); i++)
+        {
+            cur += a[i] * p[cur_digits];
+            cur_digits += old_digits;
+            while (cur_digits >= new_digits)
+            {
+                res.push_back(int(cur % p[new_digits]));
+                cur /= p[new_digits];
+                cur_digits -= new_digits;
+            }
+        }
+        res.push_back((int)cur);
+        while (!res.empty() && res.back() == 0)
+            res.pop_back();
+        return res;
+    }
+
+    static std::vector<long long> KaratsubaMultiply(const std::vector<long long> &a, const std::vector<long long> &b)
+    {
+        int n = a.size();
+        std::vector<long long> res(n + n);
+        if (n <= 32)
+        {
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
+                    res[i + j] += a[i] * b[j];
+            return res;
+        }
+
+        int k = n >> 1;
+        std::vector<long long> a1(a.begin(), a.begin() + k);
+        std::vector<long long> a2(a.begin() + k, a.end());
+        std::vector<long long> b1(b.begin(), b.begin() + k);
+        std::vector<long long> b2(b.begin() + k, b.end());
+
+        std::vector<long long> a1b1 = KaratsubaMultiply(a1, b1);
+        std::vector<long long> a2b2 = KaratsubaMultiply(a2, b2);
+
+        for (int i = 0; i < k; i++)
+            a2[i] += a1[i];
+        for (int i = 0; i < k; i++)
+            b2[i] += b1[i];
+
+        std::vector<long long> r = KaratsubaMultiply(a2, b2);
+        for (int i = 0; i < (int)a1b1.size(); i++)
+            r[i] -= a1b1[i];
+        for (int i = 0; i < (int)a2b2.size(); i++)
+            r[i] -= a2b2[i];
+
+        for (int i = 0; i < (int)r.size(); i++)
+            res[i + k] += r[i];
+        for (int i = 0; i < (int)a1b1.size(); i++)
+            res[i] += a1b1[i];
+        for (int i = 0; i < (int)a2b2.size(); i++)
+            res[i + n] += a2b2[i];
+        return res;
+    }
+
+    BigInt operator*(const BigInt &v) const
+    {
+        std::vector<int> a6 = ConvertBase(this->z, base_digits, 6);
+        std::vector<int> b6 = ConvertBase(v.z, base_digits, 6);
+        std::vector<long long> a(a6.begin(), a6.end());
+        std::vector<long long> b(b6.begin(), b6.end());
+        while (a.size() < b.size())
+            a.push_back(0);
+        while (b.size() < a.size())
+            b.push_back(0);
+        while (a.size() & (a.size() - 1))
+            a.push_back(0), b.push_back(0);
+        std::vector<long long> c = KaratsubaMultiply(a, b);
+        BigInt res;
+        res.sign = sign * v.sign;
+        for (int i = 0, carry = 0; i < (int)c.size(); i++)
+        {
+            long long cur = c[i] + carry;
+            res.z.push_back((int)(cur % 1000000));
+            carry = (int)(cur / 1000000);
+        }
+        res.z = ConvertBase(res.z, 6, base_digits);
+        res.Trim();
+        return res;
+    }
+
+    long long SumOfDigits()
+    {
+        long long res = 0;
+        long long ret = 0;
+        for (int i = z.size() - 1; i >= 0; i--)
+        {
+            res = res * base + z[i];
+            while (res)
+            {
+                ret += res % 10;
+                res /= 10;
+            }
+        }
+        return ret;
+    }
+
+    BigInt RandomBigInt(int n)
+    {
+        std::string s;
+        for (int i = 0; i < n; i++)
+        {
+            s += rand() % 10 + '0';
+        }
+        return BigInt(s);
+    }
+};
+
+} // namespace library
+
+#endif // BIGINT_H</code></pre>
+    <h2 id="DisjointSet.h">DisjointSet.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef DisjointSet_h
+#define DisjointSet_h 1
+
+#include <algorithm>
+
+namespace library
+{
+template <int sz> struct DisjointSet
+{
+    int n;
+    int par[sz];
+    int cnt[sz];
+    int rnk[sz];
+    int components;
+
+    DisjointSet()
+    {
+    }
+
+    DisjointSet(int n) : n(n)
+    {
+        this->Reset();
+    }
+
+    ~DisjointSet()
+    {
+    }
+
+    void Resize(int n)
+    {
+        this->n = n;
+        this->Reset();
+    }
+
+    void Reset()
+    {
+        for (int i = 0; i < n; i++)
+        {
+            par[i] = i;
+            cnt[i] = 1;
+            rnk[i] = 0;
+        }
+
+        components = n;
+    }
+
+    int FindSet(int u)
+    {
+        if (par[u] == u)
+        {
+            return u;
+        }
+
+        return par[u] = FindSet(par[u]);
+    }
+
+    bool IsSameSet(int u, int v)
+    {
+        return FindSet(u) == FindSet(v);
+    }
+
+    void MergeSet(int u, int v)
+    {
+        if (IsSameSet(u, v))
+        {
+            return;
+        }
+
+        u = FindSet(u);
+        v = FindSet(v);
+        if (cnt[u] < cnt[v])
+        {
+            std::swap(u, v);
+        }
+
+        par[u] = par[v];
+        cnt[v] += cnt[u];
+
+        components--;
+    }
+
+    std::vector<int> GetComponents()
+    {
+        std::vector<int> ret;
+        for (int i = 0; i < n; i++)
+        {
+            if (FindSet(i) == i)
+            {
+                ret.emplace_back(i);
+            }
+        }
+
+        return ret;
+    }
+};
+} // namespace library
+#endif</code></pre>
+    <h2 id="BpmHopcraft.h">BpmHopcraft.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef BpmHopcraft_h
+#define BpmHopcraft_h 1
+
+#include <algorithm>
+#include <vector>
+
+namespace library
+{
+// Esqrt(V) Complexity
+// 0 Based
+// Edge from set a to set b
+template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
+{
+
+    int n1, n2, edges, last[MAXN1], prev[MAXM], head[MAXM];
+    int matching[MAXN2], dist[MAXN1], Q[MAXN1];
+    bool used[MAXN1], vis[MAXN1]; // vis is cleared in each Dfs
+
+    // n1 = number of nodes in set a, n2 = number of nodes in set b
+    void Init(int _n1, int _n2)
+    {
+        n1 = _n1;
+        n2 = _n2;
+        edges = 0;
+        std::fill(last, last + n1, -1);
+    }
+
+    void AddEdge(int u, int v)
+    {
+        head[edges] = v;
+        prev[edges] = last[u];
+        last[u] = edges++;
+    }
+
+    void Bfs()
+    {
+        std::fill(dist, dist + n1, -1);
+        int sizeQ = 0;
+        for (int u = 0; u < n1; ++u)
+        {
+            if (!used[u])
+            {
+                Q[sizeQ++] = u;
+                dist[u] = 0;
+            }
+        }
+        for (int i = 0; i < sizeQ; i++)
+        {
+            int u1 = Q[i];
+            for (int e = last[u1]; e >= 0; e = prev[e])
+            {
+                int u2 = matching[head[e]];
+                if (u2 >= 0 && dist[u2] < 0)
+                {
+                    dist[u2] = dist[u1] + 1;
+                    Q[sizeQ++] = u2;
+                }
+            }
+        }
+    }
+
+    bool Dfs(int u1)
+    {
+        vis[u1] = true;
+        for (int e = last[u1]; e >= 0; e = prev[e])
+        {
+            int v = head[e];
+            int u2 = matching[v];
+            if (u2 < 0 || (!vis[u2] && dist[u2] == dist[u1] + 1 && Dfs(u2)))
+            {
+                matching[v] = u1;
+                used[u1] = true;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    int AugmentPath()
+    {
+        Bfs();
+        std::fill(vis, vis + n1, false);
+        int f = 0;
+        for (int u = 0; u < n1; ++u)
+            if (!used[u] && Dfs(u))
+                ++f;
+        return f;
+    }
+
+    int MaxMatching()
+    {
+        std::fill(used, used + n1, false);
+        std::fill(matching, matching + n2, -1);
+        for (int res = 0;;)
+        {
+            int f = AugmentPath();
+            if (!f)
+                return res;
+            res += f;
+        }
+    }
+
+    std::vector<std::pair<int, int>> GetMatching()
+    {
+        std::vector<std::pair<int, int>> res;
+        for (int i = 0; i < n2; ++i)
+            if (matching[i] != -1)
+                res.emplace_back(matching[i], i);
+        return res;
+    }
+};
+} // namespace library
+#endif</code></pre>
+    <h2 id="Dinic.h">Dinic.h</h2>
+    <a href="#table-of-content">^top</a>
+    <pre><code>
+#ifndef Dinic_h
+#define Dinic_h 1
+
+#include <algorithm>
+#include <vector>
+
+namespace library
+{
+
+struct Edge
+{
+    int from, to, cap, flow, index;
+    Edge(int from, int to, int cap, int flow, int index) : from(from), to(to), cap(cap), flow(flow), index(index)
+    {
+    }
+};
+
+template <int INF> struct Dinic
+{
+    int N;
+    std::vector<std::vector<Edge>> G;
+    std::vector<Edge *> dad;
+    std::vector<int> Q;
+
+    Dinic(int N) : N(N), G(N), dad(N), Q(N)
+    {
+    }
+
+    void AddEdge(int from, int to, int cap)
+    {
+        G[from].emplace_back(from, to, cap, 0, G[to].size());
+        if (from == to)
+            G[from].back().index++;
+        G[to].emplace_back(to, from, 0, 0, G[from].size() - 1);
+    }
+
+    long long BlockingFlow(int s, int t)
+    {
+        std::fill(dad.begin(), dad.end(), (Edge *)NULL);
+        dad[s] = &G[0][0] - 1;
+
+        int head = 0, tail = 0;
+        Q[tail++] = s;
+        while (head < tail)
+        {
+            int x = Q[head++];
+            for (int i = 0; i < G[x].size(); i++)
+            {
+                Edge &e = G[x][i];
+                if (!dad[e.to] && e.cap - e.flow > 0)
+                {
+                    dad[e.to] = &G[x][i];
+                    Q[tail++] = e.to;
+                }
+            }
+        }
+        if (!dad[t])
+            return 0;
+
+        long long totflow = 0;
+        for (int i = 0; i < G[t].size(); i++)
+        {
+            Edge *start = &G[G[t][i].to][G[t][i].index];
+            int amt = INF;
+            for (Edge *e = start; amt && e != dad[s]; e = dad[e->from])
+            {
+                if (!e)
+                {
+                    amt = 0;
+                    break;
+                }
+                amt = std::min(amt, e->cap - e->flow);
+            }
+            if (amt == 0)
+                continue;
+            for (Edge *e = start; amt && e != dad[s]; e = dad[e->from])
+            {
+                e->flow += amt;
+                G[e->to][e->index].flow -= amt;
+            }
+            totflow += amt;
+        }
+        return totflow;
+    }
+
+    long long MaxFlow(int s, int t)
+    {
+        long long totflow = 0;
+        while (long long flow = BlockingFlow(s, t))
+            totflow += flow;
+        return totflow;
+    }
+
+    void ClearFlow()
+    {
+        for (int i = 0; i < N; ++i)
+            for (int j = 0; j < G[i].size(); ++j)
+                G[i][j].flow = 0;
+    }
+};
+} // namespace library
+#endif</code></pre>
+</body>
+
+</html>
