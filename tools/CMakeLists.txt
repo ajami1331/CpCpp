@@ -4,7 +4,7 @@ project ("tools")
 
 # Add source to this project's executable.
 add_executable (tools_book-generator book-generator.cpp)
-add_compile_definitions(TOOLS_BOOK_GENERATOR_OUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../public/")
+add_compile_definitions(TOOLS_BOOK_GENERATOR_OUT_DIR="${CMAKE_CURRENT_SOURCE_DIR}/../docs/")
 
 set_property(TARGET tools_book-generator PROPERTY CXX_STANDARD 17)
 
