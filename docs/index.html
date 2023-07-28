@@ -47,14 +47,14 @@
 #ifndef FenwickTree_h
 #define FenwickTree_h 1
 
-#include <cstring>
-#include <functional>
-#include <numeric>
+#include &lt;cstring&gt;
+#include &lt;functional&gt;
+#include &lt;numeric&gt;
 
 namespace library
 {
-template <typename T, size_t sz, typename op_combine_type = std::plus<T>, typename op_decombine_type = std::minus<T>,
-          typename less_type = std::less<T>>
+template &lt;typename T, size_t sz, typename op_combine_type = std::plus&lt;T&gt;, typename op_decombine_type = std::minus&lt;T&gt;,
+          typename less_type = std::less&lt;T&gt;&gt;
 class FenwickTree
 {
   private:
@@ -77,7 +77,7 @@ class FenwickTree
 
     void Update(size_t x, T v)
     {
-        for (; x < sz; x += (x & -x))
+        for (; x &lt; sz; x += (x &amp; -x))
         {
             tr[x] = op_combine(tr[x], v);
         }
@@ -86,7 +86,7 @@ class FenwickTree
     T Query(size_t x)
     {
         T ret = 0;
-        for (; x > 0; x -= (x & -x))
+        for (; x &gt; 0; x -= (x &amp; -x))
         {
             ret = op_combine(ret, tr[x]);
         }
@@ -111,16 +111,16 @@ class FenwickTree
         T sum = 0;
         size_t pos = 0;
 
-        for (int i = LOGN; i >= 0; i--)
+        for (int i = LOGN; i &gt;= 0; i--)
         {
-            if (pos + (1 << i) >= sz)
+            if (pos + (1 &lt;&lt; i) &gt;= sz)
                 continue;
 
-            T newSum = op_combine(sum, tr[pos + (1 << i)]);
+            T newSum = op_combine(sum, tr[pos + (1 &lt;&lt; i)]);
             if (less(newSum, v))
             {
                 sum = newSum;
-                pos += (1 << i);
+                pos += (1 &lt;&lt; i);
             }
         }
         return pos + 1;
@@ -137,10 +137,10 @@ class FenwickTree
 
 namespace library
 {
-template <typename T> inline T ReadInt()
+template &lt;typename T&gt; inline T ReadInt()
 {
     T ret = 0, flag = 1, ip = getchar();
-    for (; ip < 48 || ip > 57; ip = getchar())
+    for (; ip &lt; 48 || ip &gt; 57; ip = getchar())
     {
         if (ip == 45)
         {
@@ -149,7 +149,7 @@ template <typename T> inline T ReadInt()
             break;
         }
     }
-    for (; ip > 47 && ip < 58; ip = getchar())
+    for (; ip &gt; 47 &amp;&amp; ip &lt; 58; ip = getchar())
         ret = ret * 10 + ip - 48;
     return flag * ret;
 }
@@ -170,19 +170,19 @@ inline int GetChar()
 inline int ReadChar()
 {
     int c = GetChar();
-    while (c <= 32)
+    while (c &lt;= 32)
         c = GetChar();
     return c;
 }
 
-template <typename T> inline T ReadIntBuffered()
+template &lt;typename T&gt; inline T ReadIntBuffered()
 {
     int s = 1, c = ReadChar();
     T x = 0;
-    if (c == '-')
+    if (c == &apos;-&apos;)
         s = -1, c = GetChar();
-    while ('0' <= c && c <= '9')
-        x = x * 10 + c - '0', c = GetChar();
+    while (&apos;0&apos; &lt;= c &amp;&amp; c &lt;= &apos;9&apos;)
+        x = x * 10 + c - &apos;0&apos;, c = GetChar();
     return s == 1 ? x : -x;
 }
 
@@ -195,15 +195,15 @@ template <typename T> inline T ReadIntBuffered()
 #ifndef FenwickTreeRangeSum_h
 #define FenwickTreeRangeSum_h 1
 
-#include "./FenwickTree.h"
+#include &quot;./FenwickTree.h&quot;
 
 namespace library
 {
-template <typename T, size_t sz> class FenwickTreeRangeSum
+template &lt;typename T, size_t sz&gt; class FenwickTreeRangeSum
 {
   private:
-    FenwickTree<T, sz> ft1;
-    FenwickTree<T, sz> ft2;
+    FenwickTree&lt;T, sz&gt; ft1;
+    FenwickTree&lt;T, sz&gt; ft2;
 
   public:
     FenwickTreeRangeSum()
@@ -249,24 +249,24 @@ template <typename T, size_t sz> class FenwickTreeRangeSum
 #ifndef EdmondsKarp_h
 #define EdmondsKarp_h 1
 
-#include <algorithm>
-#include <queue>
-#include <vector>
+#include &lt;algorithm&gt;
+#include &lt;queue&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
 
-template <int INF> struct EdmondsKarp
+template &lt;int INF&gt; struct EdmondsKarp
 {
     int n;
-    std::vector<int> par;
-    std::vector<bool> vis;
-    std::vector<std::vector<int>> graph;
+    std::vector&lt;int&gt; par;
+    std::vector&lt;bool&gt; vis;
+    std::vector&lt;std::vector&lt;int&gt;&gt; graph;
 
     EdmondsKarp()
     {
     }
-    EdmondsKarp(int _n) : n(_n), par(_n), vis(_n), graph(_n, std::vector<int>(_n, 0))
+    EdmondsKarp(int _n) : n(_n), par(_n), vis(_n), graph(_n, std::vector&lt;int&gt;(_n, 0))
     {
     }
     ~EdmondsKarp()
@@ -291,7 +291,7 @@ template <int INF> struct EdmondsKarp
         std::fill(vis.begin(), vis.end(), false);
         std::fill(par.begin(), par.end(), -1);
         vis[src] = true;
-        std::queue<int> q;
+        std::queue&lt;int&gt; q;
         q.push(src);
         while (!q.empty())
         {
@@ -299,9 +299,9 @@ template <int INF> struct EdmondsKarp
             q.pop();
             if (u == sink)
                 return true;
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i &lt; n; i++)
             {
-                if (graph[u][i] > 0 && !vis[i])
+                if (graph[u][i] &gt; 0 &amp;&amp; !vis[i])
                 {
                     q.push(i);
                     vis[i] = true;
@@ -334,9 +334,9 @@ template <int INF> struct EdmondsKarp
     int MaxFlow(int src, int sink)
     {
         int min_cap, ret = 0;
-        while (this->Bfs(src, sink))
+        while (this-&gt;Bfs(src, sink))
         {
-            this->AugmentPath(min_cap = this->MinVal(sink), sink);
+            this-&gt;AugmentPath(min_cap = this-&gt;MinVal(sink), sink);
             ret += min_cap;
         }
         return ret;
@@ -351,15 +351,15 @@ template <int INF> struct EdmondsKarp
 #ifndef AhoCorasick_h
 #define AhoCorasick_h 1
 
-#include <algorithm>
-#include <queue>
-#include <vector>
+#include &lt;algorithm&gt;
+#include &lt;queue&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
-template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
+template &lt;size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26&gt; struct AhoCorasick
 {
-    std::vector<int> mark[MAXLEN + 7];
+    std::vector&lt;int&gt; mark[MAXLEN + 7];
     int state, failure[MAXLEN + 7];
     int trie[MAXLEN + 7][AC_ALPHABET_SIZE];
 
@@ -377,7 +377,7 @@ template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
 
     int Value(char c)
     {
-        return c - 'a';
+        return c - &apos;a&apos;;
     }
 
     void Add(char *s, int t)
@@ -399,9 +399,9 @@ template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
 
     void ComputeFailure()
     {
-        std::queue<int> Q;
+        std::queue&lt;int&gt; Q;
         failure[0] = 0;
-        for (int i = 0; i < AC_ALPHABET_SIZE; i++)
+        for (int i = 0; i &lt; AC_ALPHABET_SIZE; i++)
         {
             if (trie[0][i] != -1)
             {
@@ -417,7 +417,7 @@ template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
             Q.pop();
             for (int v : mark[failure[u]])
                 mark[u].emplace_back(v);
-            for (int i = 0; i < AC_ALPHABET_SIZE; i++)
+            for (int i = 0; i &lt; AC_ALPHABET_SIZE; i++)
             {
                 if (trie[u][i] != -1)
                 {
@@ -440,29 +440,29 @@ template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
 #ifndef StringUtils_h
 #define StringUtils_h 1
 
-#include <algorithm>
-#include <string>
-#include <vector>
+#include &lt;algorithm&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
-static inline void ltrim(std::string &s)
+static inline void ltrim(std::string &amp;s)
 {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char c) -> bool { return !std::isspace(c); }));
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char c) -&gt; bool { return !std::isspace(c); }));
 }
 
-static inline void rtrim(std::string &s)
+static inline void rtrim(std::string &amp;s)
 {
     s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
 }
 
-static inline void trim(std::string &s)
+static inline void trim(std::string &amp;s)
 {
     ltrim(s);
     rtrim(s);
 }
 
-static inline std::string &trim_i(std::string &s)
+static inline std::string &amp;trim_i(std::string &amp;s)
 {
     ltrim(s);
     rtrim(s);
@@ -476,10 +476,10 @@ static inline std::string trim_n(std::string s)
     return s;
 }
 
-std::vector<std::string> split(const std::string &s, char splitChar)
+std::vector&lt;std::string&gt; split(const std::string &amp;s, char splitChar)
 {
-    std::vector<std::string> splittedString;
-    std::string hand = "";
+    std::vector&lt;std::string&gt; splittedString;
+    std::string hand = &quot;&quot;;
     for (char c : s)
     {
         if (c == splitChar)
@@ -502,37 +502,37 @@ std::vector<std::string> split(const std::string &s, char splitChar)
 #ifndef PolyHash_h
 #define PolyHash_h 1
 
-#include <chrono>
-#include <random>
-#include <vector>
-#include <cassert>
+#include &lt;chrono&gt;
+#include &lt;random&gt;
+#include &lt;vector&gt;
+#include &lt;cassert&gt;
 
 // #define IMPLEMENT_REV_HASH
 
 namespace library
 {
 
-constexpr unsigned long long mod = (1ULL << 61) - 1;
+constexpr unsigned long long mod = (1ULL &lt;&lt; 61) - 1;
 
 const unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
 const unsigned long long base = std::mt19937_64(seed)() % (mod / 3) + (mod / 3);
 
 long long ModMul(unsigned long long a, unsigned long long b)
 {
-    unsigned long long l1 = (unsigned int)a, h1 = a >> 32, l2 = (unsigned int)b, h2 = b >> 32;
+    unsigned long long l1 = (unsigned int)a, h1 = a &gt;&gt; 32, l2 = (unsigned int)b, h2 = b &gt;&gt; 32;
     unsigned long long l = l1 * l2, m = l1 * h2 + l2 * h1, h = h1 * h2;
-    unsigned long long ret = (l & mod) + (l >> 61) + (h << 3) + (m >> 29) + (m << 35 >> 3) + 1;
-    ret = (ret & mod) + (ret >> 61);
-    ret = (ret & mod) + (ret >> 61);
+    unsigned long long ret = (l &amp; mod) + (l &gt;&gt; 61) + (h &lt;&lt; 3) + (m &gt;&gt; 29) + (m &lt;&lt; 35 &gt;&gt; 3) + 1;
+    ret = (ret &amp; mod) + (ret &gt;&gt; 61);
+    ret = (ret &amp; mod) + (ret &gt;&gt; 61);
     return ret - 1;
 }
 
-template <size_t MAXLEN> struct PolyHash
+template &lt;size_t MAXLEN&gt; struct PolyHash
 {
-    std::vector<long long> pref;
+    std::vector&lt;long long&gt; pref;
 /// Removes the suff vector and usage if reverse hash is not required for more speed
 #ifdef IMPLEMENT_REV_HASH
-    std::vector<long long> suff;
+    std::vector&lt;long long&gt; suff;
 #endif
     inline static unsigned long long base_pow[MAXLEN];
 
@@ -540,48 +540,48 @@ template <size_t MAXLEN> struct PolyHash
     {
     }
 
-    template <typename T> PolyHash(const std::vector<T> &ar)
+    template &lt;typename T&gt; PolyHash(const std::vector&lt;T&gt; &amp;ar)
     {
         if (!base_pow[0])
             init();
 
         int n = ar.size();
-        assert(n < MAXLEN);
+        assert(n &lt; MAXLEN);
         pref.resize(n + 3, 0);
 
-        for (int i = 1; i <= n; i++)
+        for (int i = 1; i &lt;= n; i++)
         {
             pref[i] = ModMul(pref[i - 1], base) + ar[i - 1] + 997;
-            if (pref[i] >= mod)
+            if (pref[i] &gt;= mod)
                 pref[i] -= mod;
         }
 
 #ifdef IMPLEMENT_REV_HASH
         suff.resize(n + 3, 0);
-        for (int i = n; i >= 1; i--)
+        for (int i = n; i &gt;= 1; i--)
         {
             suff[i] = ModMul(suff[i + 1], base) + ar[i - 1] + 997;
-            if (suff[i] >= mod)
+            if (suff[i] &gt;= mod)
                 suff[i] -= mod;
         }
 #endif
     }
 
-    PolyHash(const char *str) : PolyHash(std::vector<char>(str, str + strlen(str)))
+    PolyHash(const char *str) : PolyHash(std::vector&lt;char&gt;(str, str + strlen(str)))
     {
     }
 
     unsigned long long GetHash(int l, int r)
     {
         long long h = pref[r + 1] - ModMul(base_pow[r - l + 1], pref[l]);
-        return h < 0 ? h + mod : h;
+        return h &lt; 0 ? h + mod : h;
     }
 
 #ifdef IMPLEMENT_REV_HASH
     unsigned long long ReverseHash(int l, int r)
     {
         long long h = suff[l + 1] - ModMul(base_pow[r - l + 1], suff[r + 2]);
-        return h < 0 ? h + mod : h;
+        return h &lt; 0 ? h + mod : h;
     }
 #endif
 
@@ -593,7 +593,7 @@ template <size_t MAXLEN> struct PolyHash
     void init()
     {
         base_pow[0] = 1;
-        for (int i = 1; i < MAXLEN; i++)
+        for (int i = 1; i &lt; MAXLEN; i++)
         {
             base_pow[i] = ModMul(base_pow[i - 1], base);
         }
@@ -609,17 +609,17 @@ template <size_t MAXLEN> struct PolyHash
 #ifndef Matrix_h
 #define Matrix_h 1
 
-#include <algorithm>
-#include <vector>
+#include &lt;algorithm&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
-template <long long mod> struct Matrix
+template &lt;long long mod&gt; struct Matrix
 {
     int mat_sz;
-    std::vector<std::vector<int>> a;
+    std::vector&lt;std::vector&lt;int&gt;&gt; a;
 
-    Matrix(int _mat_sz) : mat_sz(_mat_sz), a(std::vector<std::vector<int>>(_mat_sz, std::vector<int>(_mat_sz, 0)))
+    Matrix(int _mat_sz) : mat_sz(_mat_sz), a(std::vector&lt;std::vector&lt;int&gt;&gt;(_mat_sz, std::vector&lt;int&gt;(_mat_sz, 0)))
     {
     }
 
@@ -629,7 +629,7 @@ template <long long mod> struct Matrix
 
     void Clear()
     {
-        for (int i = 0; i < mat_sz; i++)
+        for (int i = 0; i &lt; mat_sz; i++)
         {
             std::fill(a[i].begin(), a[i].end(), 0);
         }
@@ -637,25 +637,25 @@ template <long long mod> struct Matrix
 
     void One()
     {
-        for (int i = 0; i < mat_sz; i++)
+        for (int i = 0; i &lt; mat_sz; i++)
         {
-            for (int j = 0; j < mat_sz; j++)
+            for (int j = 0; j &lt; mat_sz; j++)
             {
                 a[i][j] = (i == j);
             }
         }
     }
 
-    Matrix operator+(const Matrix &b) const
+    Matrix operator+(const Matrix &amp;b) const
     {
         Matrix tmp(mat_sz);
         tmp.Clear();
-        for (int i = 0; i < mat_sz; i++)
+        for (int i = 0; i &lt; mat_sz; i++)
         {
-            for (int j = 0; j < mat_sz; j++)
+            for (int j = 0; j &lt; mat_sz; j++)
             {
                 tmp.a[i][j] = a[i][j] + b.a[i][j];
-                if (tmp.a[i][j] >= mod)
+                if (tmp.a[i][j] &gt;= mod)
                 {
                     tmp.a[i][j] -= mod;
                 }
@@ -664,18 +664,18 @@ template <long long mod> struct Matrix
         return tmp;
     }
 
-    Matrix operator*(const Matrix &b) const
+    Matrix operator*(const Matrix &amp;b) const
     {
         Matrix tmp(mat_sz);
         tmp.Clear();
-        for (int i = 0; i < mat_sz; i++)
+        for (int i = 0; i &lt; mat_sz; i++)
         {
-            for (int j = 0; j < mat_sz; j++)
+            for (int j = 0; j &lt; mat_sz; j++)
             {
-                for (int k = 0; k < mat_sz; k++)
+                for (int k = 0; k &lt; mat_sz; k++)
                 {
                     tmp.a[i][k] += (long long)a[i][j] * b.a[j][k] % mod;
-                    if (tmp.a[i][k] >= mod)
+                    if (tmp.a[i][k] &gt;= mod)
                     {
                         tmp.a[i][k] -= mod;
                     }
@@ -699,14 +699,14 @@ template <long long mod> struct Matrix
     {
         Matrix ans(mat_sz), num = *this;
         ans.One();
-        while (x > 0)
+        while (x &gt; 0)
         {
-            if (x & 1)
+            if (x &amp; 1)
             {
                 ans = ans * num;
             }
             num = num * num;
-            x >>= 1;
+            x &gt;&gt;= 1;
         }
         return ans;
     }
@@ -721,11 +721,11 @@ template <long long mod> struct Matrix
 #ifndef KnuthMorrisPrattMatcher_h
 #define KnuthMorrisPrattMatcher_h 1
 
-#include <algorithm>
-#include <cstring>
-#include <vector>
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;vector&gt;
 
-template <size_t MAXLEN> struct KnuthMorrisPrattMatcher
+template &lt;size_t MAXLEN&gt; struct KnuthMorrisPrattMatcher
 {
     char m[MAXLEN];
     int table[MAXLEN], lenM;
@@ -736,7 +736,7 @@ template <size_t MAXLEN> struct KnuthMorrisPrattMatcher
         lenM = n;
         table[0] = 0;
         int i = 1, j = 0;
-        while (i < lenM)
+        while (i &lt; lenM)
         {
             if (m[i] == m[j])
             {
@@ -759,13 +759,13 @@ template <size_t MAXLEN> struct KnuthMorrisPrattMatcher
         }
     }
 
-    std::vector<int> MatchString(const char *s, int lenS)
+    std::vector&lt;int&gt; MatchString(const char *s, int lenS)
     {
         int i = 0, j = 0;
-        std::vector <int> matches;
-        while (i < lenS)
+        std::vector &lt;int&gt; matches;
+        while (i &lt; lenS)
         {
-            while (i < lenS && j < lenM && s[i] == m[j])
+            while (i &lt; lenS &amp;&amp; j &lt; lenM &amp;&amp; s[i] == m[j])
             {
                 i++;
                 j++;
@@ -775,7 +775,7 @@ template <size_t MAXLEN> struct KnuthMorrisPrattMatcher
                 j = table[j - 1];
                 matches.emplace_back(i - lenM);
             }
-            else if (i < lenS && s[i] != m[j])
+            else if (i &lt; lenS &amp;&amp; s[i] != m[j])
             {
                 if (j)
                 {
@@ -798,11 +798,11 @@ template <size_t MAXLEN> struct KnuthMorrisPrattMatcher
 #ifndef Manacher_h
 #define Manacher_h 1
 
-#include <algorithm>
+#include &lt;algorithm&gt;
 
 namespace library
 {
-template <size_t MAXLEN> struct Manacher
+template &lt;size_t MAXLEN&gt; struct Manacher
 {
     char str[MAXLEN];
     int LPS[MAXLEN], len;
@@ -812,30 +812,30 @@ template <size_t MAXLEN> struct Manacher
     void Init(const char *s)
     {
         len = 0;
-        str[len++] = '*';
+        str[len++] = &apos;*&apos;;
         for (int i = 0; s[i]; i++)
         {
             str[len++] = s[i];
-            str[len++] = '*';
+            str[len++] = &apos;*&apos;;
         }
-        str[len] = '\0';
+        str[len] = &apos;\0&apos;;
     }
 
     int GetLpsLength()
     {
         int c = 0, r = 0, ans = 0;
-        for (int i = 1; i < len - 1; i++)
+        for (int i = 1; i &lt; len - 1; i++)
         {
             int _i = c - (i - c);
-            if (r > i)
+            if (r &gt; i)
                 LPS[i] = std::min(LPS[_i], r - i);
             else
                 LPS[i] = 0;
-            while (i - 1 - LPS[i] >= 0 && str[i - 1 - LPS[i]] == str[i + 1 + LPS[i]])
+            while (i - 1 - LPS[i] &gt;= 0 &amp;&amp; str[i - 1 - LPS[i]] == str[i + 1 + LPS[i]])
             {
                 LPS[i]++;
             }
-            if (i + LPS[i] > r)
+            if (i + LPS[i] &gt; r)
             {
                 r = i + LPS[i];
                 c = i;
@@ -854,13 +854,13 @@ template <size_t MAXLEN> struct Manacher
 #ifndef PersistentSegmentTree_h
 #define PersistentSegmentTree_h 1
 
-#include <functional>
-#include <vector>
+#include &lt;functional&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
 
-template <typename T, size_t sz> class PersistentSegmentTree
+template &lt;typename T, size_t sz&gt; class PersistentSegmentTree
 {
   private:
     int nxt = 0;
@@ -870,83 +870,83 @@ template <typename T, size_t sz> class PersistentSegmentTree
         size_t right;
         T val;
     } nodes[sz * 32];
-    std::function<T(T, T)> combine;
-    std::function<T(T, T)> replace;
+    std::function&lt;T(T, T)&gt; combine;
+    std::function&lt;T(T, T)&gt; replace;
 
     size_t UpdateInternal(size_t node_idx, int l, int r, int idx, T x)
     {
-        auto &cur_node = nodes[node_idx];
-        if (r < idx || idx < l)
+        auto &amp;cur_node = nodes[node_idx];
+        if (r &lt; idx || idx &lt; l)
         {
             return node_idx;
         }
         if (l == r)
         {
             size_t n_node_idx = ++nxt;
-            auto &n_node = nodes[n_node_idx];
-            n_node.val = this->replace(cur_node.val, x);
+            auto &amp;n_node = nodes[n_node_idx];
+            n_node.val = this-&gt;replace(cur_node.val, x);
             n_node.left = cur_node.left;
             n_node.right = cur_node.right;
             return n_node_idx;
         }
-        int mid = (l + r) >> 1;
+        int mid = (l + r) &gt;&gt; 1;
         size_t n_node_idx = ++nxt;
-        auto &n_node = nodes[n_node_idx];
+        auto &amp;n_node = nodes[n_node_idx];
         n_node.val = cur_node.val;
         n_node.left = UpdateInternal(cur_node.left, l, mid, idx, x);
         n_node.right = UpdateInternal(cur_node.right, mid + 1, r, idx, x);
-        auto &n_node_left = nodes[n_node.left];
-        auto &n_node_right = nodes[n_node.right];
+        auto &amp;n_node_left = nodes[n_node.left];
+        auto &amp;n_node_right = nodes[n_node.right];
         n_node.val = combine(n_node_left.val, n_node_right.val);
         return n_node_idx;
     }
 
     void BuildInternal(size_t node_idx, int l, int r, T defaultValue)
     {
-        auto &cur_node = nodes[node_idx];
+        auto &amp;cur_node = nodes[node_idx];
         if (l == r)
         {
             cur_node.val = defaultValue;
             return;
         }
-        int mid = (l + r) >> 1;
+        int mid = (l + r) &gt;&gt; 1;
         cur_node.left = ++nxt;
         cur_node.right = ++nxt;
         size_t left_idx = cur_node.left;
         size_t right_idx = cur_node.right;
         BuildInternal(left_idx, l, mid, defaultValue);
         BuildInternal(right_idx, mid + 1, r, defaultValue);
-        auto &node_left = nodes[left_idx];
-        auto &node_right = nodes[right_idx];
+        auto &amp;node_left = nodes[left_idx];
+        auto &amp;node_right = nodes[right_idx];
         cur_node.val = combine(node_left.val, node_right.val);
     }
 
     void BuildInternal(size_t node_idx, int l, int r, T *arr)
     {
-        auto &cur_node = nodes[node_idx];
+        auto &amp;cur_node = nodes[node_idx];
         if (l == r)
         {
             cur_node.val = arr[l];
             return;
         }
-        int mid = (l + r) >> 1;
+        int mid = (l + r) &gt;&gt; 1;
         cur_node.left = ++nxt;
         cur_node.right = ++nxt;
         size_t left_idx = cur_node.left;
         size_t right_idx = cur_node.right;
         BuildInternal(left_idx, l, mid, arr);
         BuildInternal(right_idx, mid + 1, r, arr);
-        auto &node_left = nodes[left_idx];
-        auto &node_right = nodes[right_idx];
+        auto &amp;node_left = nodes[left_idx];
+        auto &amp;node_right = nodes[right_idx];
         cur_node.val = combine(node_left.val, node_right.val);
     }
 
   public:
-    std::vector<size_t> roots;
+    std::vector&lt;size_t&gt; roots;
 
     PersistentSegmentTree(
-        std::function<T(T, T)> combine = [](T a, T b) { return a + b; },
-        std::function<T(T, T)> replace = [](T a, T b) { return a + b; })
+        std::function&lt;T(T, T)&gt; combine = [](T a, T b) { return a + b; },
+        std::function&lt;T(T, T)&gt; replace = [](T a, T b) { return a + b; })
     {
         SetCombine(combine);
         SetReplace(replace);
@@ -957,14 +957,14 @@ template <typename T, size_t sz> class PersistentSegmentTree
     {
     }
 
-    void SetCombine(std::function<T(T, T)> combine)
+    void SetCombine(std::function&lt;T(T, T)&gt; combine)
     {
-        this->combine = combine;
+        this-&gt;combine = combine;
     }
 
-    void SetReplace(std::function<T(T, T)> replace)
+    void SetReplace(std::function&lt;T(T, T)&gt; replace)
     {
-        this->replace = replace;
+        this-&gt;replace = replace;
     }
 
     void Reset()
@@ -997,16 +997,16 @@ template <typename T, size_t sz> class PersistentSegmentTree
 
     T Query(size_t node_idx, int l, int r, int i, int j)
     {
-        auto &cur_node = nodes[node_idx];
-        if (r < i || l > j)
+        auto &amp;cur_node = nodes[node_idx];
+        if (r &lt; i || l &gt; j)
         {
             return 0;
         }
-        if (i <= l && r <= j)
+        if (i &lt;= l &amp;&amp; r &lt;= j)
         {
             return cur_node.val;
         }
-        int mid = (l + r) >> 1;
+        int mid = (l + r) &gt;&gt; 1;
         return combine(Query(cur_node.left, l, mid, i, j), Query(cur_node.right, mid + 1, r, i, j));
     }
 };
@@ -1018,19 +1018,19 @@ template <typename T, size_t sz> class PersistentSegmentTree
 #ifndef SegmentTree_h
 #define SegmentTree_h 1
 
-#include <algorithm>
-#include <functional>
+#include &lt;algorithm&gt;
+#include &lt;functional&gt;
 
 namespace library
 {
-template <typename T, size_t sz, T identityElem> class SegmentTree
+template &lt;typename T, size_t sz, T identityElem&gt; class SegmentTree
 {
   private:
     T tr[sz * 4];
-    std::function<T(T, T)> combine;
+    std::function&lt;T(T, T)&gt; combine;
 
   public:
-    SegmentTree(std::function<T(T, T)> combine = [](T a, T b) { return a + b; })
+    SegmentTree(std::function&lt;T(T, T)&gt; combine = [](T a, T b) { return a + b; })
     {
         SetCombine(combine);
         Reset();
@@ -1040,9 +1040,9 @@ template <typename T, size_t sz, T identityElem> class SegmentTree
     {
     }
 
-    void SetCombine(std::function<T(T, T)> combine)
+    void SetCombine(std::function&lt;T(T, T)&gt; combine)
     {
-        this->combine = combine;
+        this-&gt;combine = combine;
     }
 
     void Reset()
@@ -1057,12 +1057,12 @@ template <typename T, size_t sz, T identityElem> class SegmentTree
             tr[node] = arr[b];
             return;
         }
-        int left = node << 1;
+        int left = node &lt;&lt; 1;
         int right = left | 1;
-        int mid = (b + e) >> 1;
+        int mid = (b + e) &gt;&gt; 1;
         Build(left, b, mid, arr);
         Build(right, mid + 1, e, arr);
-        tr[node] = this->combine(tr[left], tr[right]);
+        tr[node] = this-&gt;combine(tr[left], tr[right]);
     }
 
     inline void Update(int node, int b, int e, int idx, T x)
@@ -1072,33 +1072,33 @@ template <typename T, size_t sz, T identityElem> class SegmentTree
             tr[node] = x;
             return;
         }
-        int left = node << 1;
+        int left = node &lt;&lt; 1;
         int right = left | 1;
-        int mid = (b + e) >> 1;
-        if (idx <= mid)
+        int mid = (b + e) &gt;&gt; 1;
+        if (idx &lt;= mid)
             Update(left, b, mid, idx, x);
         else
             Update(right, mid + 1, e, idx, x);
-        tr[node] = this->combine(tr[left], tr[right]);
+        tr[node] = this-&gt;combine(tr[left], tr[right]);
     }
 
     inline T Query(int node, int b, int e, int l, int r)
     {
-        if (r < b || e < l)
+        if (r &lt; b || e &lt; l)
             return identityElem;
-        if (b >= l && e <= r)
+        if (b &gt;= l &amp;&amp; e &lt;= r)
         {
             return tr[node];
         }
 
-        int left = node << 1;
+        int left = node &lt;&lt; 1;
         int right = left | 1;
-        int mid = (b + e) >> 1;
+        int mid = (b + e) &gt;&gt; 1;
 
         T p1 = Query(left, b, mid, l, r);
         T p2 = Query(right, mid + 1, e, l, r);
 
-        return this->combine(p1, p2);
+        return this-&gt;combine(p1, p2);
     }
 };
 } // namespace library
@@ -1110,10 +1110,10 @@ template <typename T, size_t sz, T identityElem> class SegmentTree
 #ifndef LCA_H
 #define LCA_H 1
 
-#include <algorithm>
-#include <functional>
-#include <vector>
-#include "SparseTable.h"
+#include &lt;algorithm&gt;
+#include &lt;functional&gt;
+#include &lt;vector&gt;
+#include &quot;SparseTable.h&quot;
 
 namespace library
 {
@@ -1122,14 +1122,14 @@ struct LCA
 {
     int n;
     int log2n;
-    std::vector<std::vector<int>> graph;
-    std::vector<int> parent;
-    std::vector<int> level;
-    std::vector<int> tour;
-    std::vector<int> position;
-    SparseTable<int> sparse_table;
+    std::vector&lt;std::vector&lt;int&gt;&gt; graph;
+    std::vector&lt;int&gt; parent;
+    std::vector&lt;int&gt; level;
+    std::vector&lt;int&gt; tour;
+    std::vector&lt;int&gt; position;
+    SparseTable&lt;int&gt; sparse_table;
     LCA(int n)
-        : n(n), log2n(LOG2(2 * n - 1) + 1), graph(n, std::vector<int>()), level(n), parent(n), position(n, -1)
+        : n(n), log2n(LOG2(2 * n - 1) + 1), graph(n, std::vector&lt;int&gt;()), level(n), parent(n), position(n, -1)
     {
     }
     ~LCA()
@@ -1146,7 +1146,7 @@ struct LCA
     {
         level[root] = 0;
         Dfs(root, -1);
-        sparse_table = SparseTable<int>(tour, [level = level](int x, int y) { return level[x] < level[y] ? x : y; });
+        sparse_table = SparseTable&lt;int&gt;(tour, [level = level](int x, int y) { return level[x] &lt; level[y] ? x : y; });
     }
 
     void Dfs(int u, int prev)
@@ -1179,9 +1179,9 @@ struct LCA
 
     int KthAncestor(int u, int k)
     {
-        for (int i = 0; i < log2n; i++)
+        for (int i = 0; i &lt; log2n; i++)
         {
-            if (k & (1 << i))
+            if (k &amp; (1 &lt;&lt; i))
             {
                 u = parent[u];
             }
@@ -1193,7 +1193,7 @@ struct LCA
     {
         int lca = Query(u, v);
         int d = level[u] + level[v] - 2 * level[lca];
-        if (k <= level[u] - level[lca])
+        if (k &lt;= level[u] - level[lca])
         {
             return KthAncestor(u, k);
         }
@@ -1212,13 +1212,13 @@ struct LCA
 #ifndef SuffixArray_h
 #define SuffixArray_h 1
 
-#include <algorithm>
-#include <cstring>
-#include <utility>
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;utility&gt;
 
 namespace library
 {
-template <size_t MAXLEN> struct SuffixArray
+template &lt;size_t MAXLEN&gt; struct SuffixArray
 {                                   // second approach: O(n log n)
     char T[MAXLEN];                 // the input string, up to 100K characters
     int n;                          // the length of input string
@@ -1237,46 +1237,46 @@ template <size_t MAXLEN> struct SuffixArray
     void Init(const char *str)
     {
         n = strlen(str);
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i &lt; n; i++)
             T[i] = str[i];
-        T[n++] = '$';
-        T[n] = '\0';
+        T[n++] = &apos;$&apos;;
+        T[n] = &apos;\0&apos;;
     }
 
     void CountingSort(int k) // O(n)
     {
         int i, sum, maxi = std::max(300, n); // up to 255 ASCII chars or length of n
         memset(c, 0, sizeof c);         // clear frequency table
-        for (i = 0; i < n; i++)         // count the frequency of each integer rank
-            c[i + k < n ? RA[i + k] : 0]++;
-        for (i = sum = 0; i < maxi; i++)
+        for (i = 0; i &lt; n; i++)         // count the frequency of each integer rank
+            c[i + k &lt; n ? RA[i + k] : 0]++;
+        for (i = sum = 0; i &lt; maxi; i++)
         {
             int t = c[i];
             c[i] = sum;
             sum += t;
         }
-        for (i = 0; i < n; i++) // shuffle the suffix array if necessary
-            tempSA[c[SA[i] + k < n ? RA[SA[i] + k] : 0]++] = SA[i];
-        for (i = 0; i < n; i++) // update the suffix array SA
+        for (i = 0; i &lt; n; i++) // shuffle the suffix array if necessary
+            tempSA[c[SA[i] + k &lt; n ? RA[SA[i] + k] : 0]++] = SA[i];
+        for (i = 0; i &lt; n; i++) // update the suffix array SA
             SA[i] = tempSA[i];
     }
 
     void ConstructSA() // this version can go up to 100000 characters
     {
         int i, k, r;
-        for (i = 0; i < n; i++)
+        for (i = 0; i &lt; n; i++)
             RA[i] = T[i]; // initial rankings
-        for (i = 0; i < n; i++)
+        for (i = 0; i &lt; n; i++)
             SA[i] = i;              // initial SA: {0, 1, 2, ..., n-1}
-        for (k = 1; k < n; k <<= 1) // repeat sorting process log n times
+        for (k = 1; k &lt; n; k &lt;&lt;= 1) // repeat sorting process log n times
         {
             CountingSort(k);        // actually radix sort: sort based on the second item
             CountingSort(0);        // then (stable) sort based on the first item
             tempRA[SA[0]] = r = 0;  // re-ranking; start from rank r = 0
-            for (i = 1; i < n; i++) // compare adjacent suffixes
-                tempRA[SA[i]] =     // if same pair => same rank r; otherwise, increase r
-                    (RA[SA[i]] == RA[SA[i - 1]] && RA[SA[i] + k] == RA[SA[i - 1] + k]) ? r : ++r;
-            for (i = 0; i < n; i++) // update the rank array RA
+            for (i = 1; i &lt; n; i++) // compare adjacent suffixes
+                tempRA[SA[i]] =     // if same pair =&gt; same rank r; otherwise, increase r
+                    (RA[SA[i]] == RA[SA[i - 1]] &amp;&amp; RA[SA[i] + k] == RA[SA[i - 1] + k]) ? r : ++r;
+            for (i = 0; i &lt; n; i++) // update the rank array RA
                 RA[i] = tempRA[i];
             if (RA[SA[n - 1]] == n - 1)
                 break; // nice optimization trick
@@ -1287,9 +1287,9 @@ template <size_t MAXLEN> struct SuffixArray
     {
         int i, L;
         Phi[SA[0]] = -1;            // default value
-        for (i = 1; i < n; i++)     // compute Phi in O(n)
+        for (i = 1; i &lt; n; i++)     // compute Phi in O(n)
             Phi[SA[i]] = SA[i - 1]; // remember which suffix is behind this suffix
-        for (i = L = 0; i < n; i++) // compute Permuted LCP in O(n)
+        for (i = L = 0; i &lt; n; i++) // compute Permuted LCP in O(n)
         {
             if (Phi[i] == -1)
             {
@@ -1301,34 +1301,34 @@ template <size_t MAXLEN> struct SuffixArray
             PLCP[i] = L;
             L = std::max(L - 1, 0); // L decreased max n times
         }
-        for (i = 0; i < n; i++)   // compute LCP in O(n)
+        for (i = 0; i &lt; n; i++)   // compute LCP in O(n)
             LCP[i] = PLCP[SA[i]]; // put the permuted LCP to the correct position
     }
 
-    std::pair<int, int> StringMatching() // string matching in O(m log n)
+    std::pair&lt;int, int&gt; StringMatching() // string matching in O(m log n)
     {
         int lo = 0, hi = n - 1, mid = lo; // valid matching = [0..n-1]
-        while (lo < hi)                   // find lower bound
+        while (lo &lt; hi)                   // find lower bound
         {
             mid = (lo + hi) / 2;                  // this is round down
-            int res = strncmp(T + SA[mid], P, m); // try to find P in suffix 'mid'
-            if (res >= 0)
-                hi = mid; // prune upper half (notice the >= sign)
+            int res = strncmp(T + SA[mid], P, m); // try to find P in suffix &apos;mid&apos;
+            if (res &gt;= 0)
+                hi = mid; // prune upper half (notice the &gt;= sign)
             else
                 lo = mid + 1; // prune lower half including mid
-        }                     // observe `=' in "res >= 0" above
+        }                     // observe `=&apos; in &quot;res &gt;= 0&quot; above
         if (strncmp(T + SA[lo], P, m) != 0)
-            return std::pair<int, int>(-1, -1); // if not found
-        std::pair<int, int> ans;
+            return std::pair&lt;int, int&gt;(-1, -1); // if not found
+        std::pair&lt;int, int&gt; ans;
         ans.first = lo;
         lo = 0;
         hi = n - 1;
         mid = lo;
-        while (lo < hi) // if lower bound is found, find upper bound
+        while (lo &lt; hi) // if lower bound is found, find upper bound
         {
             mid = (lo + hi) / 2;
             int res = strncmp(T + SA[mid], P, m);
-            if (res > 0)
+            if (res &gt; 0)
                 hi = mid; // prune upper half
             else
                 lo = mid + 1; // prune lower half including mid
@@ -1339,27 +1339,27 @@ template <size_t MAXLEN> struct SuffixArray
         return ans;
     } // return lower/upperbound as first/second item of the pair, respectively
 
-    std::pair<int, int> LRS() // returns a pair (the LRS length and its index)
+    std::pair&lt;int, int&gt; LRS() // returns a pair (the LRS length and its index)
     {
         int i, idx = 0, maxLCP = -1;
-        for (i = 1; i < n; i++) // O(n), start from i = 1
-            if (LCP[i] > maxLCP)
+        for (i = 1; i &lt; n; i++) // O(n), start from i = 1
+            if (LCP[i] &gt; maxLCP)
                 maxLCP = LCP[i], idx = i;
-        return std::pair<int, int>(maxLCP, idx);
+        return std::pair&lt;int, int&gt;(maxLCP, idx);
     }
 
     int Owner(int idx)
     {
-        return (idx < n - m - 1) ? 1 : 2;
+        return (idx &lt; n - m - 1) ? 1 : 2;
     }
 
-    std::pair<int, int> LCS() // returns a pair (the LCS length and its index)
+    std::pair&lt;int, int&gt; LCS() // returns a pair (the LCS length and its index)
     {
         int i, idx = 0, maxLCP = -1;
-        for (i = 1; i < n; i++) // O(n), start from i = 1
-            if (Owner(SA[i]) != Owner(SA[i - 1]) && LCP[i] > maxLCP)
+        for (i = 1; i &lt; n; i++) // O(n), start from i = 1
+            if (Owner(SA[i]) != Owner(SA[i - 1]) &amp;&amp; LCP[i] &gt; maxLCP)
                 maxLCP = LCP[i], idx = i;
-        return std::pair<int, int>(maxLCP, idx);
+        return std::pair&lt;int, int&gt;(maxLCP, idx);
     }
 };
 } // namespace library
@@ -1371,37 +1371,37 @@ template <size_t MAXLEN> struct SuffixArray
 #ifndef SmallestStringRotation_h
 #define SmallestStringRotation_h 1
 
-#include <algorithm>
-#include <cassert>
-#include <cstring>
-#include <string>
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;cstring&gt;
+#include &lt;string&gt;
 
 namespace library
 {
 
-template <size_t MAXLEN> struct SmallestStringRotation
+template &lt;size_t MAXLEN&gt; struct SmallestStringRotation
 {
     int f[MAXLEN];
-    int operator()(const std::string &s)
+    int operator()(const std::string &amp;s)
     {
         int n = s.size();
         std::string t = s + s;
         memset(f, -1, sizeof f);
         int k = 0;
-        for (int j = 1; j < 2 * n; ++j)
+        for (int j = 1; j &lt; 2 * n; ++j)
         {
             int i = f[j - k - 1];
-            while (i != -1 && t[j] != t[k + i + 1])
+            while (i != -1 &amp;&amp; t[j] != t[k + i + 1])
             {
-                if (t[j] < t[k + i + 1])
+                if (t[j] &lt; t[k + i + 1])
                 {
                     k = j - i - 1;
                 }
                 i = f[i];
             }
-            if (i == -1 && t[j] != t[k + i + 1])
+            if (i == -1 &amp;&amp; t[j] != t[k + i + 1])
             {
-                if (t[j] < t[k + i + 1])
+                if (t[j] &lt; t[k + i + 1])
                 {
                     k = j;
                 }
@@ -1425,12 +1425,12 @@ template <size_t MAXLEN> struct SmallestStringRotation
 #ifndef BpmDfs_h
 #define BpmDfs_h 1
 
-#include <cstring>
+#include &lt;cstring&gt;
 
 namespace library
 {
 
-template <size_t sz> struct BpmDfs
+template &lt;size_t sz&gt; struct BpmDfs
 {
     int n;
     bool fl[sz];
@@ -1452,7 +1452,7 @@ template <size_t sz> struct BpmDfs
 
     void Init(int n)
     {
-        this->n = n;
+        this-&gt;n = n;
     }
 
     void AddEdge(int u, int v)
@@ -1467,9 +1467,9 @@ template <size_t sz> struct BpmDfs
 
     bool Dfs(int u)
     {
-        for (int v = 0; v < n; v++)
+        for (int v = 0; v &lt; n; v++)
         {
-            if (g[u][v] && !fl[v])
+            if (g[u][v] &amp;&amp; !fl[v])
             {
                 fl[v] = true;
                 if (match[v] == -1 || Dfs(match[v]))
@@ -1486,7 +1486,7 @@ template <size_t sz> struct BpmDfs
     {
         memset(match, -1, sizeof match);
         int ret = 0;
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i &lt; n; i++)
         {
             memset(fl, 0, sizeof fl);
             if (Dfs(i))
@@ -1506,49 +1506,49 @@ template <size_t sz> struct BpmDfs
 #ifndef SparseTable_h
 #define SparseTable_h 1
 
-#include <functional>
-#include <vector>
+#include &lt;functional&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
 #define LOG2(x) (32 - __builtin_clz(x) - 1)
-template <typename T> struct SparseTable
+template &lt;typename T&gt; struct SparseTable
 {
     int n;
     int log2n;
-    std::function<T(T, T)> combine;
-    std::vector<T> table[32];
+    std::function&lt;T(T, T)&gt; combine;
+    std::vector&lt;T&gt; table[32];
 
     SparseTable()
     {
     }
 
-    SparseTable(T *arr, int len, std::function<T(T, T)> combine) : SparseTable(arr, len)
+    SparseTable(T *arr, int len, std::function&lt;T(T, T)&gt; combine) : SparseTable(arr, len)
     {
-        this->combine = combine;
+        this-&gt;combine = combine;
     }
 
-    SparseTable(T *arr, int len) : SparseTable(std::vector<T>(arr, arr + len))
+    SparseTable(T *arr, int len) : SparseTable(std::vector&lt;T&gt;(arr, arr + len))
     {
     }
 
-    SparseTable(const std::vector<T> &arr, std::function<T(T, T)> combine) : SparseTable(arr)
+    SparseTable(const std::vector&lt;T&gt; &amp;arr, std::function&lt;T(T, T)&gt; combine) : SparseTable(arr)
     {
-        this->combine = combine;
+        this-&gt;combine = combine;
     }
 
-    SparseTable(const std::vector<T> &arr)
+    SparseTable(const std::vector&lt;T&gt; &amp;arr)
     {
         n = arr.size();
         log2n = LOG2(n) + 1;
         table[0] = arr;
-        for (int i = 1; i < log2n; ++i)
+        for (int i = 1; i &lt; log2n; ++i)
         {
-            table[i].resize(n - (1 << i) + 1);
-            for (int j = 0; j + (1 << i) <= n; j++)
+            table[i].resize(n - (1 &lt;&lt; i) + 1);
+            for (int j = 0; j + (1 &lt;&lt; i) &lt;= n; j++)
             {
                 int x = table[i - 1][j];
-                int y = table[i - 1][j + (1 << (i - 1))];
+                int y = table[i - 1][j + (1 &lt;&lt; (i - 1))];
                 table[i][j] = Combine(x, y);
             }
         }
@@ -1556,8 +1556,8 @@ template <typename T> struct SparseTable
 
     T Combine(T x, T y)
     {
-        if (this->combine != nullptr)
-            return this->combine(x, y);
+        if (this-&gt;combine != nullptr)
+            return this-&gt;combine(x, y);
         return std::min(x, y);
     }
 
@@ -1565,7 +1565,7 @@ template <typename T> struct SparseTable
     {
         int k = LOG2(r - l + 1);
         int x = table[k][l];
-        int y = table[k][r - (1 << k) + 1];
+        int y = table[k][r - (1 &lt;&lt; k) + 1];
         return Combine(x, y);
     }
 };
@@ -1578,9 +1578,9 @@ template <typename T> struct SparseTable
 #ifndef ModInt_h
 #define ModInt_h 1
 
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
+#include &lt;algorithm&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
 
 namespace library
 {
@@ -1603,152 +1603,152 @@ struct ModInt
         val = _val % mod;
     }
 
-    ModInt &operator=(int _val)
+    ModInt &amp;operator=(int _val)
     {
         val = _val % mod;
         return *this;
     }
-    ModInt &operator=(long long _val)
+    ModInt &amp;operator=(long long _val)
     {
         val = _val % mod;
         return *this;
     }
-    ModInt &operator=(const ModInt &other)
+    ModInt &amp;operator=(const ModInt &amp;other)
     {
         val = other.val % mod;
         return *this;
     }
 
-    ModInt &operator+=(int _val)
+    ModInt &amp;operator+=(int _val)
     {
         _val %= mod;
         val += _val;
-        if (val >= mod)
+        if (val &gt;= mod)
             val -= mod;
         return *this;
     }
 
-    ModInt &operator+=(long long _val)
+    ModInt &amp;operator+=(long long _val)
     {
         _val %= mod;
         val += _val;
-        if (val >= mod)
+        if (val &gt;= mod)
             val -= mod;
         return *this;
     }
 
-    ModInt &operator+=(const ModInt &other)
+    ModInt &amp;operator+=(const ModInt &amp;other)
     {
         int _val = other.val % mod;
         val += _val;
-        if (val >= mod)
+        if (val &gt;= mod)
             val -= mod;
         return *this;
     }
 
-    friend ModInt operator+(ModInt lhs, const int &rhs)
+    friend ModInt operator+(ModInt lhs, const int &amp;rhs)
     {
         lhs += rhs;
         return lhs;
     }
 
-    friend ModInt operator+(ModInt lhs, const long long &rhs)
+    friend ModInt operator+(ModInt lhs, const long long &amp;rhs)
     {
         lhs += rhs;
         return lhs;
     }
 
-    friend ModInt operator+(ModInt lhs, const ModInt &rhs)
+    friend ModInt operator+(ModInt lhs, const ModInt &amp;rhs)
     {
         lhs += rhs;
         return lhs;
     }
 
-    ModInt &operator-=(int _val)
+    ModInt &amp;operator-=(int _val)
     {
         _val %= mod;
         val -= _val;
-        while (val < 0)
+        while (val &lt; 0)
             val += mod;
-        if (val >= mod)
+        if (val &gt;= mod)
             val -= mod;
         return *this;
     }
 
-    ModInt &operator-=(long long _val)
+    ModInt &amp;operator-=(long long _val)
     {
         _val %= mod;
         val -= _val;
-        while (val < 0)
+        while (val &lt; 0)
             val += mod;
-        if (val >= mod)
+        if (val &gt;= mod)
             val -= mod;
         return *this;
     }
 
-    ModInt &operator-=(const ModInt &other)
+    ModInt &amp;operator-=(const ModInt &amp;other)
     {
         int _val = other.val % mod;
         val -= _val;
-        while (val < 0)
+        while (val &lt; 0)
             val += mod;
-        if (val >= mod)
+        if (val &gt;= mod)
             val -= mod;
         return *this;
     }
 
-    friend ModInt operator-(ModInt lhs, const int &rhs)
+    friend ModInt operator-(ModInt lhs, const int &amp;rhs)
     {
         lhs -= rhs;
         return lhs;
     }
 
-    friend ModInt operator-(ModInt lhs, const long long &rhs)
+    friend ModInt operator-(ModInt lhs, const long long &amp;rhs)
     {
         lhs -= rhs;
         return lhs;
     }
 
-    friend ModInt operator-(ModInt lhs, const ModInt &rhs)
+    friend ModInt operator-(ModInt lhs, const ModInt &amp;rhs)
     {
         lhs -= rhs;
         return lhs;
     }
 
-    ModInt &operator*=(int _val)
+    ModInt &amp;operator*=(int _val)
     {
         _val %= mod;
         val = ((long long)val * val) % mod;
         return *this;
     }
 
-    ModInt &operator*=(const ModInt &other)
+    ModInt &amp;operator*=(const ModInt &amp;other)
     {
         int _val = other.val % mod;
         val = ((long long)val * val) % mod;
         return *this;
     }
 
-    friend ModInt operator*(ModInt lhs, const int &rhs)
+    friend ModInt operator*(ModInt lhs, const int &amp;rhs)
     {
         lhs *= rhs;
         return lhs;
     }
 
-    friend ModInt operator*(ModInt lhs, const ModInt &rhs)
+    friend ModInt operator*(ModInt lhs, const ModInt &amp;rhs)
     {
         lhs *= rhs;
         return lhs;
     }
 
-    friend istream &operator>>(istream &in, ModInt &inp)
+    friend istream &amp;operator&gt;&gt;(istream &amp;in, ModInt &amp;inp)
     {
-        return in >> inp.val;
+        return in &gt;&gt; inp.val;
     }
 
-    friend ostream &operator<<(ostream &out, const ModInt &pr)
+    friend ostream &amp;operator&lt;&lt;(ostream &amp;out, const ModInt &amp;pr)
     {
-        return out << pr.val;
+        return out &lt;&lt; pr.val;
     }
 };
 
@@ -1762,21 +1762,21 @@ struct ModInt
 
 namespace library
 {
-template <long long mod> long long ModuloPower(long long b, long long p)
+template &lt;long long mod&gt; long long ModuloPower(long long b, long long p)
 {
     long long ret = 1;
-    for (; p > 0; p >>= 1)
+    for (; p &gt; 0; p &gt;&gt;= 1)
     {
-        if (p & 1)
+        if (p &amp; 1)
             ret = (ret * b) % mod;
         b = (b * b) % mod;
     }
     return ret % mod;
 }
 
-template <long long mod> long long ModuloInverse(long long b)
+template &lt;long long mod&gt; long long ModuloInverse(long long b)
 {
-    return ModuloPower<mod>(b, mod - 2);
+    return ModuloPower&lt;mod&gt;(b, mod - 2);
 }
 
 } // namespace library
@@ -1788,14 +1788,14 @@ template <long long mod> long long ModuloInverse(long long b)
 #ifndef ZAlgo_H
 #define ZAlgo_H 1
 
-#include <algorithm>
-#include <cstring>
-#include <vector>
+#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
 
-template <class T, size_t MAXLEN> struct ZAlgo
+template &lt;class T, size_t MAXLEN&gt; struct ZAlgo
 {
   public:
     T outOfBound;
@@ -1805,14 +1805,14 @@ template <class T, size_t MAXLEN> struct ZAlgo
     int n;
     int maxZ;
 
-    void Init(const T *a, int aLen, const T *b, int bLen, const T &_outOfBound)
+    void Init(const T *a, int aLen, const T *b, int bLen, const T &amp;_outOfBound)
     {
         n = 0;
-        for (int i = 0; i < aLen; i++)
+        for (int i = 0; i &lt; aLen; i++)
             s[n++] = a[i];
         outOfBound = _outOfBound;
         s[n++] = outOfBound;
-        for (int i = 0; i < bLen; i++)
+        for (int i = 0; i &lt; bLen; i++)
             s[n++] = b[i];
         maxZ = 0;
         memset(occurrence, 0, sizeof(occurrence));
@@ -1820,14 +1820,14 @@ template <class T, size_t MAXLEN> struct ZAlgo
         Compute();
     }
 
-    void Init(const std::vector<T> &a, const std::vector<T> &b, const T &_outOfBound)
+    void Init(const std::vector&lt;T&gt; &amp;a, const std::vector&lt;T&gt; &amp;b, const T &amp;_outOfBound)
     {
         n = 0;
-        for (int i = 0; i < a.size(); i++)
+        for (int i = 0; i &lt; a.size(); i++)
             s[n++] = a[i];
         outOfBound = _outOfBound;
         s[n++] = outOfBound;
-        for (int i = 0; i < b.size(); i++)
+        for (int i = 0; i &lt; b.size(); i++)
             s[n++] = b[i];
         maxZ = 0;
         memset(occurrence, 0, sizeof(occurrence));
@@ -1840,12 +1840,12 @@ template <class T, size_t MAXLEN> struct ZAlgo
     {
         int l = 0;
         int r = 0;
-        for (int i = 1; i < n; i++)
+        for (int i = 1; i &lt; n; i++)
         {
-            if (i > r)
+            if (i &gt; r)
             {
                 l = r = i;
-                while (r < n && s[r - l] == s[r])
+                while (r &lt; n &amp;&amp; s[r - l] == s[r])
                 {
                     r++;
                 }
@@ -1856,14 +1856,14 @@ template <class T, size_t MAXLEN> struct ZAlgo
             else
             {
                 int k = i - l;
-                if (z[k] < r - i + 1)
+                if (z[k] &lt; r - i + 1)
                 {
                     z[i] = z[k];
                 }
                 else
                 {
                     l = i;
-                    while (r < n && s[r - l] == s[r])
+                    while (r &lt; n &amp;&amp; s[r - l] == s[r])
                     {
                         r++;
                     }
@@ -1877,7 +1877,7 @@ template <class T, size_t MAXLEN> struct ZAlgo
         int iter = 0;
         while (s[iter] != outOfBound)
             iter++;
-        for (int i = iter + 1; i < n; i++)
+        for (int i = iter + 1; i &lt; n; i++)
         {
             maxZ = std::max(maxZ, z[i]);
             occurrence[z[i]]++;
@@ -1893,17 +1893,17 @@ template <class T, size_t MAXLEN> struct ZAlgo
 #ifndef BigInt_h
 #define BigInt_h 1
 
-#include <algorithm>
-#include <cassert>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <vector>
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;cmath&gt;
+#include &lt;cstdio&gt;
+#include &lt;cstdlib&gt;
+#include &lt;cstring&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
@@ -1912,7 +1912,7 @@ const int base_digits = 9;
 
 struct BigInt
 {
-    std::vector<int> z;
+    std::vector&lt;int&gt; z;
     int sign;
 
     BigInt() : sign(1)
@@ -1924,12 +1924,12 @@ struct BigInt
         *this = v;
     }
 
-    BigInt(const std::string &s)
+    BigInt(const std::string &amp;s)
     {
         Read(s);
     }
 
-    void operator=(const BigInt &v)
+    void operator=(const BigInt &amp;v)
     {
         sign = v.sign;
         z = v.z;
@@ -1938,25 +1938,25 @@ struct BigInt
     void operator=(long long v)
     {
         sign = 1;
-        if (v < 0)
+        if (v &lt; 0)
             sign = -1, v = -v;
         z.clear();
-        for (; v > 0; v = v / base)
+        for (; v &gt; 0; v = v / base)
             z.push_back(v % base);
     }
 
-    BigInt operator+(const BigInt &v) const
+    BigInt operator+(const BigInt &amp;v) const
     {
         if (sign == v.sign)
         {
             BigInt res = v;
 
-            for (int i = 0, carry = 0; i < (int)std::max(z.size(), v.z.size()) || carry; ++i)
+            for (int i = 0, carry = 0; i &lt; (int)std::max(z.size(), v.z.size()) || carry; ++i)
             {
                 if (i == (int)res.z.size())
                     res.z.push_back(0);
-                res.z[i] += carry + (i < (int)z.size() ? z[i] : 0);
-                carry = res.z[i] >= base;
+                res.z[i] += carry + (i &lt; (int)z.size() ? z[i] : 0);
+                carry = res.z[i] &gt;= base;
                 if (carry)
                     res.z[i] -= base;
             }
@@ -1965,17 +1965,17 @@ struct BigInt
         return *this - (-v);
     }
 
-    BigInt operator-(const BigInt &v) const
+    BigInt operator-(const BigInt &amp;v) const
     {
         if (sign == v.sign)
         {
-            if (Abs() >= v.Abs())
+            if (Abs() &gt;= v.Abs())
             {
                 BigInt res = *this;
-                for (int i = 0, carry = 0; i < (int)v.z.size() || carry; ++i)
+                for (int i = 0, carry = 0; i &lt; (int)v.z.size() || carry; ++i)
                 {
-                    res.z[i] -= carry + (i < (int)v.z.size() ? v.z[i] : 0);
-                    carry = res.z[i] < 0;
+                    res.z[i] -= carry + (i &lt; (int)v.z.size() ? v.z[i] : 0);
+                    carry = res.z[i] &lt; 0;
                     if (carry)
                         res.z[i] += base;
                 }
@@ -1989,16 +1989,16 @@ struct BigInt
 
     void operator*=(int v)
     {
-        if (v < 0)
+        if (v &lt; 0)
             sign = -sign, v = -v;
-        for (int i = 0, carry = 0; i < (int)z.size() || carry; ++i)
+        for (int i = 0, carry = 0; i &lt; (int)z.size() || carry; ++i)
         {
             if (i == (int)z.size())
                 z.push_back(0);
             long long cur = z[i] * (long long)v + carry;
             carry = (int)(cur / base);
             z[i] = (int)(cur % base);
-            // asm("divl %%ecx" : "=a"(carry), "=d"(a[i]) : "A"(cur), "c"(base));
+            // asm(&quot;divl %%ecx&quot; : &quot;=a&quot;(carry), &quot;=d&quot;(a[i]) : &quot;A&quot;(cur), &quot;c&quot;(base));
         }
         Trim();
     }
@@ -2010,7 +2010,7 @@ struct BigInt
         return res;
     }
 
-    friend std::pair<BigInt, BigInt> DivMod(const BigInt &a1, const BigInt &b1)
+    friend std::pair&lt;BigInt, BigInt&gt; DivMod(const BigInt &amp;a1, const BigInt &amp;b1)
     {
         int norm = base / (b1.z.back() + 1);
         BigInt a = a1.Abs() * norm;
@@ -2018,15 +2018,15 @@ struct BigInt
         BigInt q, r;
         q.z.resize(a.z.size());
 
-        for (int i = a.z.size() - 1; i >= 0; i--)
+        for (int i = a.z.size() - 1; i &gt;= 0; i--)
         {
             r *= base;
             r += a.z[i];
-            int s1 = b.z.size() < r.z.size() ? r.z[b.z.size()] : 0;
-            int s2 = b.z.size() - 1 < r.z.size() ? r.z[b.z.size() - 1] : 0;
+            int s1 = b.z.size() &lt; r.z.size() ? r.z[b.z.size()] : 0;
+            int s2 = b.z.size() - 1 &lt; r.z.size() ? r.z[b.z.size() - 1] : 0;
             int d = ((long long)s1 * base + s2) / b.z.back();
             r -= b * d;
-            while (r < 0)
+            while (r &lt; 0)
                 r += b, --d;
             q.z[i] = d;
         }
@@ -2038,7 +2038,7 @@ struct BigInt
         return std::make_pair(q, r / norm);
     }
 
-    friend BigInt Sqrt(const BigInt &a1)
+    friend BigInt Sqrt(const BigInt &amp;a1)
     {
         BigInt a = a1;
         while (a.z.empty() || a.z.size() % 2 == 1)
@@ -2058,13 +2058,13 @@ struct BigInt
         int q = firstDigit;
         BigInt res;
 
-        for (int j = n / 2 - 1; j >= 0; j--)
+        for (int j = n / 2 - 1; j &gt;= 0; j--)
         {
             for (;; --q)
             {
                 BigInt r1 = (r - (res * 2 * base + q) * q) * base * base +
-                            (j > 0 ? (long long)a.z[2 * j - 1] * base + a.z[2 * j - 2] : 0);
-                if (r1 >= 0)
+                            (j &gt; 0 ? (long long)a.z[2 * j - 1] * base + a.z[2 * j - 2] : 0);
+                if (r1 &gt;= 0)
                 {
                     r = r1;
                     break;
@@ -2073,11 +2073,11 @@ struct BigInt
             res *= base;
             res += q;
 
-            if (j > 0)
+            if (j &gt; 0)
             {
-                int d1 = res.z.size() + 2 < r.z.size() ? r.z[res.z.size() + 2] : 0;
-                int d2 = res.z.size() + 1 < r.z.size() ? r.z[res.z.size() + 1] : 0;
-                int d3 = res.z.size() < r.z.size() ? r.z[res.z.size()] : 0;
+                int d1 = res.z.size() + 2 &lt; r.z.size() ? r.z[res.z.size() + 2] : 0;
+                int d2 = res.z.size() + 1 &lt; r.z.size() ? r.z[res.z.size() + 1] : 0;
+                int d3 = res.z.size() &lt; r.z.size() ? r.z[res.z.size()] : 0;
                 q = ((long long)d1 * base * base + (long long)d2 * base + d3) / (firstDigit * 2);
             }
         }
@@ -2086,21 +2086,21 @@ struct BigInt
         return res / norm;
     }
 
-    BigInt operator/(const BigInt &v) const
+    BigInt operator/(const BigInt &amp;v) const
     {
         return DivMod(*this, v).first;
     }
 
-    BigInt operator%(const BigInt &v) const
+    BigInt operator%(const BigInt &amp;v) const
     {
         return DivMod(*this, v).second;
     }
 
     void operator/=(int v)
     {
-        if (v < 0)
+        if (v &lt; 0)
             sign = -sign, v = -v;
-        for (int i = (int)z.size() - 1, rem = 0; i >= 0; --i)
+        for (int i = (int)z.size() - 1, rem = 0; i &gt;= 0; --i)
         {
             long long cur = z[i] + rem * (long long)base;
             z[i] = (int)(cur / v);
@@ -2118,67 +2118,67 @@ struct BigInt
 
     int operator%(int v) const
     {
-        if (v < 0)
+        if (v &lt; 0)
             v = -v;
         int m = 0;
-        for (int i = z.size() - 1; i >= 0; --i)
+        for (int i = z.size() - 1; i &gt;= 0; --i)
             m = (z[i] + m * (long long)base) % v;
         return m * sign;
     }
 
-    void operator+=(const BigInt &v)
+    void operator+=(const BigInt &amp;v)
     {
         *this = *this + v;
     }
-    void operator-=(const BigInt &v)
+    void operator-=(const BigInt &amp;v)
     {
         *this = *this - v;
     }
-    void operator*=(const BigInt &v)
+    void operator*=(const BigInt &amp;v)
     {
         *this = *this * v;
     }
-    void operator/=(const BigInt &v)
+    void operator/=(const BigInt &amp;v)
     {
         *this = *this / v;
     }
 
-    bool operator<(const BigInt &v) const
+    bool operator&lt;(const BigInt &amp;v) const
     {
         if (sign != v.sign)
-            return sign < v.sign;
+            return sign &lt; v.sign;
         if (z.size() != v.z.size())
-            return z.size() * sign < v.z.size() * v.sign;
-        for (int i = z.size() - 1; i >= 0; i--)
+            return z.size() * sign &lt; v.z.size() * v.sign;
+        for (int i = z.size() - 1; i &gt;= 0; i--)
             if (z[i] != v.z[i])
-                return z[i] * sign < v.z[i] * sign;
+                return z[i] * sign &lt; v.z[i] * sign;
         return false;
     }
 
-    bool operator>(const BigInt &v) const
+    bool operator&gt;(const BigInt &amp;v) const
     {
-        return v < *this;
+        return v &lt; *this;
     }
-    bool operator<=(const BigInt &v) const
+    bool operator&lt;=(const BigInt &amp;v) const
     {
-        return !(v < *this);
+        return !(v &lt; *this);
     }
-    bool operator>=(const BigInt &v) const
+    bool operator&gt;=(const BigInt &amp;v) const
     {
-        return !(*this < v);
+        return !(*this &lt; v);
     }
-    bool operator==(const BigInt &v) const
+    bool operator==(const BigInt &amp;v) const
     {
-        return !(*this < v) && !(v < *this);
+        return !(*this &lt; v) &amp;&amp; !(v &lt; *this);
     }
-    bool operator!=(const BigInt &v) const
+    bool operator!=(const BigInt &amp;v) const
     {
-        return *this < v || v < *this;
+        return *this &lt; v || v &lt; *this;
     }
 
     void Trim()
     {
-        while (!z.empty() && z.back() == 0)
+        while (!z.empty() &amp;&amp; z.back() == 0)
             z.pop_back();
         if (z.empty())
             sign = 1;
@@ -2186,7 +2186,7 @@ struct BigInt
 
     bool IsZero() const
     {
-        return z.empty() || (z.size() == 1 && !z[0]);
+        return z.empty() || (z.size() == 1 &amp;&amp; !z[0]);
     }
 
     BigInt operator-() const
@@ -2206,73 +2206,73 @@ struct BigInt
     long long LongValue() const
     {
         long long res = 0;
-        for (int i = z.size() - 1; i >= 0; i--)
+        for (int i = z.size() - 1; i &gt;= 0; i--)
             res = res * base + z[i];
         return res * sign;
     }
 
-    friend BigInt Gcd(const BigInt &a, const BigInt &b)
+    friend BigInt Gcd(const BigInt &amp;a, const BigInt &amp;b)
     {
         return b.IsZero() ? a : Gcd(b, a % b);
     }
-    friend BigInt Lcm(const BigInt &a, const BigInt &b)
+    friend BigInt Lcm(const BigInt &amp;a, const BigInt &amp;b)
     {
         return a / Gcd(a, b) * b;
     }
 
-    void Read(const std::string &s)
+    void Read(const std::string &amp;s)
     {
         sign = 1;
         z.clear();
         int pos = 0;
-        while (pos < (int)s.size() && (s[pos] == '-' || s[pos] == '+'))
+        while (pos &lt; (int)s.size() &amp;&amp; (s[pos] == &apos;-&apos; || s[pos] == &apos;+&apos;))
         {
-            if (s[pos] == '-')
+            if (s[pos] == &apos;-&apos;)
                 sign = -sign;
             ++pos;
         }
-        for (int i = s.size() - 1; i >= pos; i -= base_digits)
+        for (int i = s.size() - 1; i &gt;= pos; i -= base_digits)
         {
             int x = 0;
-            for (int j = std::max(pos, i - base_digits + 1); j <= i; j++)
-                x = x * 10 + s[j] - '0';
+            for (int j = std::max(pos, i - base_digits + 1); j &lt;= i; j++)
+                x = x * 10 + s[j] - &apos;0&apos;;
             z.push_back(x);
         }
         Trim();
     }
 
-    friend std::istream &operator>>(std::istream &stream, BigInt &v)
+    friend std::istream &amp;operator&gt;&gt;(std::istream &amp;stream, BigInt &amp;v)
     {
         std::string s;
-        stream >> s;
+        stream &gt;&gt; s;
         v.Read(s);
         return stream;
     }
 
-    friend std::ostream &operator<<(std::ostream &stream, const BigInt &v)
+    friend std::ostream &amp;operator&lt;&lt;(std::ostream &amp;stream, const BigInt &amp;v)
     {
         if (v.sign == -1)
-            stream << '-';
-        stream << (v.z.empty() ? 0 : v.z.back());
-        for (int i = (int)v.z.size() - 2; i >= 0; --i)
-            stream << std::setw(base_digits) << std::setfill('0') << v.z[i];
+            stream &lt;&lt; &apos;-&apos;;
+        stream &lt;&lt; (v.z.empty() ? 0 : v.z.back());
+        for (int i = (int)v.z.size() - 2; i &gt;= 0; --i)
+            stream &lt;&lt; std::setw(base_digits) &lt;&lt; std::setfill(&apos;0&apos;) &lt;&lt; v.z[i];
         return stream;
     }
 
-    static std::vector<int> ConvertBase(const std::vector<int> &a, int old_digits, int new_digits)
+    static std::vector&lt;int&gt; ConvertBase(const std::vector&lt;int&gt; &amp;a, int old_digits, int new_digits)
     {
-        std::vector<long long> p(std::max(old_digits, new_digits) + 1);
+        std::vector&lt;long long&gt; p(std::max(old_digits, new_digits) + 1);
         p[0] = 1;
-        for (int i = 1; i < (int)p.size(); i++)
+        for (int i = 1; i &lt; (int)p.size(); i++)
             p[i] = p[i - 1] * 10;
-        std::vector<int> res;
+        std::vector&lt;int&gt; res;
         long long cur = 0;
         int cur_digits = 0;
-        for (int i = 0; i < (int)a.size(); i++)
+        for (int i = 0; i &lt; (int)a.size(); i++)
         {
             cur += a[i] * p[cur_digits];
             cur_digits += old_digits;
-            while (cur_digits >= new_digits)
+            while (cur_digits &gt;= new_digits)
             {
                 res.push_back(int(cur % p[new_digits]));
                 cur /= p[new_digits];
@@ -2280,68 +2280,68 @@ struct BigInt
             }
         }
         res.push_back((int)cur);
-        while (!res.empty() && res.back() == 0)
+        while (!res.empty() &amp;&amp; res.back() == 0)
             res.pop_back();
         return res;
     }
 
-    static std::vector<long long> KaratsubaMultiply(const std::vector<long long> &a, const std::vector<long long> &b)
+    static std::vector&lt;long long&gt; KaratsubaMultiply(const std::vector&lt;long long&gt; &amp;a, const std::vector&lt;long long&gt; &amp;b)
     {
         int n = a.size();
-        std::vector<long long> res(n + n);
-        if (n <= 32)
+        std::vector&lt;long long&gt; res(n + n);
+        if (n &lt;= 32)
         {
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < n; j++)
+            for (int i = 0; i &lt; n; i++)
+                for (int j = 0; j &lt; n; j++)
                     res[i + j] += a[i] * b[j];
             return res;
         }
 
-        int k = n >> 1;
-        std::vector<long long> a1(a.begin(), a.begin() + k);
-        std::vector<long long> a2(a.begin() + k, a.end());
-        std::vector<long long> b1(b.begin(), b.begin() + k);
-        std::vector<long long> b2(b.begin() + k, b.end());
+        int k = n &gt;&gt; 1;
+        std::vector&lt;long long&gt; a1(a.begin(), a.begin() + k);
+        std::vector&lt;long long&gt; a2(a.begin() + k, a.end());
+        std::vector&lt;long long&gt; b1(b.begin(), b.begin() + k);
+        std::vector&lt;long long&gt; b2(b.begin() + k, b.end());
 
-        std::vector<long long> a1b1 = KaratsubaMultiply(a1, b1);
-        std::vector<long long> a2b2 = KaratsubaMultiply(a2, b2);
+        std::vector&lt;long long&gt; a1b1 = KaratsubaMultiply(a1, b1);
+        std::vector&lt;long long&gt; a2b2 = KaratsubaMultiply(a2, b2);
 
-        for (int i = 0; i < k; i++)
+        for (int i = 0; i &lt; k; i++)
             a2[i] += a1[i];
-        for (int i = 0; i < k; i++)
+        for (int i = 0; i &lt; k; i++)
             b2[i] += b1[i];
 
-        std::vector<long long> r = KaratsubaMultiply(a2, b2);
-        for (int i = 0; i < (int)a1b1.size(); i++)
+        std::vector&lt;long long&gt; r = KaratsubaMultiply(a2, b2);
+        for (int i = 0; i &lt; (int)a1b1.size(); i++)
             r[i] -= a1b1[i];
-        for (int i = 0; i < (int)a2b2.size(); i++)
+        for (int i = 0; i &lt; (int)a2b2.size(); i++)
             r[i] -= a2b2[i];
 
-        for (int i = 0; i < (int)r.size(); i++)
+        for (int i = 0; i &lt; (int)r.size(); i++)
             res[i + k] += r[i];
-        for (int i = 0; i < (int)a1b1.size(); i++)
+        for (int i = 0; i &lt; (int)a1b1.size(); i++)
             res[i] += a1b1[i];
-        for (int i = 0; i < (int)a2b2.size(); i++)
+        for (int i = 0; i &lt; (int)a2b2.size(); i++)
             res[i + n] += a2b2[i];
         return res;
     }
 
-    BigInt operator*(const BigInt &v) const
+    BigInt operator*(const BigInt &amp;v) const
     {
-        std::vector<int> a6 = ConvertBase(this->z, base_digits, 6);
-        std::vector<int> b6 = ConvertBase(v.z, base_digits, 6);
-        std::vector<long long> a(a6.begin(), a6.end());
-        std::vector<long long> b(b6.begin(), b6.end());
-        while (a.size() < b.size())
+        std::vector&lt;int&gt; a6 = ConvertBase(this-&gt;z, base_digits, 6);
+        std::vector&lt;int&gt; b6 = ConvertBase(v.z, base_digits, 6);
+        std::vector&lt;long long&gt; a(a6.begin(), a6.end());
+        std::vector&lt;long long&gt; b(b6.begin(), b6.end());
+        while (a.size() &lt; b.size())
             a.push_back(0);
-        while (b.size() < a.size())
+        while (b.size() &lt; a.size())
             b.push_back(0);
-        while (a.size() & (a.size() - 1))
+        while (a.size() &amp; (a.size() - 1))
             a.push_back(0), b.push_back(0);
-        std::vector<long long> c = KaratsubaMultiply(a, b);
+        std::vector&lt;long long&gt; c = KaratsubaMultiply(a, b);
         BigInt res;
         res.sign = sign * v.sign;
-        for (int i = 0, carry = 0; i < (int)c.size(); i++)
+        for (int i = 0, carry = 0; i &lt; (int)c.size(); i++)
         {
             long long cur = c[i] + carry;
             res.z.push_back((int)(cur % 1000000));
@@ -2356,7 +2356,7 @@ struct BigInt
     {
         long long res = 0;
         long long ret = 0;
-        for (int i = z.size() - 1; i >= 0; i--)
+        for (int i = z.size() - 1; i &gt;= 0; i--)
         {
             res = res * base + z[i];
             while (res)
@@ -2371,9 +2371,9 @@ struct BigInt
     BigInt RandomBigInt(int n)
     {
         std::string s;
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i &lt; n; i++)
         {
-            s += rand() % 10 + '0';
+            s += rand() % 10 + &apos;0&apos;;
         }
         return BigInt(s);
     }
@@ -2388,11 +2388,11 @@ struct BigInt
 #ifndef DisjointSet_h
 #define DisjointSet_h 1
 
-#include <algorithm>
+#include &lt;algorithm&gt;
 
 namespace library
 {
-template <int sz> struct DisjointSet
+template &lt;int sz&gt; struct DisjointSet
 {
     int n;
     int par[sz];
@@ -2406,7 +2406,7 @@ template <int sz> struct DisjointSet
 
     DisjointSet(int n) : n(n)
     {
-        this->Reset();
+        this-&gt;Reset();
     }
 
     ~DisjointSet()
@@ -2415,13 +2415,13 @@ template <int sz> struct DisjointSet
 
     void Resize(int n)
     {
-        this->n = n;
-        this->Reset();
+        this-&gt;n = n;
+        this-&gt;Reset();
     }
 
     void Reset()
     {
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i &lt; n; i++)
         {
             par[i] = i;
             cnt[i] = 1;
@@ -2455,7 +2455,7 @@ template <int sz> struct DisjointSet
 
         u = FindSet(u);
         v = FindSet(v);
-        if (cnt[u] < cnt[v])
+        if (cnt[u] &lt; cnt[v])
         {
             std::swap(u, v);
         }
@@ -2466,10 +2466,10 @@ template <int sz> struct DisjointSet
         components--;
     }
 
-    std::vector<int> GetComponents()
+    std::vector&lt;int&gt; GetComponents()
     {
-        std::vector<int> ret;
-        for (int i = 0; i < n; i++)
+        std::vector&lt;int&gt; ret;
+        for (int i = 0; i &lt; n; i++)
         {
             if (FindSet(i) == i)
             {
@@ -2488,15 +2488,15 @@ template <int sz> struct DisjointSet
 #ifndef BpmHopcraft_h
 #define BpmHopcraft_h 1
 
-#include <algorithm>
-#include <vector>
+#include &lt;algorithm&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
 // Esqrt(V) Complexity
 // 0 Based
 // Edge from set a to set b
-template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
+template &lt;size_t MAXN1, size_t MAXN2, size_t MAXM&gt; struct BpmHopcraft
 {
 
     int n1, n2, edges, last[MAXN1], prev[MAXM], head[MAXM];
@@ -2523,7 +2523,7 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
     {
         std::fill(dist, dist + n1, -1);
         int sizeQ = 0;
-        for (int u = 0; u < n1; ++u)
+        for (int u = 0; u &lt; n1; ++u)
         {
             if (!used[u])
             {
@@ -2531,13 +2531,13 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
                 dist[u] = 0;
             }
         }
-        for (int i = 0; i < sizeQ; i++)
+        for (int i = 0; i &lt; sizeQ; i++)
         {
             int u1 = Q[i];
-            for (int e = last[u1]; e >= 0; e = prev[e])
+            for (int e = last[u1]; e &gt;= 0; e = prev[e])
             {
                 int u2 = matching[head[e]];
-                if (u2 >= 0 && dist[u2] < 0)
+                if (u2 &gt;= 0 &amp;&amp; dist[u2] &lt; 0)
                 {
                     dist[u2] = dist[u1] + 1;
                     Q[sizeQ++] = u2;
@@ -2549,11 +2549,11 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
     bool Dfs(int u1)
     {
         vis[u1] = true;
-        for (int e = last[u1]; e >= 0; e = prev[e])
+        for (int e = last[u1]; e &gt;= 0; e = prev[e])
         {
             int v = head[e];
             int u2 = matching[v];
-            if (u2 < 0 || (!vis[u2] && dist[u2] == dist[u1] + 1 && Dfs(u2)))
+            if (u2 &lt; 0 || (!vis[u2] &amp;&amp; dist[u2] == dist[u1] + 1 &amp;&amp; Dfs(u2)))
             {
                 matching[v] = u1;
                 used[u1] = true;
@@ -2568,8 +2568,8 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
         Bfs();
         std::fill(vis, vis + n1, false);
         int f = 0;
-        for (int u = 0; u < n1; ++u)
-            if (!used[u] && Dfs(u))
+        for (int u = 0; u &lt; n1; ++u)
+            if (!used[u] &amp;&amp; Dfs(u))
                 ++f;
         return f;
     }
@@ -2587,10 +2587,10 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
         }
     }
 
-    std::vector<std::pair<int, int>> GetMatching()
+    std::vector&lt;std::pair&lt;int, int&gt;&gt; GetMatching()
     {
-        std::vector<std::pair<int, int>> res;
-        for (int i = 0; i < n2; ++i)
+        std::vector&lt;std::pair&lt;int, int&gt;&gt; res;
+        for (int i = 0; i &lt; n2; ++i)
             if (matching[i] != -1)
                 res.emplace_back(matching[i], i);
         return res;
@@ -2604,8 +2604,8 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
 #ifndef Dinic_h
 #define Dinic_h 1
 
-#include <algorithm>
-#include <vector>
+#include &lt;algorithm&gt;
+#include &lt;vector&gt;
 
 namespace library
 {
@@ -2618,12 +2618,12 @@ struct Edge
     }
 };
 
-template <int INF> struct Dinic
+template &lt;int INF&gt; struct Dinic
 {
     int N;
-    std::vector<std::vector<Edge>> G;
-    std::vector<Edge *> dad;
-    std::vector<int> Q;
+    std::vector&lt;std::vector&lt;Edge&gt;&gt; G;
+    std::vector&lt;Edge *&gt; dad;
+    std::vector&lt;int&gt; Q;
 
     Dinic(int N) : N(N), G(N), dad(N), Q(N)
     {
@@ -2640,19 +2640,19 @@ template <int INF> struct Dinic
     long long BlockingFlow(int s, int t)
     {
         std::fill(dad.begin(), dad.end(), (Edge *)NULL);
-        dad[s] = &G[0][0] - 1;
+        dad[s] = &amp;G[0][0] - 1;
 
         int head = 0, tail = 0;
         Q[tail++] = s;
-        while (head < tail)
+        while (head &lt; tail)
         {
             int x = Q[head++];
-            for (int i = 0; i < G[x].size(); i++)
+            for (int i = 0; i &lt; G[x].size(); i++)
             {
-                Edge &e = G[x][i];
-                if (!dad[e.to] && e.cap - e.flow > 0)
+                Edge &amp;e = G[x][i];
+                if (!dad[e.to] &amp;&amp; e.cap - e.flow &gt; 0)
                 {
-                    dad[e.to] = &G[x][i];
+                    dad[e.to] = &amp;G[x][i];
                     Q[tail++] = e.to;
                 }
             }
@@ -2661,25 +2661,25 @@ template <int INF> struct Dinic
             return 0;
 
         long long totflow = 0;
-        for (int i = 0; i < G[t].size(); i++)
+        for (int i = 0; i &lt; G[t].size(); i++)
         {
-            Edge *start = &G[G[t][i].to][G[t][i].index];
+            Edge *start = &amp;G[G[t][i].to][G[t][i].index];
             int amt = INF;
-            for (Edge *e = start; amt && e != dad[s]; e = dad[e->from])
+            for (Edge *e = start; amt &amp;&amp; e != dad[s]; e = dad[e-&gt;from])
             {
                 if (!e)
                 {
                     amt = 0;
                     break;
                 }
-                amt = std::min(amt, e->cap - e->flow);
+                amt = std::min(amt, e-&gt;cap - e-&gt;flow);
             }
             if (amt == 0)
                 continue;
-            for (Edge *e = start; amt && e != dad[s]; e = dad[e->from])
+            for (Edge *e = start; amt &amp;&amp; e != dad[s]; e = dad[e-&gt;from])
             {
-                e->flow += amt;
-                G[e->to][e->index].flow -= amt;
+                e-&gt;flow += amt;
+                G[e-&gt;to][e-&gt;index].flow -= amt;
             }
             totflow += amt;
         }
@@ -2696,8 +2696,8 @@ template <int INF> struct Dinic
 
     void ClearFlow()
     {
-        for (int i = 0; i < N; ++i)
-            for (int j = 0; j < G[i].size(); ++j)
+        for (int i = 0; i &lt; N; ++i)
+            for (int j = 0; j &lt; G[i].size(); ++j)
                 G[i][j].flow = 0;
     }
 };

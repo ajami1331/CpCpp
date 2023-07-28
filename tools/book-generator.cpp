@@ -24,6 +24,37 @@ std::vector<std::string> getFiles(std::string path)
     return files;
 }
 
+void encode(std::string &data)
+{
+    std::string buffer;
+    buffer.reserve(data.size());
+    for (size_t pos = 0; pos != data.size(); ++pos)
+    {
+        switch (data[pos])
+        {
+        case '&':
+            buffer.append("&amp;");
+            break;
+        case '\"':
+            buffer.append("&quot;");
+            break;
+        case '\'':
+            buffer.append("&apos;");
+            break;
+        case '<':
+            buffer.append("&lt;");
+            break;
+        case '>':
+            buffer.append("&gt;");
+            break;
+        default:
+            buffer.append(&data[pos], 1);
+            break;
+        }
+    }
+    data.swap(buffer);
+}
+
 int main(int argc, char *argv[])
 {
     auto files = getFiles(CP_LIBRARY_PATH);
@@ -46,7 +77,8 @@ int main(int argc, char *argv[])
     outFile.open(output_file_name);
     outFile << header;
     outFile << "<h1>Algorithms</h1>\n";
-    outFile << "<h2>Github: <a href=\"https://github.com/ajami1331/CpCpp/tree/main/library\">ajami1331/CpCpp</a></h2>\n";
+    outFile
+        << "<h2>Github: <a href=\"https://github.com/ajami1331/CpCpp/tree/main/library\">ajami1331/CpCpp</a></h2>\n";
     outFile << "<h2 id=\"table-of-content\">Table of Contents</h2>\n";
     outFile << "<ul>\n";
     for (auto file : files)
@@ -65,6 +97,7 @@ int main(int argc, char *argv[])
         outFile << "<pre><code>\n";
         std::ifstream t(file);
         std::string str((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
+        encode(str);
         outFile << str;
         outFile << "</code></pre>\n";
     }
