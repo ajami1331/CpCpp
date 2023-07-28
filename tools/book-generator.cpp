@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
         highlightjsVersion + "/styles/default.min.css\">\n" +
         "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/" + highlightjsVersion +
         "/highlight.min.js\"></script>\n" + "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/" +
-        highlightjsVersion + "/languages/go.min.js\"></script>\n" + "    </head>\n" + "<body>\n";
+        highlightjsVersion + "/languages/go.min.js\"></script>\n" + "    <script>hljs.highlightAll();</script>\ns" +
+        "    </head>\n" + "<body>\n";
     std::string footer = "</body></html>";
     fs::remove_all(TOOLS_BOOK_GENERATOR_OUT_DIR);
     fs::create_directory(TOOLS_BOOK_GENERATOR_OUT_DIR);
