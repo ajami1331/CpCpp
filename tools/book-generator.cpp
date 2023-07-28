@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
         highlightjsVersion + "/styles/default.min.css\">\n" +
         "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/" + highlightjsVersion +
         "/highlight.min.js\"></script>\n" + "    <script src=\"https://cdnjs.cloudflare.com/ajax/libs/highlight.js/" +
-        highlightjsVersion + "/languages/go.min.js\"></script>\n" + "    <script>hljs.highlightAll();</script>\ns" +
+        highlightjsVersion + "/languages/go.min.js\"></script>\n" + "    <script>hljs.highlightAll();</script>\n" +
         "    </head>\n" + "<body>\n";
     std::string footer = "</body></html>";
     fs::remove_all(TOOLS_BOOK_GENERATOR_OUT_DIR);
@@ -46,6 +46,7 @@ int main(int argc, char *argv[])
     outFile.open(output_file_name);
     outFile << header;
     outFile << "<h1>Algorithms</h1>\n";
+    outFile << "<h2>Github: <a href=\"https://github.com/ajami1331/CpCpp/tree/main/library\">ajami1331/CpCpp</a></h2>\n";
     outFile << "<h2 id=\"table-of-content\">Table of Contents</h2>\n";
     outFile << "<ul>\n";
     for (auto file : files)
