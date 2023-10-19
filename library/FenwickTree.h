@@ -7,13 +7,14 @@
 
 namespace library
 {
+#define LOG2(x) (32 - __builtin_clz(x) - 1)
 template <typename T, size_t sz, typename op_combine_type = std::plus<T>, typename op_decombine_type = std::minus<T>,
           typename less_type = std::less<T>>
 class FenwickTree
 {
   private:
     T tr[sz];
-    int LOGN = std::__lg(sz);
+    int LOGN = LOG2(sz);
     op_combine_type op_combine;
     op_decombine_type op_decombine;
     less_type less;
