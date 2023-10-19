@@ -8,9 +8,6 @@
 #include <fstream>
 #include <iostream>
 #include <map>
-#ifndef __llvm__
-#include <source_location>
-#endif
 #include <string>
 
 #include "library/StringUtils.h"
