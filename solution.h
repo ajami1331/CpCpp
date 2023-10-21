@@ -25,14 +25,22 @@ using ull = unsigned long long;
 const int sz = 2e5 + 105;
 int t, n, m;
 char s[sz];
-library::FenwickTree<int, sz> ft_two;
-library::FenwickTree<int, sz> ft_three;
+library::FenwickTreeRangeSum<int, sz> ft_two;
+library::FenwickTreeRangeSum<int, sz> ft_three;
 library::FenwickTreeRangeSum<int, sz> st;
 int type, l, r, x;
 
 int query(int x)
 {
-    return st.Query(x) % 26;
+    return st.QueryPoint(x) % 26;
+}
+void print()
+{
+    for (int i = 1; i <= n; ++i)
+    {
+        cout << (char)(query(i) + 'a');
+    }
+    cout << endl;
 }
 
 void Solve()
@@ -46,8 +54,7 @@ void Solve()
         st.Reset();
         for (int i = 1; i <= n; ++i)
         {
-            st.Update(i, s[i] - 'a' + 1);
-            st.Update(i + 1, -(s[i] - 'a' + 1));
+            st.Update(i, s[i] - 'a');
             if (i + 1 <= n && s[i] == s[i + 1])
             {
                 ft_two.RangeUpdate(i, i + 1, 1);
@@ -57,7 +64,6 @@ void Solve()
                 ft_three.RangeUpdate(i, i + 2, 1);
             }
         }
-
         while (m--)
         {
             scanf("%d", &type);
@@ -69,7 +75,7 @@ void Solve()
                 {
                     continue;
                 }
-                for (int i = max(1, l -2); i <= l; i++)
+                for (int i = max(1, l - 5); i <= min(l + 5, n); i++)
                 {
                     if (i + 1 <= n && query(i) == query(i + 1))
                     {
@@ -80,7 +86,7 @@ void Solve()
                         ft_three.RangeUpdate(i, i + 2, -1);
                     }
                 }
-                for (int i = max(1, r - 2); i <= r; i++)
+                for (int i = max(1, r - 5); i <= min(r + 5, n); i++)
                 {
                     if (i + 1 <= n && query(i) == query(i + 1))
                     {
@@ -92,7 +98,7 @@ void Solve()
                     }
                 }
                 st.RangeUpdate(l, r, x);
-                for (int i = max(1, l - 2); i <= l; i++)
+                for (int i = max(1, l - 5); i <= min(l + 5, n); i++)
                 {
                     if (i + 1 <= n && query(i) == query(i + 1))
                     {
@@ -103,7 +109,7 @@ void Solve()
                         ft_three.RangeUpdate(i, i + 2, 1);
                     }
                 }
-                for (int i = max(1, r - 2); i <= r; i++)
+                for (int i = max(1, r - 5); i <= min(r + 5, n); i++)
                 {
                     if (i + 1 <= n && query(i) == query(i + 1))
                     {
@@ -143,7 +149,6 @@ void Solve()
                 {
                     ans += ft_three.QueryRange(l + 2, r - 2);
                 }
-
                 if (ans > 0)
                 {
                     printf("NO\n");

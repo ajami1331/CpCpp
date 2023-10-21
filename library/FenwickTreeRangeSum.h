@@ -1,7 +1,7 @@
 #ifndef FenwickTreeRangeSum_h
 #define FenwickTreeRangeSum_h 1
 
-#include "./FenwickTree.h"
+#include "FenwickTree.h"
 
 namespace library
 {
@@ -44,6 +44,11 @@ template <typename T, size_t sz> class FenwickTreeRangeSum
     T QueryRange(size_t l, size_t r)
     {
         return Query(r) - Query(l - 1);
+    }
+
+    T QueryPoint(size_t x)
+    {
+        return QueryRange(x, x);
     }
 };
 } // namespace library
