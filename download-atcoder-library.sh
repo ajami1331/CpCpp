@@ -27,7 +27,7 @@ pushd tmp_atcoder_library
         popd
         
         cp LICENSE "${atcoder_path}"
-        CP README.md "${atcoder_path}"
+        cp README.md "${atcoder_path}"
 
     popd
 
