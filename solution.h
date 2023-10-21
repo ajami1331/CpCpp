@@ -34,6 +34,7 @@ int query(int x)
 {
     return st.QueryPoint(x) % 26;
 }
+
 void print()
 {
     for (int i = 1; i <= n; ++i)
@@ -67,6 +68,7 @@ void Solve()
         while (m--)
         {
             scanf("%d", &type);
+            // print();
             if (type == 1)
             {
                 scanf("%d %d %d", &l, &r, &x);
