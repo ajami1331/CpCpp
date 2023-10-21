@@ -3,7 +3,7 @@
 #include "solution.h"
 #include "validator.h"
 
-int main(int argc, char *argv[])
+int main()
 {
 #ifdef CLown1331
     validator::Process(true);

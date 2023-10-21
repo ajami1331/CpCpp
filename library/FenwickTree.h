@@ -55,7 +55,7 @@ class FenwickTree
     }
 
     /// @brief: Only works with point queries
-    T RangeUpdate(size_t l, size_t r, T v)
+    void RangeUpdate(size_t l, size_t r, T v)
     {
         Update(l, v);
         Update(r + 1, op_decombine(0, v));

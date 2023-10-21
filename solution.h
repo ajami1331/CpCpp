@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 #include "library/FenwickTree.h"
-#include "library/FenwickTreeRangeSum.h"
 
 namespace solution
 {
@@ -25,23 +24,60 @@ using ull = unsigned long long;
 const int sz = 2e5 + 105;
 int t, n, m;
 char s[sz];
-library::FenwickTreeRangeSum<int, sz> ft_two;
-library::FenwickTreeRangeSum<int, sz> ft_three;
-library::FenwickTreeRangeSum<int, sz> st;
 int type, l, r, x;
 
-int query(int x)
+struct mod_plus : public binary_function<int, int, int>
 {
-    return st.QueryPoint(x) % 26;
+    int operator()(const int &x, const int &y) const
+    {
+        return (x + y) % 26;
+    }
+};
+
+struct mod_minus : public binary_function<int, int, int>
+{
+    int operator()(const int &x, const int &y) const
+    {
+        return (x - y + 26) % 26;
+    }
+};
+
+library::FenwickTree<int, sz, mod_plus, mod_minus> ft;
+
+set <int> two, three;
+
+void push(int l, int r)
+{
+    l = max(l, 1);
+    r = min(r, n);
+    for (int i = l; i <= r; ++i)
+    {
+        if (i + 1 <= n && ft.Query(i) == ft.Query(i + 1))
+        {
+            two.insert(i);
+        }
+        else 
+        {
+            two.erase(i);
+        }
+        if (i + 2 <= n && ft.Query(i) == ft.Query(i + 2))
+        {
+            three.insert(i);
+        }
+        else
+        {
+            three.erase(i);
+        }
+    }
 }
 
 void print()
 {
     for (int i = 1; i <= n; ++i)
     {
-        cout << (char)(query(i) + 'a');
+        printf("%c", ft.Query(i) + 'a');
     }
-    cout << endl;
+    printf("\n");
 }
 
 void Solve()
@@ -49,107 +85,52 @@ void Solve()
     scanf("%d", &t);
     while (t-- && scanf("%d %d", &n, &m) == 2)
     {
+        s[0] = 0;
         scanf("%s", s + 1);
-        ft_two.Reset();
-        ft_three.Reset();
-        st.Reset();
+        ft.Reset();
+        two.clear();
+        three.clear();
         for (int i = 1; i <= n; ++i)
         {
-            st.Update(i, s[i] - 'a');
+            ft.Update(i, s[i] - s[i - 1] + 26);
             if (i + 1 <= n && s[i] == s[i + 1])
             {
-                ft_two.RangeUpdate(i, i + 1, 1);
+                two.insert(i);
             }
             if (i + 2 <= n && s[i] == s[i + 2])
             {
-                ft_three.RangeUpdate(i, i + 2, 1);
+                three.insert(i);
             }
         }
         while (m--)
         {
-            scanf("%d", &type);
             // print();
+            scanf("%d", &type);
+            
             if (type == 1)
             {
                 scanf("%d %d %d", &l, &r, &x);
                 x %= 26;
-                if (x == 0)
-                {
-                    continue;
-                }
-                for (int i = max(1, l - 5); i <= min(l + 5, n); i++)
-                {
-                    if (i + 1 <= n && query(i) == query(i + 1))
-                    {
-                        ft_two.RangeUpdate(i, i + 1, -1);
-                    }
-                    if (i + 2 <= n && query(i) == query(i + 2))
-                    {
-                        ft_three.RangeUpdate(i, i + 2, -1);
-                    }
-                }
-                for (int i = max(1, r - 5); i <= min(r + 5, n); i++)
-                {
-                    if (i + 1 <= n && query(i) == query(i + 1))
-                    {
-                        ft_two.RangeUpdate(i, i + 1, -1);
-                    }
-                    if (i + 2 <= n && query(i) == query(i + 2))
-                    {
-                        ft_three.RangeUpdate(i, i + 2, -1);
-                    }
-                }
-                st.RangeUpdate(l, r, x);
-                for (int i = max(1, l - 5); i <= min(l + 5, n); i++)
-                {
-                    if (i + 1 <= n && query(i) == query(i + 1))
-                    {
-                        ft_two.RangeUpdate(i, i + 1, 1);
-                    }
-                    if (i + 2 <= n && query(i) == query(i + 2))
-                    {
-                        ft_three.RangeUpdate(i, i + 2, 1);
-                    }
-                }
-                for (int i = max(1, r - 5); i <= min(r + 5, n); i++)
-                {
-                    if (i + 1 <= n && query(i) == query(i + 1))
-                    {
-                        ft_two.RangeUpdate(i, i + 1, 1);
-                    }
-                    if (i + 2 <= n && query(i) == query(i + 2))
-                    {
-                        ft_three.RangeUpdate(i, i + 2, 1);
-                    }
-                }
+                ft.RangeUpdate(l, r, x);
+                push(l - 5, l + 5);
+                push(r - 5, r + 5);
             }
             else
             {
                 scanf("%d %d", &l, &r);
                 int ans = 0;
-                if (l + 1 <= r && !ans)
+                auto it = two.lower_bound(l);
+                if (it != two.end() && *it + 1 <= r)
                 {
-                    ans += query(l) == query(l + 1);
+                    ans = 1;
                 }
-                if (l <= r - 1 && !ans)
+                else
                 {
-                    ans += query(r - 1) == query(r);
-                }
-                if (l + 1 <= r - 1 && !ans)
-                {
-                    ans += ft_two.QueryRange(l + 1, r - 1);
-                }
-                if (l + 2 <= r && !ans)
-                {
-                    ans += query(l) == query(l + 2);
-                }
-                if (l <= r - 2 && !ans)
-                {
-                    ans += query(r - 2) == query(r);
-                }
-                if (l + 2 <= r - 2 && !ans)
-                {
-                    ans += ft_three.QueryRange(l + 2, r - 2);
+                    it = three.lower_bound(l);
+                    if (it != three.end() && *it + 2 <= r)
+                    {
+                        ans = 1;
+                    }
                 }
                 if (ans > 0)
                 {

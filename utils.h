@@ -35,7 +35,7 @@ bool IsComment(std::string line)
     return line.rfind("//") == 0 || line.rfind("///") == 0;
 }
 
-void ProcessIncludes(std::string line, std::filesystem::path filePath)
+bool ProcessIncludes(std::string line, std::filesystem::path filePath)
 {
     auto tokens = library::split(line, ' ');
     auto tokensFiltered = std::vector<std::string>{};
@@ -44,14 +44,14 @@ void ProcessIncludes(std::string line, std::filesystem::path filePath)
     assert(tokensFiltered.size() == 2 && "Should be in format {#include $library_name}");
     if (tokensFiltered[1][0] == '<')
     {
-        headers.emplace_back(tokensFiltered[0] + " " + tokensFiltered[1] + "\n");
-        return;
+        return false;
     }
     std::string includePath = tokensFiltered[1];
     includePath.pop_back();
     includePath.erase(0, 1);
     std::filesystem::path fpath = includePath;
     Process(std::filesystem::path(filePath).remove_filename().concat(fpath.string()));
+    return true;
 }
 
 std::ifstream OpenInputAndValidate(std::string filePathString)
@@ -89,9 +89,8 @@ void Process(std::filesystem::path filePath)
     while (std::getline(fstream, line))
     {
         library::rtrim(line);
-        if (library::trim_n(line).rfind(header) == 0)
+        if (library::trim_n(line).rfind(header) == 0 && ProcessIncludes(line, filePath))
         {
-            ProcessIncludes(line, filePath);
             continue;
         }
 

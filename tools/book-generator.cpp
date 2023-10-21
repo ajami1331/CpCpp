@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <vector>
 namespace fs = std::filesystem;
 
 std::vector<std::string> getFiles(std::string path)

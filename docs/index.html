@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html>
-
-<head>
+    <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
     <title>Algorithms</title>
@@ -9,603 +8,79 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/languages/go.min.js"></script>
     <script>hljs.highlightAll();</script>
-</head>
-
+    </head>
 <body>
-    <h1>Algorithms</h1>
-    <h2>Github: <a href="https://github.com/ajami1331/CpCpp/tree/main/library">ajami1331/CpCpp</a></h2>
-    <h2 id="table-of-content">Table of Contents</h2>
-    <ul>
-        <li><a href="#FenwickTree.h">FenwickTree.h</a></li>
-        <li><a href="#FastIO.h">FastIO.h</a></li>
-        <li><a href="#FenwickTreeRangeSum.h">FenwickTreeRangeSum.h</a></li>
-        <li><a href="#EdmondsKarp.h">EdmondsKarp.h</a></li>
-        <li><a href="#AhoCorasick.h">AhoCorasick.h</a></li>
-        <li><a href="#StringUtils.h">StringUtils.h</a></li>
-        <li><a href="#PolyHash.h">PolyHash.h</a></li>
-        <li><a href="#Matrix.h">Matrix.h</a></li>
-        <li><a href="#KnuthMorrisPrattMatcher.h">KnuthMorrisPrattMatcher.h</a></li>
-        <li><a href="#Manacher.h">Manacher.h</a></li>
-        <li><a href="#PersistentSegmentTree.h">PersistentSegmentTree.h</a></li>
-        <li><a href="#SegmentTree.h">SegmentTree.h</a></li>
-        <li><a href="#LCA.h">LCA.h</a></li>
-        <li><a href="#SuffixArray.h">SuffixArray.h</a></li>
-        <li><a href="#SmallestStringRotation.h">SmallestStringRotation.h</a></li>
-        <li><a href="#BpmDfs.h">BpmDfs.h</a></li>
-        <li><a href="#SparseTable.h">SparseTable.h</a></li>
-        <li><a href="#ModInt.h">ModInt.h</a></li>
-        <li><a href="#Math.h">Math.h</a></li>
-        <li><a href="#ZAlgo.h">ZAlgo.h</a></li>
-        <li><a href="#BigInt.h">BigInt.h</a></li>
-        <li><a href="#DisjointSet.h">DisjointSet.h</a></li>
-        <li><a href="#BpmHopcraft.h">BpmHopcraft.h</a></li>
-        <li><a href="#Dinic.h">Dinic.h</a></li>
-    </ul>
-    <h2 id="FenwickTree.h">FenwickTree.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef FenwickTree_h
-#define FenwickTree_h 1
-
-#include &lt;cstring&gt;
-#include &lt;functional&gt;
-#include &lt;numeric&gt;
-
-namespace library
-{
-template &lt;typename T, size_t sz, typename op_combine_type = std::plus&lt;T&gt;, typename op_decombine_type = std::minus&lt;T&gt;,
-          typename less_type = std::less&lt;T&gt;&gt;
-class FenwickTree
-{
-  private:
-    T tr[sz];
-    int LOGN = std::__lg(sz);
-    op_combine_type op_combine;
-    op_decombine_type op_decombine;
-    less_type less;
-
-  public:
-    FenwickTree()
-    {
-        Reset();
-    }
-
-    void Reset()
-    {
-        memset(tr, 0, sizeof tr);
-    }
-
-    void Update(size_t x, T v)
-    {
-        for (; x &lt; sz; x += (x &amp; -x))
-        {
-            tr[x] = op_combine(tr[x], v);
-        }
-    }
-
-    T Query(size_t x)
-    {
-        T ret = 0;
-        for (; x &gt; 0; x -= (x &amp; -x))
-        {
-            ret = op_combine(ret, tr[x]);
-        }
-        return ret;
-    }
-
-    /// @brief: Only works with point updates
-    T QueryRange(size_t l, size_t r)
-    {
-        return op_decombine(Query(r), Query(l - 1));
-    }
-
-    /// @brief: Only works with point queries
-    T RangeUpdate(size_t l, size_t r, T v)
-    {
-        Update(l, v);
-        Update(r + 1, op_decombine(0, v));
-    }
-
-    size_t BinarySearch(T v)
-    {
-        T sum = 0;
-        size_t pos = 0;
-
-        for (int i = LOGN; i &gt;= 0; i--)
-        {
-            if (pos + (1 &lt;&lt; i) &gt;= sz)
-                continue;
-
-            T newSum = op_combine(sum, tr[pos + (1 &lt;&lt; i)]);
-            if (less(newSum, v))
-            {
-                sum = newSum;
-                pos += (1 &lt;&lt; i);
-            }
-        }
-        return pos + 1;
-    }
-};
-} // namespace library
-
-#endif</code></pre>
-    <h2 id="FastIO.h">FastIO.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef FastIO_h
-#define FastIO_h 1
-
-namespace library
-{
-template &lt;typename T&gt; inline T ReadInt()
-{
-    T ret = 0, flag = 1, ip = getchar();
-    for (; ip &lt; 48 || ip &gt; 57; ip = getchar())
-    {
-        if (ip == 45)
-        {
-            flag = -1;
-            ip = getchar();
-            break;
-        }
-    }
-    for (; ip &gt; 47 &amp;&amp; ip &lt; 58; ip = getchar())
-        ret = ret * 10 + ip - 48;
-    return flag * ret;
-}
-
-static const int buf_size = 4096;
-
-inline int GetChar()
-{
-    static char buf[buf_size];
-    static int len = 0, pos = 0;
-    if (pos == len)
-        pos = 0, len = fread(buf, 1, buf_size, stdin);
-    if (pos == len)
-        return -1;
-    return buf[pos++];
-}
-
-inline int ReadChar()
-{
-    int c = GetChar();
-    while (c &lt;= 32)
-        c = GetChar();
-    return c;
-}
-
-template &lt;typename T&gt; inline T ReadIntBuffered()
-{
-    int s = 1, c = ReadChar();
-    T x = 0;
-    if (c == &apos;-&apos;)
-        s = -1, c = GetChar();
-    while (&apos;0&apos; &lt;= c &amp;&amp; c &lt;= &apos;9&apos;)
-        x = x * 10 + c - &apos;0&apos;, c = GetChar();
-    return s == 1 ? x : -x;
-}
-
-} // namespace library
-
-#endif</code></pre>
-    <h2 id="FenwickTreeRangeSum.h">FenwickTreeRangeSum.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef FenwickTreeRangeSum_h
-#define FenwickTreeRangeSum_h 1
-
-#include &quot;./FenwickTree.h&quot;
-
-namespace library
-{
-template &lt;typename T, size_t sz&gt; class FenwickTreeRangeSum
-{
-  private:
-    FenwickTree&lt;T, sz&gt; ft1;
-    FenwickTree&lt;T, sz&gt; ft2;
-
-  public:
-    FenwickTreeRangeSum()
-    {
-        Reset();
-    }
-
-    void Reset()
-    {
-        ft1.Reset();
-        ft2.Reset();
-    }
-
-    void Update(size_t x, T v)
-    {
-        RangeUpdate(x, x, v);
-    }
-
-    void RangeUpdate(size_t l, size_t r, T v)
-    {
-        ft1.Update(l, v);
-        ft1.Update(r + 1, -v);
-        ft2.Update(l, v * (l - 1));
-        ft2.Update(r + 1, -v * r);
-    }
-
-    T Query(size_t x)
-    {
-        return ft1.Query(x) * x - ft2.Query(x);
-    }
-
-    T QueryRange(size_t l, size_t r)
-    {
-        return Query(r) - Query(l - 1);
-    }
-};
-} // namespace library
-
-#endif</code></pre>
-    <h2 id="EdmondsKarp.h">EdmondsKarp.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef EdmondsKarp_h
-#define EdmondsKarp_h 1
-
-#include &lt;algorithm&gt;
-#include &lt;queue&gt;
-#include &lt;vector&gt;
-
-namespace library
-{
-
-template &lt;int INF&gt; struct EdmondsKarp
-{
-    int n;
-    std::vector&lt;int&gt; par;
-    std::vector&lt;bool&gt; vis;
-    std::vector&lt;std::vector&lt;int&gt;&gt; graph;
-
-    EdmondsKarp()
-    {
-    }
-    EdmondsKarp(int _n) : n(_n), par(_n), vis(_n), graph(_n, std::vector&lt;int&gt;(_n, 0))
-    {
-    }
-    ~EdmondsKarp()
-    {
-    }
-
-    void AddEdge(int from, int to, int cap, bool undirected)
-    {
-        graph[from][to] += cap;
-        graph[to][from] = undirected ? graph[to][from] + cap : graph[to][from];
-    }
-
-    void SetEdgeCapacity(int from, int to, int cap, bool undirected)
-    {
-        graph[from][to] = cap;
-        graph[to][from] = undirected ? cap : graph[to][from];
-    }
-
-    bool Bfs(int src, int sink)
-    {
-        int u;
-        std::fill(vis.begin(), vis.end(), false);
-        std::fill(par.begin(), par.end(), -1);
-        vis[src] = true;
-        std::queue&lt;int&gt; q;
-        q.push(src);
-        while (!q.empty())
-        {
-            u = q.front();
-            q.pop();
-            if (u == sink)
-                return true;
-            for (int i = 0; i &lt; n; i++)
-            {
-                if (graph[u][i] &gt; 0 &amp;&amp; !vis[i])
-                {
-                    q.push(i);
-                    vis[i] = true;
-                    par[i] = u;
-                }
-            }
-        }
-        return par[sink] != -1;
-    }
-
-    int MinVal(int i)
-    {
-        int ret = INF;
-        for (; par[i] != -1; i = par[i])
-        {
-            ret = std::min(ret, graph[par[i]][i]);
-        }
-        return ret;
-    }
-
-    void AugmentPath(int val, int i)
-    {
-        for (; par[i] != -1; i = par[i])
-        {
-            graph[par[i]][i] -= val;
-            graph[i][par[i]] += val;
-        }
-    }
-
-    int MaxFlow(int src, int sink)
-    {
-        int min_cap, ret = 0;
-        while (this-&gt;Bfs(src, sink))
-        {
-            this-&gt;AugmentPath(min_cap = this-&gt;MinVal(sink), sink);
-            ret += min_cap;
-        }
-        return ret;
-    }
-};
-} // namespace library
-#endif
-</code></pre>
-    <h2 id="AhoCorasick.h">AhoCorasick.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef AhoCorasick_h
-#define AhoCorasick_h 1
-
-#include &lt;algorithm&gt;
-#include &lt;queue&gt;
-#include &lt;vector&gt;
-
-namespace library
-{
-template &lt;size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26&gt; struct AhoCorasick
-{
-    std::vector&lt;int&gt; mark[MAXLEN + 7];
-    int state, failure[MAXLEN + 7];
-    int trie[MAXLEN + 7][AC_ALPHABET_SIZE];
-
-    AhoCorasick()
-    {
-        Init();
-    }
-
-    void Init()
-    {
-        mark[0].clear();
-        std::fill(trie[0], trie[0] + AC_ALPHABET_SIZE, -1);
-        state = 0;
-    }
-
-    int Value(char c)
-    {
-        return c - &apos;a&apos;;
-    }
-
-    void Add(char *s, int t)
-    {
-        int root = 0, id;
-        for (int i = 0; s[i]; i++)
-        {
-            id = Value(s[i]);
-            if (trie[root][id] == -1)
-            {
-                trie[root][id] = ++state;
-                mark[state].clear();
-                std::fill(trie[state], trie[state + 1] + AC_ALPHABET_SIZE, -1);
-            }
-            root = trie[root][id];
-        }
-        mark[root].emplace_back(t);
-    }
-
-    void ComputeFailure()
-    {
-        std::queue&lt;int&gt; Q;
-        failure[0] = 0;
-        for (int i = 0; i &lt; AC_ALPHABET_SIZE; i++)
-        {
-            if (trie[0][i] != -1)
-            {
-                failure[trie[0][i]] = 0;
-                Q.push(trie[0][i]);
-            }
-            else
-                trie[0][i] = 0;
-        }
-        while (!Q.empty())
-        {
-            int u = Q.front();
-            Q.pop();
-            for (int v : mark[failure[u]])
-                mark[u].emplace_back(v);
-            for (int i = 0; i &lt; AC_ALPHABET_SIZE; i++)
-            {
-                if (trie[u][i] != -1)
-                {
-                    failure[trie[u][i]] = trie[failure[u]][i];
-                    Q.push(trie[u][i]);
-                }
-                else
-                    trie[u][i] = trie[failure[u]][i];
-            }
-        }
-    }
-};
-
-} // namespace library
-
-#endif</code></pre>
-    <h2 id="StringUtils.h">StringUtils.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef StringUtils_h
-#define StringUtils_h 1
-
-#include &lt;algorithm&gt;
-#include &lt;string&gt;
-#include &lt;vector&gt;
-
-namespace library
-{
-static inline void ltrim(std::string &amp;s)
-{
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char c) -&gt; bool { return !std::isspace(c); }));
-}
-
-static inline void rtrim(std::string &amp;s)
-{
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
-}
-
-static inline void trim(std::string &amp;s)
-{
-    ltrim(s);
-    rtrim(s);
-}
-
-static inline std::string &amp;trim_i(std::string &amp;s)
-{
-    ltrim(s);
-    rtrim(s);
-    return s;
-}
-
-static inline std::string trim_n(std::string s)
-{
-    ltrim(s);
-    rtrim(s);
-    return s;
-}
-
-std::vector&lt;std::string&gt; split(const std::string &amp;s, char splitChar)
-{
-    std::vector&lt;std::string&gt; splittedString;
-    std::string hand = &quot;&quot;;
-    for (char c : s)
-    {
-        if (c == splitChar)
-        {
-            splittedString.emplace_back(hand);
-            hand.clear();
-            continue;
-        }
-        hand.push_back(c);
-    }
-    splittedString.emplace_back(hand);
-    return splittedString;
-}
-} // namespace library
-#endif</code></pre>
-    <h2 id="PolyHash.h">PolyHash.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-/// src: https://github.com/sgtlaugh/algovault/blob/master/code_library/hashing.cpp
-#ifndef PolyHash_h
-#define PolyHash_h 1
-
-#include &lt;chrono&gt;
-#include &lt;random&gt;
-#include &lt;vector&gt;
-#include &lt;cassert&gt;
-
-// #define IMPLEMENT_REV_HASH
-
-namespace library
-{
-
-constexpr unsigned long long mod = (1ULL &lt;&lt; 61) - 1;
-
-const unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
-const unsigned long long base = std::mt19937_64(seed)() % (mod / 3) + (mod / 3);
-
-long long ModMul(unsigned long long a, unsigned long long b)
-{
-    unsigned long long l1 = (unsigned int)a, h1 = a &gt;&gt; 32, l2 = (unsigned int)b, h2 = b &gt;&gt; 32;
-    unsigned long long l = l1 * l2, m = l1 * h2 + l2 * h1, h = h1 * h2;
-    unsigned long long ret = (l &amp; mod) + (l &gt;&gt; 61) + (h &lt;&lt; 3) + (m &gt;&gt; 29) + (m &lt;&lt; 35 &gt;&gt; 3) + 1;
-    ret = (ret &amp; mod) + (ret &gt;&gt; 61);
-    ret = (ret &amp; mod) + (ret &gt;&gt; 61);
-    return ret - 1;
-}
-
-template &lt;size_t MAXLEN&gt; struct PolyHash
-{
-    std::vector&lt;long long&gt; pref;
-/// Removes the suff vector and usage if reverse hash is not required for more speed
-#ifdef IMPLEMENT_REV_HASH
-    std::vector&lt;long long&gt; suff;
-#endif
-    inline static unsigned long long base_pow[MAXLEN];
-
-    PolyHash()
-    {
-    }
-
-    template &lt;typename T&gt; PolyHash(const std::vector&lt;T&gt; &amp;ar)
-    {
-        if (!base_pow[0])
-            init();
-
-        int n = ar.size();
-        assert(n &lt; MAXLEN);
-        pref.resize(n + 3, 0);
-
-        for (int i = 1; i &lt;= n; i++)
-        {
-            pref[i] = ModMul(pref[i - 1], base) + ar[i - 1] + 997;
-            if (pref[i] &gt;= mod)
-                pref[i] -= mod;
-        }
-
-#ifdef IMPLEMENT_REV_HASH
-        suff.resize(n + 3, 0);
-        for (int i = n; i &gt;= 1; i--)
-        {
-            suff[i] = ModMul(suff[i + 1], base) + ar[i - 1] + 997;
-            if (suff[i] &gt;= mod)
-                suff[i] -= mod;
-        }
-#endif
-    }
-
-    PolyHash(const char *str) : PolyHash(std::vector&lt;char&gt;(str, str + strlen(str)))
-    {
-    }
-
-    unsigned long long GetHash(int l, int r)
-    {
-        long long h = pref[r + 1] - ModMul(base_pow[r - l + 1], pref[l]);
-        return h &lt; 0 ? h + mod : h;
-    }
-
-#ifdef IMPLEMENT_REV_HASH
-    unsigned long long ReverseHash(int l, int r)
-    {
-        long long h = suff[l + 1] - ModMul(base_pow[r - l + 1], suff[r + 2]);
-        return h &lt; 0 ? h + mod : h;
-    }
-#endif
-
-    unsigned long long GetHash(int l, int r, int x, int y)
-    {
-        return (ModMul(GetHash(l, r), base_pow[y - x + 1]) + GetHash(x, y)) % mod;
-    }
-
-    void init()
-    {
-        base_pow[0] = 1;
-        for (int i = 1; i &lt; MAXLEN; i++)
-        {
-            base_pow[i] = ModMul(base_pow[i - 1], base);
-        }
-    }
-};
-} // namespace library
-
-#endif
-</code></pre>
-    <h2 id="Matrix.h">Matrix.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
+<h1>Algorithms</h1>
+<h2>Github: <a href="https://github.com/ajami1331/CpCpp/tree/main/library">ajami1331/CpCpp</a></h2>
+<h2 id="table-of-content">Table of Contents</h2>
+<ul>
+<li><a href="#Matrix.h">Matrix.h</a></li>
+<li><a href="#StringUtils.h">StringUtils.h</a></li>
+<li><a href="#SmallestStringRotation.h">SmallestStringRotation.h</a></li>
+<li><a href="#EdmondsKarp.h">EdmondsKarp.h</a></li>
+<li><a href="#PolyHash.h">PolyHash.h</a></li>
+<li><a href="#KnuthMorrisPrattMatcher.h">KnuthMorrisPrattMatcher.h</a></li>
+<li><a href="#DisjointSet.h">DisjointSet.h</a></li>
+<li><a href="#Math.h">Math.h</a></li>
+<li><a href="#LCA.h">LCA.h</a></li>
+<li><a href="#BpmDfs.h">BpmDfs.h</a></li>
+<li><a href="#SegmentTree.h">SegmentTree.h</a></li>
+<li><a href="#Dinic.h">Dinic.h</a></li>
+<li><a href="#SparseTable.h">SparseTable.h</a></li>
+<li><a href="#PersistentSegmentTree.h">PersistentSegmentTree.h</a></li>
+<li><a href="#Manacher.h">Manacher.h</a></li>
+<li><a href="#AhoCorasick.h">AhoCorasick.h</a></li>
+<li><a href="#ZAlgo.h">ZAlgo.h</a></li>
+<li><a href="#BigInt.h">BigInt.h</a></li>
+<li><a href="#FenwickTree.h">FenwickTree.h</a></li>
+<li><a href="#FastIO.h">FastIO.h</a></li>
+<li><a href="#FenwickTreeRangeSum.h">FenwickTreeRangeSum.h</a></li>
+<li><a href="#BpmHopcraft.h">BpmHopcraft.h</a></li>
+<li><a href="#SuffixArray.h">SuffixArray.h</a></li>
+<li><a href="#ModInt.h">ModInt.h</a></li>
+<li><a href="#internal_scc">internal_scc</a></li>
+<li><a href="#string">string</a></li>
+<li><a href="#twosat">twosat</a></li>
+<li><a href="#convolution.hpp">convolution.hpp</a></li>
+<li><a href="#fenwicktree.hpp">fenwicktree.hpp</a></li>
+<li><a href="#modint">modint</a></li>
+<li><a href="#LICENSE">LICENSE</a></li>
+<li><a href="#internal_csr.hpp">internal_csr.hpp</a></li>
+<li><a href="#fenwicktree">fenwicktree</a></li>
+<li><a href="#internal_math">internal_math</a></li>
+<li><a href="#internal_bit.hpp">internal_bit.hpp</a></li>
+<li><a href="#dsu">dsu</a></li>
+<li><a href="#internal_bit">internal_bit</a></li>
+<li><a href="#math">math</a></li>
+<li><a href="#internal_queue.hpp">internal_queue.hpp</a></li>
+<li><a href="#lazysegtree">lazysegtree</a></li>
+<li><a href="#mincostflow.hpp">mincostflow.hpp</a></li>
+<li><a href="#scc">scc</a></li>
+<li><a href="#dsu.hpp">dsu.hpp</a></li>
+<li><a href="#maxflow">maxflow</a></li>
+<li><a href="#internal_type_traits">internal_type_traits</a></li>
+<li><a href="#segtree.hpp">segtree.hpp</a></li>
+<li><a href="#README.md">README.md</a></li>
+<li><a href="#scc.hpp">scc.hpp</a></li>
+<li><a href="#math.hpp">math.hpp</a></li>
+<li><a href="#internal_csr">internal_csr</a></li>
+<li><a href="#internal_math.hpp">internal_math.hpp</a></li>
+<li><a href="#maxflow.hpp">maxflow.hpp</a></li>
+<li><a href="#string.hpp">string.hpp</a></li>
+<li><a href="#segtree">segtree</a></li>
+<li><a href="#lazysegtree.hpp">lazysegtree.hpp</a></li>
+<li><a href="#mincostflow">mincostflow</a></li>
+<li><a href="#convolution">convolution</a></li>
+<li><a href="#twosat.hpp">twosat.hpp</a></li>
+<li><a href="#internal_type_traits.hpp">internal_type_traits.hpp</a></li>
+<li><a href="#all">all</a></li>
+<li><a href="#internal_scc.hpp">internal_scc.hpp</a></li>
+<li><a href="#modint.hpp">modint.hpp</a></li>
+<li><a href="#internal_queue">internal_queue</a></li>
+</ul>
+<h2 id="Matrix.h">Matrix.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
 #ifndef Matrix_h
 #define Matrix_h 1
 
@@ -715,9 +190,334 @@ template &lt;long long mod&gt; struct Matrix
 } // namespace library
 
 #endif</code></pre>
-    <h2 id="KnuthMorrisPrattMatcher.h">KnuthMorrisPrattMatcher.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
+<h2 id="StringUtils.h">StringUtils.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef StringUtils_h
+#define StringUtils_h 1
+
+#include &lt;algorithm&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+namespace library
+{
+static inline void ltrim(std::string &amp;s)
+{
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char c) -&gt; bool { return !std::isspace(c); }));
+}
+
+static inline void rtrim(std::string &amp;s)
+{
+    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+}
+
+static inline void trim(std::string &amp;s)
+{
+    ltrim(s);
+    rtrim(s);
+}
+
+static inline std::string &amp;trim_i(std::string &amp;s)
+{
+    ltrim(s);
+    rtrim(s);
+    return s;
+}
+
+static inline std::string trim_n(std::string s)
+{
+    ltrim(s);
+    rtrim(s);
+    return s;
+}
+
+std::vector&lt;std::string&gt; split(const std::string &amp;s, char splitChar)
+{
+    std::vector&lt;std::string&gt; splittedString;
+    std::string hand = &quot;&quot;;
+    for (char c : s)
+    {
+        if (c == splitChar)
+        {
+            splittedString.emplace_back(hand);
+            hand.clear();
+            continue;
+        }
+        hand.push_back(c);
+    }
+    splittedString.emplace_back(hand);
+    return splittedString;
+}
+} // namespace library
+#endif</code></pre>
+<h2 id="SmallestStringRotation.h">SmallestStringRotation.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef SmallestStringRotation_h
+#define SmallestStringRotation_h 1
+
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;cstring&gt;
+#include &lt;string&gt;
+
+namespace library
+{
+
+template &lt;size_t MAXLEN&gt; struct SmallestStringRotation
+{
+    int f[MAXLEN];
+    int operator()(const std::string &amp;s)
+    {
+        int n = s.size();
+        std::string t = s + s;
+        memset(f, -1, sizeof f);
+        int k = 0;
+        for (int j = 1; j &lt; 2 * n; ++j)
+        {
+            int i = f[j - k - 1];
+            while (i != -1 &amp;&amp; t[j] != t[k + i + 1])
+            {
+                if (t[j] &lt; t[k + i + 1])
+                {
+                    k = j - i - 1;
+                }
+                i = f[i];
+            }
+            if (i == -1 &amp;&amp; t[j] != t[k + i + 1])
+            {
+                if (t[j] &lt; t[k + i + 1])
+                {
+                    k = j;
+                }
+                f[j - k] = -1;
+            }
+            else
+            {
+                f[j - k] = i + 1;
+            }
+        }
+        return k;
+    }
+};
+
+} // namespace library
+
+#endif</code></pre>
+<h2 id="EdmondsKarp.h">EdmondsKarp.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef EdmondsKarp_h
+#define EdmondsKarp_h 1
+
+#include &lt;algorithm&gt;
+#include &lt;queue&gt;
+#include &lt;vector&gt;
+
+namespace library
+{
+
+template &lt;int INF&gt; struct EdmondsKarp
+{
+    int n;
+    std::vector&lt;int&gt; par;
+    std::vector&lt;bool&gt; vis;
+    std::vector&lt;std::vector&lt;int&gt;&gt; graph;
+
+    EdmondsKarp()
+    {
+    }
+    EdmondsKarp(int _n) : n(_n), par(_n), vis(_n), graph(_n, std::vector&lt;int&gt;(_n, 0))
+    {
+    }
+    ~EdmondsKarp()
+    {
+    }
+
+    void AddEdge(int from, int to, int cap, bool undirected)
+    {
+        graph[from][to] += cap;
+        graph[to][from] = undirected ? graph[to][from] + cap : graph[to][from];
+    }
+
+    void SetEdgeCapacity(int from, int to, int cap, bool undirected)
+    {
+        graph[from][to] = cap;
+        graph[to][from] = undirected ? cap : graph[to][from];
+    }
+
+    bool Bfs(int src, int sink)
+    {
+        int u;
+        std::fill(vis.begin(), vis.end(), false);
+        std::fill(par.begin(), par.end(), -1);
+        vis[src] = true;
+        std::queue&lt;int&gt; q;
+        q.push(src);
+        while (!q.empty())
+        {
+            u = q.front();
+            q.pop();
+            if (u == sink)
+                return true;
+            for (int i = 0; i &lt; n; i++)
+            {
+                if (graph[u][i] &gt; 0 &amp;&amp; !vis[i])
+                {
+                    q.push(i);
+                    vis[i] = true;
+                    par[i] = u;
+                }
+            }
+        }
+        return par[sink] != -1;
+    }
+
+    int MinVal(int i)
+    {
+        int ret = INF;
+        for (; par[i] != -1; i = par[i])
+        {
+            ret = std::min(ret, graph[par[i]][i]);
+        }
+        return ret;
+    }
+
+    void AugmentPath(int val, int i)
+    {
+        for (; par[i] != -1; i = par[i])
+        {
+            graph[par[i]][i] -= val;
+            graph[i][par[i]] += val;
+        }
+    }
+
+    int MaxFlow(int src, int sink)
+    {
+        int min_cap, ret = 0;
+        while (this-&gt;Bfs(src, sink))
+        {
+            this-&gt;AugmentPath(min_cap = this-&gt;MinVal(sink), sink);
+            ret += min_cap;
+        }
+        return ret;
+    }
+};
+} // namespace library
+#endif
+</code></pre>
+<h2 id="PolyHash.h">PolyHash.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+/// src: https://github.com/sgtlaugh/algovault/blob/master/code_library/hashing.cpp
+#ifndef PolyHash_h
+#define PolyHash_h 1
+
+#include &lt;chrono&gt;
+#include &lt;random&gt;
+#include &lt;vector&gt;
+#include &lt;cassert&gt;
+
+// #define IMPLEMENT_REV_HASH
+
+namespace library
+{
+
+constexpr unsigned long long mod = (1ULL &lt;&lt; 61) - 1;
+
+const unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
+const unsigned long long base = std::mt19937_64(seed)() % (mod / 3) + (mod / 3);
+
+long long ModMul(unsigned long long a, unsigned long long b)
+{
+    unsigned long long l1 = (unsigned int)a, h1 = a &gt;&gt; 32, l2 = (unsigned int)b, h2 = b &gt;&gt; 32;
+    unsigned long long l = l1 * l2, m = l1 * h2 + l2 * h1, h = h1 * h2;
+    unsigned long long ret = (l &amp; mod) + (l &gt;&gt; 61) + (h &lt;&lt; 3) + (m &gt;&gt; 29) + (m &lt;&lt; 35 &gt;&gt; 3) + 1;
+    ret = (ret &amp; mod) + (ret &gt;&gt; 61);
+    ret = (ret &amp; mod) + (ret &gt;&gt; 61);
+    return ret - 1;
+}
+
+template &lt;size_t MAXLEN&gt; struct PolyHash
+{
+    std::vector&lt;long long&gt; pref;
+/// Removes the suff vector and usage if reverse hash is not required for more speed
+#ifdef IMPLEMENT_REV_HASH
+    std::vector&lt;long long&gt; suff;
+#endif
+    inline static unsigned long long base_pow[MAXLEN];
+
+    PolyHash()
+    {
+    }
+
+    template &lt;typename T&gt; PolyHash(const std::vector&lt;T&gt; &amp;ar)
+    {
+        if (!base_pow[0])
+            init();
+
+        int n = ar.size();
+        assert(n &lt; MAXLEN);
+        pref.resize(n + 3, 0);
+
+        for (int i = 1; i &lt;= n; i++)
+        {
+            pref[i] = ModMul(pref[i - 1], base) + ar[i - 1] + 997;
+            if (pref[i] &gt;= mod)
+                pref[i] -= mod;
+        }
+
+#ifdef IMPLEMENT_REV_HASH
+        suff.resize(n + 3, 0);
+        for (int i = n; i &gt;= 1; i--)
+        {
+            suff[i] = ModMul(suff[i + 1], base) + ar[i - 1] + 997;
+            if (suff[i] &gt;= mod)
+                suff[i] -= mod;
+        }
+#endif
+    }
+
+    PolyHash(const char *str) : PolyHash(std::vector&lt;char&gt;(str, str + strlen(str)))
+    {
+    }
+
+    unsigned long long GetHash(int l, int r)
+    {
+        long long h = pref[r + 1] - ModMul(base_pow[r - l + 1], pref[l]);
+        return h &lt; 0 ? h + mod : h;
+    }
+
+#ifdef IMPLEMENT_REV_HASH
+    unsigned long long ReverseHash(int l, int r)
+    {
+        long long h = suff[l + 1] - ModMul(base_pow[r - l + 1], suff[r + 2]);
+        return h &lt; 0 ? h + mod : h;
+    }
+#endif
+
+    unsigned long long GetHash(int l, int r, int x, int y)
+    {
+        return (ModMul(GetHash(l, r), base_pow[y - x + 1]) + GetHash(x, y)) % mod;
+    }
+
+    void init()
+    {
+        base_pow[0] = 1;
+        for (int i = 1; i &lt; MAXLEN; i++)
+        {
+            base_pow[i] = ModMul(base_pow[i - 1], base);
+        }
+    }
+};
+} // namespace library
+
+#endif
+</code></pre>
+<h2 id="KnuthMorrisPrattMatcher.h">KnuthMorrisPrattMatcher.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
 #ifndef KnuthMorrisPrattMatcher_h
 #define KnuthMorrisPrattMatcher_h 1
 
@@ -792,65 +592,589 @@ template &lt;size_t MAXLEN&gt; struct KnuthMorrisPrattMatcher
 };
 
 #endif</code></pre>
-    <h2 id="Manacher.h">Manacher.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef Manacher_h
-#define Manacher_h 1
+<h2 id="DisjointSet.h">DisjointSet.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef DisjointSet_h
+#define DisjointSet_h 1
 
 #include &lt;algorithm&gt;
 
 namespace library
 {
-template &lt;size_t MAXLEN&gt; struct Manacher
+template &lt;int sz&gt; struct DisjointSet
 {
-    char str[MAXLEN];
-    int LPS[MAXLEN], len;
+    int n;
+    int par[sz];
+    int cnt[sz];
+    int rnk[sz];
+    int components;
 
-    /// @brief Initialize the Manacher algorithm.
-    /// @param s The string to be processed. Expects it to be null terminated.
-    void Init(const char *s)
+    DisjointSet()
     {
-        len = 0;
-        str[len++] = &apos;*&apos;;
-        for (int i = 0; s[i]; i++)
-        {
-            str[len++] = s[i];
-            str[len++] = &apos;*&apos;;
-        }
-        str[len] = &apos;\0&apos;;
     }
 
-    int GetLpsLength()
+    DisjointSet(int n) : n(n)
     {
-        int c = 0, r = 0, ans = 0;
-        for (int i = 1; i &lt; len - 1; i++)
+        this-&gt;Reset();
+    }
+
+    ~DisjointSet()
+    {
+    }
+
+    void Resize(int n)
+    {
+        this-&gt;n = n;
+        this-&gt;Reset();
+    }
+
+    void Reset()
+    {
+        for (int i = 0; i &lt; n; i++)
         {
-            int _i = c - (i - c);
-            if (r &gt; i)
-                LPS[i] = std::min(LPS[_i], r - i);
-            else
-                LPS[i] = 0;
-            while (i - 1 - LPS[i] &gt;= 0 &amp;&amp; str[i - 1 - LPS[i]] == str[i + 1 + LPS[i]])
-            {
-                LPS[i]++;
-            }
-            if (i + LPS[i] &gt; r)
-            {
-                r = i + LPS[i];
-                c = i;
-            }
-            ans = std::max(ans, LPS[i]);
+            par[i] = i;
+            cnt[i] = 1;
+            rnk[i] = 0;
         }
-        return ans;
+
+        components = n;
+    }
+
+    int FindSet(int u)
+    {
+        if (par[u] == u)
+        {
+            return u;
+        }
+
+        return par[u] = FindSet(par[u]);
+    }
+
+    bool IsSameSet(int u, int v)
+    {
+        return FindSet(u) == FindSet(v);
+    }
+
+    void MergeSet(int u, int v)
+    {
+        if (IsSameSet(u, v))
+        {
+            return;
+        }
+
+        u = FindSet(u);
+        v = FindSet(v);
+        if (cnt[u] &lt; cnt[v])
+        {
+            std::swap(u, v);
+        }
+
+        par[u] = par[v];
+        cnt[v] += cnt[u];
+
+        components--;
+    }
+
+    std::vector&lt;int&gt; GetComponents()
+    {
+        std::vector&lt;int&gt; ret;
+        for (int i = 0; i &lt; n; i++)
+        {
+            if (FindSet(i) == i)
+            {
+                ret.emplace_back(i);
+            }
+        }
+
+        return ret;
     }
 };
 } // namespace library
-#endif
-</code></pre>
-    <h2 id="PersistentSegmentTree.h">PersistentSegmentTree.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
+#endif</code></pre>
+<h2 id="Math.h">Math.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef Math_h
+#define Math_h 1
+
+namespace library
+{
+template &lt;long long mod&gt; long long ModuloPower(long long b, long long p)
+{
+    long long ret = 1;
+    for (; p &gt; 0; p &gt;&gt;= 1)
+    {
+        if (p &amp; 1)
+            ret = (ret * b) % mod;
+        b = (b * b) % mod;
+    }
+    return ret % mod;
+}
+
+template &lt;long long mod&gt; long long ModuloInverse(long long b)
+{
+    return ModuloPower&lt;mod&gt;(b, mod - 2);
+}
+
+} // namespace library
+
+#endif</code></pre>
+<h2 id="LCA.h">LCA.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef LCA_H
+#define LCA_H 1
+
+#include &lt;algorithm&gt;
+#include &lt;functional&gt;
+#include &lt;vector&gt;
+#include &quot;SparseTable.h&quot;
+
+namespace library
+{
+#define LOG2(x) (32 - __builtin_clz(x) - 1)
+struct LCA
+{
+    int n;
+    int log2n;
+    std::vector&lt;std::vector&lt;int&gt;&gt; graph;
+    std::vector&lt;int&gt; parent;
+    std::vector&lt;int&gt; level;
+    std::vector&lt;int&gt; tour;
+    std::vector&lt;int&gt; position;
+    SparseTable&lt;int&gt; sparse_table;
+    LCA(int n)
+        : n(n), log2n(LOG2(2 * n - 1) + 1), graph(n, std::vector&lt;int&gt;()), level(n), parent(n), position(n, -1)
+    {
+    }
+    ~LCA()
+    {
+    }
+
+    void AddEdge(int from, int to)
+    {
+        graph[from].emplace_back(to);
+        graph[to].emplace_back(from);
+    }
+
+    void Build(int root)
+    {
+        level[root] = 0;
+        Dfs(root, -1);
+        sparse_table = SparseTable&lt;int&gt;(tour, [level = level](int x, int y) { return level[x] &lt; level[y] ? x : y; });
+    }
+
+    void Dfs(int u, int prev)
+    {
+        parent[u] = prev;
+        level[u] = level[prev] + 1;
+        position[u] = tour.size();
+        tour.emplace_back(u);
+        for (int v : graph[u])
+        {
+            if (v != prev)
+            {
+                Dfs(v, u);
+                tour.emplace_back(u);
+            }
+        }
+    }
+
+    int Query(int u, int v)
+    {
+        auto [l, r] = std::minmax(position[u], position[v]);
+        return sparse_table.Query(l, r);
+    }
+
+    int Distance(int u, int v)
+    {
+        int lca = Query(u, v);
+        return level[u] + level[v] - 2 * level[lca];
+    }
+
+    int KthAncestor(int u, int k)
+    {
+        for (int i = 0; i &lt; log2n; i++)
+        {
+            if (k &amp; (1 &lt;&lt; i))
+            {
+                u = parent[u];
+            }
+        }
+        return u;
+    }
+
+    int KthAncestor(int u, int v, int k)
+    {
+        int lca = Query(u, v);
+        int d = level[u] + level[v] - 2 * level[lca];
+        if (k &lt;= level[u] - level[lca])
+        {
+            return KthAncestor(u, k);
+        }
+        else
+        {
+            return KthAncestor(v, d - k);
+        }
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+<h2 id="BpmDfs.h">BpmDfs.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef BpmDfs_h
+#define BpmDfs_h 1
+
+#include &lt;cstring&gt;
+
+namespace library
+{
+
+template &lt;size_t sz&gt; struct BpmDfs
+{
+    int n;
+    bool fl[sz];
+    int match[sz];
+    bool g[sz][sz];
+
+    BpmDfs()
+    {
+    }
+
+    BpmDfs(int n)
+    {
+        Init(n);
+    }
+
+    ~BpmDfs()
+    {
+    }
+
+    void Init(int n)
+    {
+        this-&gt;n = n;
+    }
+
+    void AddEdge(int u, int v)
+    {
+        g[u][v] = true;
+    }
+
+    void Clear()
+    {
+        memset(g, 0, sizeof g);
+    }
+
+    bool Dfs(int u)
+    {
+        for (int v = 0; v &lt; n; v++)
+        {
+            if (g[u][v] &amp;&amp; !fl[v])
+            {
+                fl[v] = true;
+                if (match[v] == -1 || Dfs(match[v]))
+                {
+                    match[v] = u;
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    int MaxMatching()
+    {
+        memset(match, -1, sizeof match);
+        int ret = 0;
+        for (int i = 0; i &lt; n; i++)
+        {
+            memset(fl, 0, sizeof fl);
+            if (Dfs(i))
+            {
+                ret++;
+            }
+        }
+        return ret;
+    }
+};
+
+} // namespace library
+#endif</code></pre>
+<h2 id="SegmentTree.h">SegmentTree.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef SegmentTree_h
+#define SegmentTree_h 1
+
+#include &lt;algorithm&gt;
+#include &lt;functional&gt;
+
+namespace library
+{
+template &lt;typename T, size_t sz, T identityElem&gt; class SegmentTree
+{
+  private:
+    T tr[sz * 4];
+    std::function&lt;T(T, T)&gt; combine;
+
+  public:
+    SegmentTree(std::function&lt;T(T, T)&gt; combine = [](T a, T b) { return a + b; })
+    {
+        SetCombine(combine);
+        Reset();
+    }
+
+    ~SegmentTree()
+    {
+    }
+
+    void SetCombine(std::function&lt;T(T, T)&gt; combine)
+    {
+        this-&gt;combine = combine;
+    }
+
+    void Reset()
+    {
+        std::fill(tr, tr + sz * 4, identityElem);
+    }
+
+    inline void Build(int node, int b, int e, T *arr)
+    {
+        if (b == e)
+        {
+            tr[node] = arr[b];
+            return;
+        }
+        int left = node &lt;&lt; 1;
+        int right = left | 1;
+        int mid = (b + e) &gt;&gt; 1;
+        Build(left, b, mid, arr);
+        Build(right, mid + 1, e, arr);
+        tr[node] = this-&gt;combine(tr[left], tr[right]);
+    }
+
+    inline void Update(int node, int b, int e, int idx, T x)
+    {
+        if (b == e)
+        {
+            tr[node] = x;
+            return;
+        }
+        int left = node &lt;&lt; 1;
+        int right = left | 1;
+        int mid = (b + e) &gt;&gt; 1;
+        if (idx &lt;= mid)
+            Update(left, b, mid, idx, x);
+        else
+            Update(right, mid + 1, e, idx, x);
+        tr[node] = this-&gt;combine(tr[left], tr[right]);
+    }
+
+    inline T Query(int node, int b, int e, int l, int r)
+    {
+        if (r &lt; b || e &lt; l)
+            return identityElem;
+        if (b &gt;= l &amp;&amp; e &lt;= r)
+        {
+            return tr[node];
+        }
+
+        int left = node &lt;&lt; 1;
+        int right = left | 1;
+        int mid = (b + e) &gt;&gt; 1;
+
+        T p1 = Query(left, b, mid, l, r);
+        T p2 = Query(right, mid + 1, e, l, r);
+
+        return this-&gt;combine(p1, p2);
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+<h2 id="Dinic.h">Dinic.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef Dinic_h
+#define Dinic_h 1
+
+#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+
+namespace library
+{
+
+struct Edge
+{
+    int from, to, cap, flow, index;
+    Edge(int from, int to, int cap, int flow, int index) : from(from), to(to), cap(cap), flow(flow), index(index)
+    {
+    }
+};
+
+template &lt;int INF&gt; struct Dinic
+{
+    int N;
+    std::vector&lt;std::vector&lt;Edge&gt;&gt; G;
+    std::vector&lt;Edge *&gt; dad;
+    std::vector&lt;int&gt; Q;
+
+    Dinic(int N) : N(N), G(N), dad(N), Q(N)
+    {
+    }
+
+    void AddEdge(int from, int to, int cap)
+    {
+        G[from].emplace_back(from, to, cap, 0, G[to].size());
+        if (from == to)
+            G[from].back().index++;
+        G[to].emplace_back(to, from, 0, 0, G[from].size() - 1);
+    }
+
+    long long BlockingFlow(int s, int t)
+    {
+        std::fill(dad.begin(), dad.end(), (Edge *)NULL);
+        dad[s] = &amp;G[0][0] - 1;
+
+        int head = 0, tail = 0;
+        Q[tail++] = s;
+        while (head &lt; tail)
+        {
+            int x = Q[head++];
+            for (int i = 0; i &lt; G[x].size(); i++)
+            {
+                Edge &amp;e = G[x][i];
+                if (!dad[e.to] &amp;&amp; e.cap - e.flow &gt; 0)
+                {
+                    dad[e.to] = &amp;G[x][i];
+                    Q[tail++] = e.to;
+                }
+            }
+        }
+        if (!dad[t])
+            return 0;
+
+        long long totflow = 0;
+        for (int i = 0; i &lt; G[t].size(); i++)
+        {
+            Edge *start = &amp;G[G[t][i].to][G[t][i].index];
+            int amt = INF;
+            for (Edge *e = start; amt &amp;&amp; e != dad[s]; e = dad[e-&gt;from])
+            {
+                if (!e)
+                {
+                    amt = 0;
+                    break;
+                }
+                amt = std::min(amt, e-&gt;cap - e-&gt;flow);
+            }
+            if (amt == 0)
+                continue;
+            for (Edge *e = start; amt &amp;&amp; e != dad[s]; e = dad[e-&gt;from])
+            {
+                e-&gt;flow += amt;
+                G[e-&gt;to][e-&gt;index].flow -= amt;
+            }
+            totflow += amt;
+        }
+        return totflow;
+    }
+
+    long long MaxFlow(int s, int t)
+    {
+        long long totflow = 0;
+        while (long long flow = BlockingFlow(s, t))
+            totflow += flow;
+        return totflow;
+    }
+
+    void ClearFlow()
+    {
+        for (int i = 0; i &lt; N; ++i)
+            for (int j = 0; j &lt; G[i].size(); ++j)
+                G[i][j].flow = 0;
+    }
+};
+} // namespace library
+#endif</code></pre>
+<h2 id="SparseTable.h">SparseTable.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef SparseTable_h
+#define SparseTable_h 1
+
+#include &lt;functional&gt;
+#include &lt;vector&gt;
+
+namespace library
+{
+#define LOG2(x) (32 - __builtin_clz(x) - 1)
+template &lt;typename T&gt; struct SparseTable
+{
+    int n;
+    int log2n;
+    std::function&lt;T(T, T)&gt; combine;
+    std::vector&lt;T&gt; table[32];
+
+    SparseTable()
+    {
+    }
+
+    SparseTable(T *arr, int len, std::function&lt;T(T, T)&gt; combine) : SparseTable(arr, len)
+    {
+        this-&gt;combine = combine;
+    }
+
+    SparseTable(T *arr, int len) : SparseTable(std::vector&lt;T&gt;(arr, arr + len))
+    {
+    }
+
+    SparseTable(const std::vector&lt;T&gt; &amp;arr, std::function&lt;T(T, T)&gt; combine) : SparseTable(arr)
+    {
+        this-&gt;combine = combine;
+    }
+
+    SparseTable(const std::vector&lt;T&gt; &amp;arr)
+    {
+        n = arr.size();
+        log2n = LOG2(n) + 1;
+        table[0] = arr;
+        for (int i = 1; i &lt; log2n; ++i)
+        {
+            table[i].resize(n - (1 &lt;&lt; i) + 1);
+            for (int j = 0; j + (1 &lt;&lt; i) &lt;= n; j++)
+            {
+                int x = table[i - 1][j];
+                int y = table[i - 1][j + (1 &lt;&lt; (i - 1))];
+                table[i][j] = Combine(x, y);
+            }
+        }
+    }
+
+    T Combine(T x, T y)
+    {
+        if (this-&gt;combine != nullptr)
+            return this-&gt;combine(x, y);
+        return std::min(x, y);
+    }
+
+    T Query(int l, int r)
+    {
+        int k = LOG2(r - l + 1);
+        int x = table[k][l];
+        int y = table[k][r - (1 &lt;&lt; k) + 1];
+        return Combine(x, y);
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+<h2 id="PersistentSegmentTree.h">PersistentSegmentTree.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
 #ifndef PersistentSegmentTree_h
 #define PersistentSegmentTree_h 1
 
@@ -1012,779 +1336,154 @@ template &lt;typename T, size_t sz&gt; class PersistentSegmentTree
 };
 } // namespace library
 #endif</code></pre>
-    <h2 id="SegmentTree.h">SegmentTree.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef SegmentTree_h
-#define SegmentTree_h 1
+<h2 id="Manacher.h">Manacher.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef Manacher_h
+#define Manacher_h 1
 
 #include &lt;algorithm&gt;
-#include &lt;functional&gt;
 
 namespace library
 {
-template &lt;typename T, size_t sz, T identityElem&gt; class SegmentTree
+template &lt;size_t MAXLEN&gt; struct Manacher
 {
-  private:
-    T tr[sz * 4];
-    std::function&lt;T(T, T)&gt; combine;
+    char str[MAXLEN];
+    int LPS[MAXLEN], len;
 
-  public:
-    SegmentTree(std::function&lt;T(T, T)&gt; combine = [](T a, T b) { return a + b; })
+    /// @brief Initialize the Manacher algorithm.
+    /// @param s The string to be processed. Expects it to be null terminated.
+    void Init(const char *s)
     {
-        SetCombine(combine);
-        Reset();
-    }
-
-    ~SegmentTree()
-    {
-    }
-
-    void SetCombine(std::function&lt;T(T, T)&gt; combine)
-    {
-        this-&gt;combine = combine;
-    }
-
-    void Reset()
-    {
-        std::fill(tr, tr + sz * 4, identityElem);
-    }
-
-    inline void Build(int node, int b, int e, T *arr)
-    {
-        if (b == e)
+        len = 0;
+        str[len++] = &apos;*&apos;;
+        for (int i = 0; s[i]; i++)
         {
-            tr[node] = arr[b];
-            return;
+            str[len++] = s[i];
+            str[len++] = &apos;*&apos;;
         }
-        int left = node &lt;&lt; 1;
-        int right = left | 1;
-        int mid = (b + e) &gt;&gt; 1;
-        Build(left, b, mid, arr);
-        Build(right, mid + 1, e, arr);
-        tr[node] = this-&gt;combine(tr[left], tr[right]);
+        str[len] = &apos;\0&apos;;
     }
 
-    inline void Update(int node, int b, int e, int idx, T x)
+    int GetLpsLength()
     {
-        if (b == e)
+        int c = 0, r = 0, ans = 0;
+        for (int i = 1; i &lt; len - 1; i++)
         {
-            tr[node] = x;
-            return;
-        }
-        int left = node &lt;&lt; 1;
-        int right = left | 1;
-        int mid = (b + e) &gt;&gt; 1;
-        if (idx &lt;= mid)
-            Update(left, b, mid, idx, x);
-        else
-            Update(right, mid + 1, e, idx, x);
-        tr[node] = this-&gt;combine(tr[left], tr[right]);
-    }
-
-    inline T Query(int node, int b, int e, int l, int r)
-    {
-        if (r &lt; b || e &lt; l)
-            return identityElem;
-        if (b &gt;= l &amp;&amp; e &lt;= r)
-        {
-            return tr[node];
-        }
-
-        int left = node &lt;&lt; 1;
-        int right = left | 1;
-        int mid = (b + e) &gt;&gt; 1;
-
-        T p1 = Query(left, b, mid, l, r);
-        T p2 = Query(right, mid + 1, e, l, r);
-
-        return this-&gt;combine(p1, p2);
-    }
-};
-} // namespace library
-
-#endif</code></pre>
-    <h2 id="LCA.h">LCA.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef LCA_H
-#define LCA_H 1
-
-#include &lt;algorithm&gt;
-#include &lt;functional&gt;
-#include &lt;vector&gt;
-#include &quot;SparseTable.h&quot;
-
-namespace library
-{
-#define LOG2(x) (32 - __builtin_clz(x) - 1)
-struct LCA
-{
-    int n;
-    int log2n;
-    std::vector&lt;std::vector&lt;int&gt;&gt; graph;
-    std::vector&lt;int&gt; parent;
-    std::vector&lt;int&gt; level;
-    std::vector&lt;int&gt; tour;
-    std::vector&lt;int&gt; position;
-    SparseTable&lt;int&gt; sparse_table;
-    LCA(int n)
-        : n(n), log2n(LOG2(2 * n - 1) + 1), graph(n, std::vector&lt;int&gt;()), level(n), parent(n), position(n, -1)
-    {
-    }
-    ~LCA()
-    {
-    }
-
-    void AddEdge(int from, int to)
-    {
-        graph[from].emplace_back(to);
-        graph[to].emplace_back(from);
-    }
-
-    void Build(int root)
-    {
-        level[root] = 0;
-        Dfs(root, -1);
-        sparse_table = SparseTable&lt;int&gt;(tour, [level = level](int x, int y) { return level[x] &lt; level[y] ? x : y; });
-    }
-
-    void Dfs(int u, int prev)
-    {
-        parent[u] = prev;
-        level[u] = level[prev] + 1;
-        position[u] = tour.size();
-        tour.emplace_back(u);
-        for (int v : graph[u])
-        {
-            if (v != prev)
-            {
-                Dfs(v, u);
-                tour.emplace_back(u);
-            }
-        }
-    }
-
-    int Query(int u, int v)
-    {
-        auto [l, r] = std::minmax(position[u], position[v]);
-        return sparse_table.Query(l, r);
-    }
-
-    int Distance(int u, int v)
-    {
-        int lca = Query(u, v);
-        return level[u] + level[v] - 2 * level[lca];
-    }
-
-    int KthAncestor(int u, int k)
-    {
-        for (int i = 0; i &lt; log2n; i++)
-        {
-            if (k &amp; (1 &lt;&lt; i))
-            {
-                u = parent[u];
-            }
-        }
-        return u;
-    }
-
-    int KthAncestor(int u, int v, int k)
-    {
-        int lca = Query(u, v);
-        int d = level[u] + level[v] - 2 * level[lca];
-        if (k &lt;= level[u] - level[lca])
-        {
-            return KthAncestor(u, k);
-        }
-        else
-        {
-            return KthAncestor(v, d - k);
-        }
-    }
-};
-} // namespace library
-
-#endif</code></pre>
-    <h2 id="SuffixArray.h">SuffixArray.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef SuffixArray_h
-#define SuffixArray_h 1
-
-#include &lt;algorithm&gt;
-#include &lt;cstring&gt;
-#include &lt;utility&gt;
-
-namespace library
-{
-template &lt;size_t MAXLEN&gt; struct SuffixArray
-{                                   // second approach: O(n log n)
-    char T[MAXLEN];                 // the input string, up to 100K characters
-    int n;                          // the length of input string
-    int RA[MAXLEN], tempRA[MAXLEN]; // rank array and temporary rank array
-    int SA[MAXLEN], tempSA[MAXLEN]; // suffix array and temporary suffix array
-    int c[MAXLEN];                  // for counting/radix sort
-
-    char P[MAXLEN]; // the pattern string (for string matching)
-    int m;          // the length of pattern string
-
-    int Phi[MAXLEN]; // for computing longest common prefix
-    int PLCP[MAXLEN];
-    int LCP[MAXLEN]; // LCP[i] stores the LCP between previous suffix T+SA[i-1]
-    // and current suffix T+SA[i]
-
-    void Init(const char *str)
-    {
-        n = strlen(str);
-        for (int i = 0; i &lt; n; i++)
-            T[i] = str[i];
-        T[n++] = &apos;$&apos;;
-        T[n] = &apos;\0&apos;;
-    }
-
-    void CountingSort(int k) // O(n)
-    {
-        int i, sum, maxi = std::max(300, n); // up to 255 ASCII chars or length of n
-        memset(c, 0, sizeof c);         // clear frequency table
-        for (i = 0; i &lt; n; i++)         // count the frequency of each integer rank
-            c[i + k &lt; n ? RA[i + k] : 0]++;
-        for (i = sum = 0; i &lt; maxi; i++)
-        {
-            int t = c[i];
-            c[i] = sum;
-            sum += t;
-        }
-        for (i = 0; i &lt; n; i++) // shuffle the suffix array if necessary
-            tempSA[c[SA[i] + k &lt; n ? RA[SA[i] + k] : 0]++] = SA[i];
-        for (i = 0; i &lt; n; i++) // update the suffix array SA
-            SA[i] = tempSA[i];
-    }
-
-    void ConstructSA() // this version can go up to 100000 characters
-    {
-        int i, k, r;
-        for (i = 0; i &lt; n; i++)
-            RA[i] = T[i]; // initial rankings
-        for (i = 0; i &lt; n; i++)
-            SA[i] = i;              // initial SA: {0, 1, 2, ..., n-1}
-        for (k = 1; k &lt; n; k &lt;&lt;= 1) // repeat sorting process log n times
-        {
-            CountingSort(k);        // actually radix sort: sort based on the second item
-            CountingSort(0);        // then (stable) sort based on the first item
-            tempRA[SA[0]] = r = 0;  // re-ranking; start from rank r = 0
-            for (i = 1; i &lt; n; i++) // compare adjacent suffixes
-                tempRA[SA[i]] =     // if same pair =&gt; same rank r; otherwise, increase r
-                    (RA[SA[i]] == RA[SA[i - 1]] &amp;&amp; RA[SA[i] + k] == RA[SA[i - 1] + k]) ? r : ++r;
-            for (i = 0; i &lt; n; i++) // update the rank array RA
-                RA[i] = tempRA[i];
-            if (RA[SA[n - 1]] == n - 1)
-                break; // nice optimization trick
-        }
-    }
-
-    void ComputeLCP()
-    {
-        int i, L;
-        Phi[SA[0]] = -1;            // default value
-        for (i = 1; i &lt; n; i++)     // compute Phi in O(n)
-            Phi[SA[i]] = SA[i - 1]; // remember which suffix is behind this suffix
-        for (i = L = 0; i &lt; n; i++) // compute Permuted LCP in O(n)
-        {
-            if (Phi[i] == -1)
-            {
-                PLCP[i] = 0; // special case
-                continue;
-            }
-            while (T[i + L] == T[Phi[i] + L])
-                L++; // L increased max n times
-            PLCP[i] = L;
-            L = std::max(L - 1, 0); // L decreased max n times
-        }
-        for (i = 0; i &lt; n; i++)   // compute LCP in O(n)
-            LCP[i] = PLCP[SA[i]]; // put the permuted LCP to the correct position
-    }
-
-    std::pair&lt;int, int&gt; StringMatching() // string matching in O(m log n)
-    {
-        int lo = 0, hi = n - 1, mid = lo; // valid matching = [0..n-1]
-        while (lo &lt; hi)                   // find lower bound
-        {
-            mid = (lo + hi) / 2;                  // this is round down
-            int res = strncmp(T + SA[mid], P, m); // try to find P in suffix &apos;mid&apos;
-            if (res &gt;= 0)
-                hi = mid; // prune upper half (notice the &gt;= sign)
+            int _i = c - (i - c);
+            if (r &gt; i)
+                LPS[i] = std::min(LPS[_i], r - i);
             else
-                lo = mid + 1; // prune lower half including mid
-        }                     // observe `=&apos; in &quot;res &gt;= 0&quot; above
-        if (strncmp(T + SA[lo], P, m) != 0)
-            return std::pair&lt;int, int&gt;(-1, -1); // if not found
-        std::pair&lt;int, int&gt; ans;
-        ans.first = lo;
-        lo = 0;
-        hi = n - 1;
-        mid = lo;
-        while (lo &lt; hi) // if lower bound is found, find upper bound
-        {
-            mid = (lo + hi) / 2;
-            int res = strncmp(T + SA[mid], P, m);
-            if (res &gt; 0)
-                hi = mid; // prune upper half
-            else
-                lo = mid + 1; // prune lower half including mid
-        }                     // (notice the selected branch when res == 0)
-        if (strncmp(T + SA[hi], P, m) != 0)
-            hi--; // special case
-        ans.second = hi;
+                LPS[i] = 0;
+            while (i - 1 - LPS[i] &gt;= 0 &amp;&amp; str[i - 1 - LPS[i]] == str[i + 1 + LPS[i]])
+            {
+                LPS[i]++;
+            }
+            if (i + LPS[i] &gt; r)
+            {
+                r = i + LPS[i];
+                c = i;
+            }
+            ans = std::max(ans, LPS[i]);
+        }
         return ans;
-    } // return lower/upperbound as first/second item of the pair, respectively
-
-    std::pair&lt;int, int&gt; LRS() // returns a pair (the LRS length and its index)
-    {
-        int i, idx = 0, maxLCP = -1;
-        for (i = 1; i &lt; n; i++) // O(n), start from i = 1
-            if (LCP[i] &gt; maxLCP)
-                maxLCP = LCP[i], idx = i;
-        return std::pair&lt;int, int&gt;(maxLCP, idx);
-    }
-
-    int Owner(int idx)
-    {
-        return (idx &lt; n - m - 1) ? 1 : 2;
-    }
-
-    std::pair&lt;int, int&gt; LCS() // returns a pair (the LCS length and its index)
-    {
-        int i, idx = 0, maxLCP = -1;
-        for (i = 1; i &lt; n; i++) // O(n), start from i = 1
-            if (Owner(SA[i]) != Owner(SA[i - 1]) &amp;&amp; LCP[i] &gt; maxLCP)
-                maxLCP = LCP[i], idx = i;
-        return std::pair&lt;int, int&gt;(maxLCP, idx);
     }
 };
 } // namespace library
-
-#endif</code></pre>
-    <h2 id="SmallestStringRotation.h">SmallestStringRotation.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef SmallestStringRotation_h
-#define SmallestStringRotation_h 1
+#endif
+</code></pre>
+<h2 id="AhoCorasick.h">AhoCorasick.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef AhoCorasick_h
+#define AhoCorasick_h 1
 
 #include &lt;algorithm&gt;
-#include &lt;cassert&gt;
-#include &lt;cstring&gt;
-#include &lt;string&gt;
-
-namespace library
-{
-
-template &lt;size_t MAXLEN&gt; struct SmallestStringRotation
-{
-    int f[MAXLEN];
-    int operator()(const std::string &amp;s)
-    {
-        int n = s.size();
-        std::string t = s + s;
-        memset(f, -1, sizeof f);
-        int k = 0;
-        for (int j = 1; j &lt; 2 * n; ++j)
-        {
-            int i = f[j - k - 1];
-            while (i != -1 &amp;&amp; t[j] != t[k + i + 1])
-            {
-                if (t[j] &lt; t[k + i + 1])
-                {
-                    k = j - i - 1;
-                }
-                i = f[i];
-            }
-            if (i == -1 &amp;&amp; t[j] != t[k + i + 1])
-            {
-                if (t[j] &lt; t[k + i + 1])
-                {
-                    k = j;
-                }
-                f[j - k] = -1;
-            }
-            else
-            {
-                f[j - k] = i + 1;
-            }
-        }
-        return k;
-    }
-};
-
-} // namespace library
-
-#endif</code></pre>
-    <h2 id="BpmDfs.h">BpmDfs.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef BpmDfs_h
-#define BpmDfs_h 1
-
-#include &lt;cstring&gt;
-
-namespace library
-{
-
-template &lt;size_t sz&gt; struct BpmDfs
-{
-    int n;
-    bool fl[sz];
-    int match[sz];
-    bool g[sz][sz];
-
-    BpmDfs()
-    {
-    }
-
-    BpmDfs(int n)
-    {
-        Init(n);
-    }
-
-    ~BpmDfs()
-    {
-    }
-
-    void Init(int n)
-    {
-        this-&gt;n = n;
-    }
-
-    void AddEdge(int u, int v)
-    {
-        g[u][v] = true;
-    }
-
-    void Clear()
-    {
-        memset(g, 0, sizeof g);
-    }
-
-    bool Dfs(int u)
-    {
-        for (int v = 0; v &lt; n; v++)
-        {
-            if (g[u][v] &amp;&amp; !fl[v])
-            {
-                fl[v] = true;
-                if (match[v] == -1 || Dfs(match[v]))
-                {
-                    match[v] = u;
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    int MaxMatching()
-    {
-        memset(match, -1, sizeof match);
-        int ret = 0;
-        for (int i = 0; i &lt; n; i++)
-        {
-            memset(fl, 0, sizeof fl);
-            if (Dfs(i))
-            {
-                ret++;
-            }
-        }
-        return ret;
-    }
-};
-
-} // namespace library
-#endif</code></pre>
-    <h2 id="SparseTable.h">SparseTable.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef SparseTable_h
-#define SparseTable_h 1
-
-#include &lt;functional&gt;
+#include &lt;queue&gt;
 #include &lt;vector&gt;
 
 namespace library
 {
-#define LOG2(x) (32 - __builtin_clz(x) - 1)
-template &lt;typename T&gt; struct SparseTable
+template &lt;size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26&gt; struct AhoCorasick
 {
-    int n;
-    int log2n;
-    std::function&lt;T(T, T)&gt; combine;
-    std::vector&lt;T&gt; table[32];
+    std::vector&lt;int&gt; mark[MAXLEN + 7];
+    int state, failure[MAXLEN + 7];
+    int trie[MAXLEN + 7][AC_ALPHABET_SIZE];
 
-    SparseTable()
+    AhoCorasick()
     {
+        Init();
     }
 
-    SparseTable(T *arr, int len, std::function&lt;T(T, T)&gt; combine) : SparseTable(arr, len)
+    void Init()
     {
-        this-&gt;combine = combine;
+        mark[0].clear();
+        std::fill(trie[0], trie[0] + AC_ALPHABET_SIZE, -1);
+        state = 0;
     }
 
-    SparseTable(T *arr, int len) : SparseTable(std::vector&lt;T&gt;(arr, arr + len))
+    int Value(char c)
     {
+        return c - &apos;a&apos;;
     }
 
-    SparseTable(const std::vector&lt;T&gt; &amp;arr, std::function&lt;T(T, T)&gt; combine) : SparseTable(arr)
+    void Add(char *s, int t)
     {
-        this-&gt;combine = combine;
-    }
-
-    SparseTable(const std::vector&lt;T&gt; &amp;arr)
-    {
-        n = arr.size();
-        log2n = LOG2(n) + 1;
-        table[0] = arr;
-        for (int i = 1; i &lt; log2n; ++i)
+        int root = 0, id;
+        for (int i = 0; s[i]; i++)
         {
-            table[i].resize(n - (1 &lt;&lt; i) + 1);
-            for (int j = 0; j + (1 &lt;&lt; i) &lt;= n; j++)
+            id = Value(s[i]);
+            if (trie[root][id] == -1)
             {
-                int x = table[i - 1][j];
-                int y = table[i - 1][j + (1 &lt;&lt; (i - 1))];
-                table[i][j] = Combine(x, y);
+                trie[root][id] = ++state;
+                mark[state].clear();
+                std::fill(trie[state], trie[state + 1] + AC_ALPHABET_SIZE, -1);
+            }
+            root = trie[root][id];
+        }
+        mark[root].emplace_back(t);
+    }
+
+    void ComputeFailure()
+    {
+        std::queue&lt;int&gt; Q;
+        failure[0] = 0;
+        for (int i = 0; i &lt; AC_ALPHABET_SIZE; i++)
+        {
+            if (trie[0][i] != -1)
+            {
+                failure[trie[0][i]] = 0;
+                Q.push(trie[0][i]);
+            }
+            else
+                trie[0][i] = 0;
+        }
+        while (!Q.empty())
+        {
+            int u = Q.front();
+            Q.pop();
+            for (int v : mark[failure[u]])
+                mark[u].emplace_back(v);
+            for (int i = 0; i &lt; AC_ALPHABET_SIZE; i++)
+            {
+                if (trie[u][i] != -1)
+                {
+                    failure[trie[u][i]] = trie[failure[u]][i];
+                    Q.push(trie[u][i]);
+                }
+                else
+                    trie[u][i] = trie[failure[u]][i];
             }
         }
     }
-
-    T Combine(T x, T y)
-    {
-        if (this-&gt;combine != nullptr)
-            return this-&gt;combine(x, y);
-        return std::min(x, y);
-    }
-
-    T Query(int l, int r)
-    {
-        int k = LOG2(r - l + 1);
-        int x = table[k][l];
-        int y = table[k][r - (1 &lt;&lt; k) + 1];
-        return Combine(x, y);
-    }
-};
-} // namespace library
-
-#endif</code></pre>
-    <h2 id="ModInt.h">ModInt.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef ModInt_h
-#define ModInt_h 1
-
-#include &lt;algorithm&gt;
-#include &lt;iomanip&gt;
-#include &lt;iostream&gt;
-
-namespace library
-{
-
-struct ModInt
-{
-    int val;
-    int mod = 1e9 + 7;
-
-    ModInt()
-    {
-        val = 0;
-    }
-    ModInt(int _val)
-    {
-        val = _val % mod;
-    }
-    ModInt(long long _val)
-    {
-        val = _val % mod;
-    }
-
-    ModInt &amp;operator=(int _val)
-    {
-        val = _val % mod;
-        return *this;
-    }
-    ModInt &amp;operator=(long long _val)
-    {
-        val = _val % mod;
-        return *this;
-    }
-    ModInt &amp;operator=(const ModInt &amp;other)
-    {
-        val = other.val % mod;
-        return *this;
-    }
-
-    ModInt &amp;operator+=(int _val)
-    {
-        _val %= mod;
-        val += _val;
-        if (val &gt;= mod)
-            val -= mod;
-        return *this;
-    }
-
-    ModInt &amp;operator+=(long long _val)
-    {
-        _val %= mod;
-        val += _val;
-        if (val &gt;= mod)
-            val -= mod;
-        return *this;
-    }
-
-    ModInt &amp;operator+=(const ModInt &amp;other)
-    {
-        int _val = other.val % mod;
-        val += _val;
-        if (val &gt;= mod)
-            val -= mod;
-        return *this;
-    }
-
-    friend ModInt operator+(ModInt lhs, const int &amp;rhs)
-    {
-        lhs += rhs;
-        return lhs;
-    }
-
-    friend ModInt operator+(ModInt lhs, const long long &amp;rhs)
-    {
-        lhs += rhs;
-        return lhs;
-    }
-
-    friend ModInt operator+(ModInt lhs, const ModInt &amp;rhs)
-    {
-        lhs += rhs;
-        return lhs;
-    }
-
-    ModInt &amp;operator-=(int _val)
-    {
-        _val %= mod;
-        val -= _val;
-        while (val &lt; 0)
-            val += mod;
-        if (val &gt;= mod)
-            val -= mod;
-        return *this;
-    }
-
-    ModInt &amp;operator-=(long long _val)
-    {
-        _val %= mod;
-        val -= _val;
-        while (val &lt; 0)
-            val += mod;
-        if (val &gt;= mod)
-            val -= mod;
-        return *this;
-    }
-
-    ModInt &amp;operator-=(const ModInt &amp;other)
-    {
-        int _val = other.val % mod;
-        val -= _val;
-        while (val &lt; 0)
-            val += mod;
-        if (val &gt;= mod)
-            val -= mod;
-        return *this;
-    }
-
-    friend ModInt operator-(ModInt lhs, const int &amp;rhs)
-    {
-        lhs -= rhs;
-        return lhs;
-    }
-
-    friend ModInt operator-(ModInt lhs, const long long &amp;rhs)
-    {
-        lhs -= rhs;
-        return lhs;
-    }
-
-    friend ModInt operator-(ModInt lhs, const ModInt &amp;rhs)
-    {
-        lhs -= rhs;
-        return lhs;
-    }
-
-    ModInt &amp;operator*=(int _val)
-    {
-        _val %= mod;
-        val = ((long long)val * val) % mod;
-        return *this;
-    }
-
-    ModInt &amp;operator*=(const ModInt &amp;other)
-    {
-        int _val = other.val % mod;
-        val = ((long long)val * val) % mod;
-        return *this;
-    }
-
-    friend ModInt operator*(ModInt lhs, const int &amp;rhs)
-    {
-        lhs *= rhs;
-        return lhs;
-    }
-
-    friend ModInt operator*(ModInt lhs, const ModInt &amp;rhs)
-    {
-        lhs *= rhs;
-        return lhs;
-    }
-
-    friend istream &amp;operator&gt;&gt;(istream &amp;in, ModInt &amp;inp)
-    {
-        return in &gt;&gt; inp.val;
-    }
-
-    friend ostream &amp;operator&lt;&lt;(ostream &amp;out, const ModInt &amp;pr)
-    {
-        return out &lt;&lt; pr.val;
-    }
 };
 
 } // namespace library
-#endif</code></pre>
-    <h2 id="Math.h">Math.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef Math_h
-#define Math_h 1
-
-namespace library
-{
-template &lt;long long mod&gt; long long ModuloPower(long long b, long long p)
-{
-    long long ret = 1;
-    for (; p &gt; 0; p &gt;&gt;= 1)
-    {
-        if (p &amp; 1)
-            ret = (ret * b) % mod;
-        b = (b * b) % mod;
-    }
-    return ret % mod;
-}
-
-template &lt;long long mod&gt; long long ModuloInverse(long long b)
-{
-    return ModuloPower&lt;mod&gt;(b, mod - 2);
-}
-
-} // namespace library
 
 #endif</code></pre>
-    <h2 id="ZAlgo.h">ZAlgo.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
+<h2 id="ZAlgo.h">ZAlgo.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
 #ifndef ZAlgo_H
 #define ZAlgo_H 1
 
@@ -1887,9 +1586,9 @@ template &lt;class T, size_t MAXLEN&gt; struct ZAlgo
 } // namespace library
 
 #endif</code></pre>
-    <h2 id="BigInt.h">BigInt.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
+<h2 id="BigInt.h">BigInt.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
 #ifndef BigInt_h
 #define BigInt_h 1
 
@@ -2382,109 +2081,217 @@ struct BigInt
 } // namespace library
 
 #endif // BIGINT_H</code></pre>
-    <h2 id="DisjointSet.h">DisjointSet.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef DisjointSet_h
-#define DisjointSet_h 1
+<h2 id="FenwickTree.h">FenwickTree.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef FenwickTree_h
+#define FenwickTree_h 1
 
-#include &lt;algorithm&gt;
+#include &lt;cstring&gt;
+#include &lt;functional&gt;
+#include &lt;numeric&gt;
 
 namespace library
 {
-template &lt;int sz&gt; struct DisjointSet
+#define LOG2(x) (32 - __builtin_clz(x) - 1)
+template &lt;typename T, size_t sz, typename op_combine_type = std::plus&lt;T&gt;, typename op_decombine_type = std::minus&lt;T&gt;,
+          typename less_type = std::less&lt;T&gt;&gt;
+class FenwickTree
 {
-    int n;
-    int par[sz];
-    int cnt[sz];
-    int rnk[sz];
-    int components;
+  private:
+    T tr[sz];
+    int LOGN = LOG2(sz);
+    op_combine_type op_combine;
+    op_decombine_type op_decombine;
+    less_type less;
 
-    DisjointSet()
+  public:
+    FenwickTree()
     {
-    }
-
-    DisjointSet(int n) : n(n)
-    {
-        this-&gt;Reset();
-    }
-
-    ~DisjointSet()
-    {
-    }
-
-    void Resize(int n)
-    {
-        this-&gt;n = n;
-        this-&gt;Reset();
+        Reset();
     }
 
     void Reset()
     {
-        for (int i = 0; i &lt; n; i++)
-        {
-            par[i] = i;
-            cnt[i] = 1;
-            rnk[i] = 0;
-        }
-
-        components = n;
+        memset(tr, 0, sizeof tr);
     }
 
-    int FindSet(int u)
+    void Update(size_t x, T v)
     {
-        if (par[u] == u)
+        for (; x &lt; sz; x += (x &amp; -x))
         {
-            return u;
+            tr[x] = op_combine(tr[x], v);
         }
-
-        return par[u] = FindSet(par[u]);
     }
 
-    bool IsSameSet(int u, int v)
+    T Query(size_t x)
     {
-        return FindSet(u) == FindSet(v);
+        T ret = 0;
+        for (; x &gt; 0; x -= (x &amp; -x))
+        {
+            ret = op_combine(ret, tr[x]);
+        }
+        return ret;
     }
 
-    void MergeSet(int u, int v)
+    /// @brief: Only works with point updates
+    T QueryRange(size_t l, size_t r)
     {
-        if (IsSameSet(u, v))
-        {
-            return;
-        }
-
-        u = FindSet(u);
-        v = FindSet(v);
-        if (cnt[u] &lt; cnt[v])
-        {
-            std::swap(u, v);
-        }
-
-        par[u] = par[v];
-        cnt[v] += cnt[u];
-
-        components--;
+        return op_decombine(Query(r), Query(l - 1));
     }
 
-    std::vector&lt;int&gt; GetComponents()
+    /// @brief: Only works with point queries
+    void RangeUpdate(size_t l, size_t r, T v)
     {
-        std::vector&lt;int&gt; ret;
-        for (int i = 0; i &lt; n; i++)
+        Update(l, v);
+        Update(r + 1, op_decombine(0, v));
+    }
+
+    size_t BinarySearch(T v)
+    {
+        T sum = 0;
+        size_t pos = 0;
+
+        for (int i = LOGN; i &gt;= 0; i--)
         {
-            if (FindSet(i) == i)
+            if (pos + (1 &lt;&lt; i) &gt;= sz)
+                continue;
+
+            T newSum = op_combine(sum, tr[pos + (1 &lt;&lt; i)]);
+            if (less(newSum, v))
             {
-                ret.emplace_back(i);
+                sum = newSum;
+                pos += (1 &lt;&lt; i);
             }
         }
-
-        return ret;
+        return pos + 1;
     }
 };
 } // namespace library
+
 #endif</code></pre>
-    <h2 id="BpmHopcraft.h">BpmHopcraft.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
+<h2 id="FastIO.h">FastIO.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef FastIO_h
+#define FastIO_h 1
+
+namespace library
+{
+template &lt;typename T&gt; inline T ReadInt()
+{
+    T ret = 0, flag = 1, ip = getchar();
+    for (; ip &lt; 48 || ip &gt; 57; ip = getchar())
+    {
+        if (ip == 45)
+        {
+            flag = -1;
+            ip = getchar();
+            break;
+        }
+    }
+    for (; ip &gt; 47 &amp;&amp; ip &lt; 58; ip = getchar())
+        ret = ret * 10 + ip - 48;
+    return flag * ret;
+}
+
+static const int buf_size = 4096;
+
+inline int GetChar()
+{
+    static char buf[buf_size];
+    static int len = 0, pos = 0;
+    if (pos == len)
+        pos = 0, len = fread(buf, 1, buf_size, stdin);
+    if (pos == len)
+        return -1;
+    return buf[pos++];
+}
+
+inline int ReadChar()
+{
+    int c = GetChar();
+    while (c &lt;= 32)
+        c = GetChar();
+    return c;
+}
+
+template &lt;typename T&gt; inline T ReadIntBuffered()
+{
+    int s = 1, c = ReadChar();
+    T x = 0;
+    if (c == &apos;-&apos;)
+        s = -1, c = GetChar();
+    while (&apos;0&apos; &lt;= c &amp;&amp; c &lt;= &apos;9&apos;)
+        x = x * 10 + c - &apos;0&apos;, c = GetChar();
+    return s == 1 ? x : -x;
+}
+
+} // namespace library
+
+#endif</code></pre>
+<h2 id="FenwickTreeRangeSum.h">FenwickTreeRangeSum.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef FenwickTreeRangeSum_h
+#define FenwickTreeRangeSum_h 1
+
+#include &quot;FenwickTree.h&quot;
+
+namespace library
+{
+template &lt;typename T, size_t sz&gt; class FenwickTreeRangeSum
+{
+  private:
+    FenwickTree&lt;T, sz&gt; ft1;
+    FenwickTree&lt;T, sz&gt; ft2;
+
+  public:
+    FenwickTreeRangeSum()
+    {
+        Reset();
+    }
+
+    void Reset()
+    {
+        ft1.Reset();
+        ft2.Reset();
+    }
+
+    void Update(size_t x, T v)
+    {
+        RangeUpdate(x, x, v);
+    }
+
+    void RangeUpdate(size_t l, size_t r, T v)
+    {
+        ft1.Update(l, v);
+        ft1.Update(r + 1, -v);
+        ft2.Update(l, v * (l - 1));
+        ft2.Update(r + 1, -v * r);
+    }
+
+    T Query(size_t x)
+    {
+        return ft1.Query(x) * x - ft2.Query(x);
+    }
+
+    T QueryRange(size_t l, size_t r)
+    {
+        return Query(r) - Query(l - 1);
+    }
+
+    T QueryPoint(size_t x)
+    {
+        return QueryRange(x, x);
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+<h2 id="BpmHopcraft.h">BpmHopcraft.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
 #ifndef BpmHopcraft_h
 #define BpmHopcraft_h 1
 
@@ -2598,111 +2405,3129 @@ template &lt;size_t MAXN1, size_t MAXN2, size_t MAXM&gt; struct BpmHopcraft
 };
 } // namespace library
 #endif</code></pre>
-    <h2 id="Dinic.h">Dinic.h</h2>
-    <a href="#table-of-content">^top</a>
-    <pre><code>
-#ifndef Dinic_h
-#define Dinic_h 1
+<h2 id="SuffixArray.h">SuffixArray.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef SuffixArray_h
+#define SuffixArray_h 1
 
 #include &lt;algorithm&gt;
-#include &lt;vector&gt;
+#include &lt;cstring&gt;
+#include &lt;utility&gt;
+
+namespace library
+{
+template &lt;size_t MAXLEN&gt; struct SuffixArray
+{                                   // second approach: O(n log n)
+    char T[MAXLEN];                 // the input string, up to 100K characters
+    int n;                          // the length of input string
+    int RA[MAXLEN], tempRA[MAXLEN]; // rank array and temporary rank array
+    int SA[MAXLEN], tempSA[MAXLEN]; // suffix array and temporary suffix array
+    int c[MAXLEN];                  // for counting/radix sort
+
+    char P[MAXLEN]; // the pattern string (for string matching)
+    int m;          // the length of pattern string
+
+    int Phi[MAXLEN]; // for computing longest common prefix
+    int PLCP[MAXLEN];
+    int LCP[MAXLEN]; // LCP[i] stores the LCP between previous suffix T+SA[i-1]
+    // and current suffix T+SA[i]
+
+    void Init(const char *str)
+    {
+        n = strlen(str);
+        for (int i = 0; i &lt; n; i++)
+            T[i] = str[i];
+        T[n++] = &apos;$&apos;;
+        T[n] = &apos;\0&apos;;
+    }
+
+    void CountingSort(int k) // O(n)
+    {
+        int i, sum, maxi = std::max(300, n); // up to 255 ASCII chars or length of n
+        memset(c, 0, sizeof c);         // clear frequency table
+        for (i = 0; i &lt; n; i++)         // count the frequency of each integer rank
+            c[i + k &lt; n ? RA[i + k] : 0]++;
+        for (i = sum = 0; i &lt; maxi; i++)
+        {
+            int t = c[i];
+            c[i] = sum;
+            sum += t;
+        }
+        for (i = 0; i &lt; n; i++) // shuffle the suffix array if necessary
+            tempSA[c[SA[i] + k &lt; n ? RA[SA[i] + k] : 0]++] = SA[i];
+        for (i = 0; i &lt; n; i++) // update the suffix array SA
+            SA[i] = tempSA[i];
+    }
+
+    void ConstructSA() // this version can go up to 100000 characters
+    {
+        int i, k, r;
+        for (i = 0; i &lt; n; i++)
+            RA[i] = T[i]; // initial rankings
+        for (i = 0; i &lt; n; i++)
+            SA[i] = i;              // initial SA: {0, 1, 2, ..., n-1}
+        for (k = 1; k &lt; n; k &lt;&lt;= 1) // repeat sorting process log n times
+        {
+            CountingSort(k);        // actually radix sort: sort based on the second item
+            CountingSort(0);        // then (stable) sort based on the first item
+            tempRA[SA[0]] = r = 0;  // re-ranking; start from rank r = 0
+            for (i = 1; i &lt; n; i++) // compare adjacent suffixes
+                tempRA[SA[i]] =     // if same pair =&gt; same rank r; otherwise, increase r
+                    (RA[SA[i]] == RA[SA[i - 1]] &amp;&amp; RA[SA[i] + k] == RA[SA[i - 1] + k]) ? r : ++r;
+            for (i = 0; i &lt; n; i++) // update the rank array RA
+                RA[i] = tempRA[i];
+            if (RA[SA[n - 1]] == n - 1)
+                break; // nice optimization trick
+        }
+    }
+
+    void ComputeLCP()
+    {
+        int i, L;
+        Phi[SA[0]] = -1;            // default value
+        for (i = 1; i &lt; n; i++)     // compute Phi in O(n)
+            Phi[SA[i]] = SA[i - 1]; // remember which suffix is behind this suffix
+        for (i = L = 0; i &lt; n; i++) // compute Permuted LCP in O(n)
+        {
+            if (Phi[i] == -1)
+            {
+                PLCP[i] = 0; // special case
+                continue;
+            }
+            while (T[i + L] == T[Phi[i] + L])
+                L++; // L increased max n times
+            PLCP[i] = L;
+            L = std::max(L - 1, 0); // L decreased max n times
+        }
+        for (i = 0; i &lt; n; i++)   // compute LCP in O(n)
+            LCP[i] = PLCP[SA[i]]; // put the permuted LCP to the correct position
+    }
+
+    std::pair&lt;int, int&gt; StringMatching() // string matching in O(m log n)
+    {
+        int lo = 0, hi = n - 1, mid = lo; // valid matching = [0..n-1]
+        while (lo &lt; hi)                   // find lower bound
+        {
+            mid = (lo + hi) / 2;                  // this is round down
+            int res = strncmp(T + SA[mid], P, m); // try to find P in suffix &apos;mid&apos;
+            if (res &gt;= 0)
+                hi = mid; // prune upper half (notice the &gt;= sign)
+            else
+                lo = mid + 1; // prune lower half including mid
+        }                     // observe `=&apos; in &quot;res &gt;= 0&quot; above
+        if (strncmp(T + SA[lo], P, m) != 0)
+            return std::pair&lt;int, int&gt;(-1, -1); // if not found
+        std::pair&lt;int, int&gt; ans;
+        ans.first = lo;
+        lo = 0;
+        hi = n - 1;
+        mid = lo;
+        while (lo &lt; hi) // if lower bound is found, find upper bound
+        {
+            mid = (lo + hi) / 2;
+            int res = strncmp(T + SA[mid], P, m);
+            if (res &gt; 0)
+                hi = mid; // prune upper half
+            else
+                lo = mid + 1; // prune lower half including mid
+        }                     // (notice the selected branch when res == 0)
+        if (strncmp(T + SA[hi], P, m) != 0)
+            hi--; // special case
+        ans.second = hi;
+        return ans;
+    } // return lower/upperbound as first/second item of the pair, respectively
+
+    std::pair&lt;int, int&gt; LRS() // returns a pair (the LRS length and its index)
+    {
+        int i, idx = 0, maxLCP = -1;
+        for (i = 1; i &lt; n; i++) // O(n), start from i = 1
+            if (LCP[i] &gt; maxLCP)
+                maxLCP = LCP[i], idx = i;
+        return std::pair&lt;int, int&gt;(maxLCP, idx);
+    }
+
+    int Owner(int idx)
+    {
+        return (idx &lt; n - m - 1) ? 1 : 2;
+    }
+
+    std::pair&lt;int, int&gt; LCS() // returns a pair (the LCS length and its index)
+    {
+        int i, idx = 0, maxLCP = -1;
+        for (i = 1; i &lt; n; i++) // O(n), start from i = 1
+            if (Owner(SA[i]) != Owner(SA[i - 1]) &amp;&amp; LCP[i] &gt; maxLCP)
+                maxLCP = LCP[i], idx = i;
+        return std::pair&lt;int, int&gt;(maxLCP, idx);
+    }
+};
+} // namespace library
+
+#endif</code></pre>
+<h2 id="ModInt.h">ModInt.h</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ModInt_h
+#define ModInt_h 1
+
+#include &lt;algorithm&gt;
+#include &lt;iomanip&gt;
+#include &lt;iostream&gt;
 
 namespace library
 {
 
-struct Edge
+struct ModInt
 {
-    int from, to, cap, flow, index;
-    Edge(int from, int to, int cap, int flow, int index) : from(from), to(to), cap(cap), flow(flow), index(index)
+    int val;
+    int mod = 1e9 + 7;
+
+    ModInt()
     {
+        val = 0;
+    }
+    ModInt(int _val)
+    {
+        val = _val % mod;
+    }
+    ModInt(long long _val)
+    {
+        val = _val % mod;
+    }
+
+    ModInt &amp;operator=(int _val)
+    {
+        val = _val % mod;
+        return *this;
+    }
+    ModInt &amp;operator=(long long _val)
+    {
+        val = _val % mod;
+        return *this;
+    }
+    ModInt &amp;operator=(const ModInt &amp;other)
+    {
+        val = other.val % mod;
+        return *this;
+    }
+
+    ModInt &amp;operator+=(int _val)
+    {
+        _val %= mod;
+        val += _val;
+        if (val &gt;= mod)
+            val -= mod;
+        return *this;
+    }
+
+    ModInt &amp;operator+=(long long _val)
+    {
+        _val %= mod;
+        val += _val;
+        if (val &gt;= mod)
+            val -= mod;
+        return *this;
+    }
+
+    ModInt &amp;operator+=(const ModInt &amp;other)
+    {
+        int _val = other.val % mod;
+        val += _val;
+        if (val &gt;= mod)
+            val -= mod;
+        return *this;
+    }
+
+    friend ModInt operator+(ModInt lhs, const int &amp;rhs)
+    {
+        lhs += rhs;
+        return lhs;
+    }
+
+    friend ModInt operator+(ModInt lhs, const long long &amp;rhs)
+    {
+        lhs += rhs;
+        return lhs;
+    }
+
+    friend ModInt operator+(ModInt lhs, const ModInt &amp;rhs)
+    {
+        lhs += rhs;
+        return lhs;
+    }
+
+    ModInt &amp;operator-=(int _val)
+    {
+        _val %= mod;
+        val -= _val;
+        while (val &lt; 0)
+            val += mod;
+        if (val &gt;= mod)
+            val -= mod;
+        return *this;
+    }
+
+    ModInt &amp;operator-=(long long _val)
+    {
+        _val %= mod;
+        val -= _val;
+        while (val &lt; 0)
+            val += mod;
+        if (val &gt;= mod)
+            val -= mod;
+        return *this;
+    }
+
+    ModInt &amp;operator-=(const ModInt &amp;other)
+    {
+        int _val = other.val % mod;
+        val -= _val;
+        while (val &lt; 0)
+            val += mod;
+        if (val &gt;= mod)
+            val -= mod;
+        return *this;
+    }
+
+    friend ModInt operator-(ModInt lhs, const int &amp;rhs)
+    {
+        lhs -= rhs;
+        return lhs;
+    }
+
+    friend ModInt operator-(ModInt lhs, const long long &amp;rhs)
+    {
+        lhs -= rhs;
+        return lhs;
+    }
+
+    friend ModInt operator-(ModInt lhs, const ModInt &amp;rhs)
+    {
+        lhs -= rhs;
+        return lhs;
+    }
+
+    ModInt &amp;operator*=(int _val)
+    {
+        _val %= mod;
+        val = ((long long)val * val) % mod;
+        return *this;
+    }
+
+    ModInt &amp;operator*=(const ModInt &amp;other)
+    {
+        int _val = other.val % mod;
+        val = ((long long)val * val) % mod;
+        return *this;
+    }
+
+    friend ModInt operator*(ModInt lhs, const int &amp;rhs)
+    {
+        lhs *= rhs;
+        return lhs;
+    }
+
+    friend ModInt operator*(ModInt lhs, const ModInt &amp;rhs)
+    {
+        lhs *= rhs;
+        return lhs;
+    }
+
+    friend istream &amp;operator&gt;&gt;(istream &amp;in, ModInt &amp;inp)
+    {
+        return in &gt;&gt; inp.val;
+    }
+
+    friend ostream &amp;operator&lt;&lt;(ostream &amp;out, const ModInt &amp;pr)
+    {
+        return out &lt;&lt; pr.val;
     }
 };
 
-template &lt;int INF&gt; struct Dinic
-{
-    int N;
-    std::vector&lt;std::vector&lt;Edge&gt;&gt; G;
-    std::vector&lt;Edge *&gt; dad;
-    std::vector&lt;int&gt; Q;
-
-    Dinic(int N) : N(N), G(N), dad(N), Q(N)
-    {
-    }
-
-    void AddEdge(int from, int to, int cap)
-    {
-        G[from].emplace_back(from, to, cap, 0, G[to].size());
-        if (from == to)
-            G[from].back().index++;
-        G[to].emplace_back(to, from, 0, 0, G[from].size() - 1);
-    }
-
-    long long BlockingFlow(int s, int t)
-    {
-        std::fill(dad.begin(), dad.end(), (Edge *)NULL);
-        dad[s] = &amp;G[0][0] - 1;
-
-        int head = 0, tail = 0;
-        Q[tail++] = s;
-        while (head &lt; tail)
-        {
-            int x = Q[head++];
-            for (int i = 0; i &lt; G[x].size(); i++)
-            {
-                Edge &amp;e = G[x][i];
-                if (!dad[e.to] &amp;&amp; e.cap - e.flow &gt; 0)
-                {
-                    dad[e.to] = &amp;G[x][i];
-                    Q[tail++] = e.to;
-                }
-            }
-        }
-        if (!dad[t])
-            return 0;
-
-        long long totflow = 0;
-        for (int i = 0; i &lt; G[t].size(); i++)
-        {
-            Edge *start = &amp;G[G[t][i].to][G[t][i].index];
-            int amt = INF;
-            for (Edge *e = start; amt &amp;&amp; e != dad[s]; e = dad[e-&gt;from])
-            {
-                if (!e)
-                {
-                    amt = 0;
-                    break;
-                }
-                amt = std::min(amt, e-&gt;cap - e-&gt;flow);
-            }
-            if (amt == 0)
-                continue;
-            for (Edge *e = start; amt &amp;&amp; e != dad[s]; e = dad[e-&gt;from])
-            {
-                e-&gt;flow += amt;
-                G[e-&gt;to][e-&gt;index].flow -= amt;
-            }
-            totflow += amt;
-        }
-        return totflow;
-    }
-
-    long long MaxFlow(int s, int t)
-    {
-        long long totflow = 0;
-        while (long long flow = BlockingFlow(s, t))
-            totflow += flow;
-        return totflow;
-    }
-
-    void ClearFlow()
-    {
-        for (int i = 0; i &lt; N; ++i)
-            for (int j = 0; j &lt; G[i].size(); ++j)
-                G[i][j].flow = 0;
-    }
-};
 } // namespace library
 #endif</code></pre>
-</body>
+<h2 id="internal_scc">internal_scc</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;internal_scc.hpp&quot;
+</code></pre>
+<h2 id="string">string</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;string.hpp&quot;
+</code></pre>
+<h2 id="twosat">twosat</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;twosat.hpp&quot;
+</code></pre>
+<h2 id="convolution.hpp">convolution.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_CONVOLUTION_HPP
+#define ATCODER_CONVOLUTION_HPP 1
 
-</html>
+#include &lt;algorithm&gt;
+#include &lt;array&gt;
+#include &lt;cassert&gt;
+#include &lt;type_traits&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_bit&quot;
+#include &quot;modint&quot;
+
+namespace atcoder {
+
+namespace internal {
+
+template &lt;class mint,
+          int g = internal::primitive_root&lt;mint::mod()&gt;,
+          internal::is_static_modint_t&lt;mint&gt;* = nullptr&gt;
+struct fft_info {
+    static constexpr int rank2 = countr_zero_constexpr(mint::mod() - 1);
+    std::array&lt;mint, rank2 + 1&gt; root;   // root[i]^(2^i) == 1
+    std::array&lt;mint, rank2 + 1&gt; iroot;  // root[i] * iroot[i] == 1
+
+    std::array&lt;mint, std::max(0, rank2 - 2 + 1)&gt; rate2;
+    std::array&lt;mint, std::max(0, rank2 - 2 + 1)&gt; irate2;
+
+    std::array&lt;mint, std::max(0, rank2 - 3 + 1)&gt; rate3;
+    std::array&lt;mint, std::max(0, rank2 - 3 + 1)&gt; irate3;
+
+    fft_info() {
+        root[rank2] = mint(g).pow((mint::mod() - 1) &gt;&gt; rank2);
+        iroot[rank2] = root[rank2].inv();
+        for (int i = rank2 - 1; i &gt;= 0; i--) {
+            root[i] = root[i + 1] * root[i + 1];
+            iroot[i] = iroot[i + 1] * iroot[i + 1];
+        }
+
+        {
+            mint prod = 1, iprod = 1;
+            for (int i = 0; i &lt;= rank2 - 2; i++) {
+                rate2[i] = root[i + 2] * prod;
+                irate2[i] = iroot[i + 2] * iprod;
+                prod *= iroot[i + 2];
+                iprod *= root[i + 2];
+            }
+        }
+        {
+            mint prod = 1, iprod = 1;
+            for (int i = 0; i &lt;= rank2 - 3; i++) {
+                rate3[i] = root[i + 3] * prod;
+                irate3[i] = iroot[i + 3] * iprod;
+                prod *= iroot[i + 3];
+                iprod *= root[i + 3];
+            }
+        }
+    }
+};
+
+template &lt;class mint, internal::is_static_modint_t&lt;mint&gt;* = nullptr&gt;
+void butterfly(std::vector&lt;mint&gt;&amp; a) {
+    int n = int(a.size());
+    int h = internal::countr_zero((unsigned int)n);
+
+    static const fft_info&lt;mint&gt; info;
+
+    int len = 0;  // a[i, i+(n&gt;&gt;len), i+2*(n&gt;&gt;len), ..] is transformed
+    while (len &lt; h) {
+        if (h - len == 1) {
+            int p = 1 &lt;&lt; (h - len - 1);
+            mint rot = 1;
+            for (int s = 0; s &lt; (1 &lt;&lt; len); s++) {
+                int offset = s &lt;&lt; (h - len);
+                for (int i = 0; i &lt; p; i++) {
+                    auto l = a[i + offset];
+                    auto r = a[i + offset + p] * rot;
+                    a[i + offset] = l + r;
+                    a[i + offset + p] = l - r;
+                }
+                if (s + 1 != (1 &lt;&lt; len))
+                    rot *= info.rate2[countr_zero(~(unsigned int)(s))];
+            }
+            len++;
+        } else {
+            // 4-base
+            int p = 1 &lt;&lt; (h - len - 2);
+            mint rot = 1, imag = info.root[2];
+            for (int s = 0; s &lt; (1 &lt;&lt; len); s++) {
+                mint rot2 = rot * rot;
+                mint rot3 = rot2 * rot;
+                int offset = s &lt;&lt; (h - len);
+                for (int i = 0; i &lt; p; i++) {
+                    auto mod2 = 1ULL * mint::mod() * mint::mod();
+                    auto a0 = 1ULL * a[i + offset].val();
+                    auto a1 = 1ULL * a[i + offset + p].val() * rot.val();
+                    auto a2 = 1ULL * a[i + offset + 2 * p].val() * rot2.val();
+                    auto a3 = 1ULL * a[i + offset + 3 * p].val() * rot3.val();
+                    auto a1na3imag =
+                        1ULL * mint(a1 + mod2 - a3).val() * imag.val();
+                    auto na2 = mod2 - a2;
+                    a[i + offset] = a0 + a2 + a1 + a3;
+                    a[i + offset + 1 * p] = a0 + a2 + (2 * mod2 - (a1 + a3));
+                    a[i + offset + 2 * p] = a0 + na2 + a1na3imag;
+                    a[i + offset + 3 * p] = a0 + na2 + (mod2 - a1na3imag);
+                }
+                if (s + 1 != (1 &lt;&lt; len))
+                    rot *= info.rate3[countr_zero(~(unsigned int)(s))];
+            }
+            len += 2;
+        }
+    }
+}
+
+template &lt;class mint, internal::is_static_modint_t&lt;mint&gt;* = nullptr&gt;
+void butterfly_inv(std::vector&lt;mint&gt;&amp; a) {
+    int n = int(a.size());
+    int h = internal::countr_zero((unsigned int)n);
+
+    static const fft_info&lt;mint&gt; info;
+
+    int len = h;  // a[i, i+(n&gt;&gt;len), i+2*(n&gt;&gt;len), ..] is transformed
+    while (len) {
+        if (len == 1) {
+            int p = 1 &lt;&lt; (h - len);
+            mint irot = 1;
+            for (int s = 0; s &lt; (1 &lt;&lt; (len - 1)); s++) {
+                int offset = s &lt;&lt; (h - len + 1);
+                for (int i = 0; i &lt; p; i++) {
+                    auto l = a[i + offset];
+                    auto r = a[i + offset + p];
+                    a[i + offset] = l + r;
+                    a[i + offset + p] =
+                        (unsigned long long)(mint::mod() + l.val() - r.val()) *
+                        irot.val();
+                    ;
+                }
+                if (s + 1 != (1 &lt;&lt; (len - 1)))
+                    irot *= info.irate2[countr_zero(~(unsigned int)(s))];
+            }
+            len--;
+        } else {
+            // 4-base
+            int p = 1 &lt;&lt; (h - len);
+            mint irot = 1, iimag = info.iroot[2];
+            for (int s = 0; s &lt; (1 &lt;&lt; (len - 2)); s++) {
+                mint irot2 = irot * irot;
+                mint irot3 = irot2 * irot;
+                int offset = s &lt;&lt; (h - len + 2);
+                for (int i = 0; i &lt; p; i++) {
+                    auto a0 = 1ULL * a[i + offset + 0 * p].val();
+                    auto a1 = 1ULL * a[i + offset + 1 * p].val();
+                    auto a2 = 1ULL * a[i + offset + 2 * p].val();
+                    auto a3 = 1ULL * a[i + offset + 3 * p].val();
+
+                    auto a2na3iimag =
+                        1ULL *
+                        mint((mint::mod() + a2 - a3) * iimag.val()).val();
+
+                    a[i + offset] = a0 + a1 + a2 + a3;
+                    a[i + offset + 1 * p] =
+                        (a0 + (mint::mod() - a1) + a2na3iimag) * irot.val();
+                    a[i + offset + 2 * p] =
+                        (a0 + a1 + (mint::mod() - a2) + (mint::mod() - a3)) *
+                        irot2.val();
+                    a[i + offset + 3 * p] =
+                        (a0 + (mint::mod() - a1) + (mint::mod() - a2na3iimag)) *
+                        irot3.val();
+                }
+                if (s + 1 != (1 &lt;&lt; (len - 2)))
+                    irot *= info.irate3[countr_zero(~(unsigned int)(s))];
+            }
+            len -= 2;
+        }
+    }
+}
+
+template &lt;class mint, internal::is_static_modint_t&lt;mint&gt;* = nullptr&gt;
+std::vector&lt;mint&gt; convolution_naive(const std::vector&lt;mint&gt;&amp; a,
+                                    const std::vector&lt;mint&gt;&amp; b) {
+    int n = int(a.size()), m = int(b.size());
+    std::vector&lt;mint&gt; ans(n + m - 1);
+    if (n &lt; m) {
+        for (int j = 0; j &lt; m; j++) {
+            for (int i = 0; i &lt; n; i++) {
+                ans[i + j] += a[i] * b[j];
+            }
+        }
+    } else {
+        for (int i = 0; i &lt; n; i++) {
+            for (int j = 0; j &lt; m; j++) {
+                ans[i + j] += a[i] * b[j];
+            }
+        }
+    }
+    return ans;
+}
+
+template &lt;class mint, internal::is_static_modint_t&lt;mint&gt;* = nullptr&gt;
+std::vector&lt;mint&gt; convolution_fft(std::vector&lt;mint&gt; a, std::vector&lt;mint&gt; b) {
+    int n = int(a.size()), m = int(b.size());
+    int z = (int)internal::bit_ceil((unsigned int)(n + m - 1));
+    a.resize(z);
+    internal::butterfly(a);
+    b.resize(z);
+    internal::butterfly(b);
+    for (int i = 0; i &lt; z; i++) {
+        a[i] *= b[i];
+    }
+    internal::butterfly_inv(a);
+    a.resize(n + m - 1);
+    mint iz = mint(z).inv();
+    for (int i = 0; i &lt; n + m - 1; i++) a[i] *= iz;
+    return a;
+}
+
+}  // namespace internal
+
+template &lt;class mint, internal::is_static_modint_t&lt;mint&gt;* = nullptr&gt;
+std::vector&lt;mint&gt; convolution(std::vector&lt;mint&gt;&amp;&amp; a, std::vector&lt;mint&gt;&amp;&amp; b) {
+    int n = int(a.size()), m = int(b.size());
+    if (!n || !m) return {};
+
+    int z = (int)internal::bit_ceil((unsigned int)(n + m - 1));
+    assert((mint::mod() - 1) % z == 0);
+
+    if (std::min(n, m) &lt;= 60) return convolution_naive(a, b);
+    return internal::convolution_fft(a, b);
+}
+template &lt;class mint, internal::is_static_modint_t&lt;mint&gt;* = nullptr&gt;
+std::vector&lt;mint&gt; convolution(const std::vector&lt;mint&gt;&amp; a,
+                              const std::vector&lt;mint&gt;&amp; b) {
+    int n = int(a.size()), m = int(b.size());
+    if (!n || !m) return {};
+
+    int z = (int)internal::bit_ceil((unsigned int)(n + m - 1));
+    assert((mint::mod() - 1) % z == 0);
+
+    if (std::min(n, m) &lt;= 60) return convolution_naive(a, b);
+    return internal::convolution_fft(a, b);
+}
+
+template &lt;unsigned int mod = 998244353,
+          class T,
+          std::enable_if_t&lt;internal::is_integral&lt;T&gt;::value&gt;* = nullptr&gt;
+std::vector&lt;T&gt; convolution(const std::vector&lt;T&gt;&amp; a, const std::vector&lt;T&gt;&amp; b) {
+    int n = int(a.size()), m = int(b.size());
+    if (!n || !m) return {};
+
+    using mint = static_modint&lt;mod&gt;;
+
+    int z = (int)internal::bit_ceil((unsigned int)(n + m - 1));
+    assert((mint::mod() - 1) % z == 0);
+
+    std::vector&lt;mint&gt; a2(n), b2(m);
+    for (int i = 0; i &lt; n; i++) {
+        a2[i] = mint(a[i]);
+    }
+    for (int i = 0; i &lt; m; i++) {
+        b2[i] = mint(b[i]);
+    }
+    auto c2 = convolution(std::move(a2), std::move(b2));
+    std::vector&lt;T&gt; c(n + m - 1);
+    for (int i = 0; i &lt; n + m - 1; i++) {
+        c[i] = c2[i].val();
+    }
+    return c;
+}
+
+std::vector&lt;long long&gt; convolution_ll(const std::vector&lt;long long&gt;&amp; a,
+                                      const std::vector&lt;long long&gt;&amp; b) {
+    int n = int(a.size()), m = int(b.size());
+    if (!n || !m) return {};
+
+    static constexpr unsigned long long MOD1 = 754974721;  // 2^24
+    static constexpr unsigned long long MOD2 = 167772161;  // 2^25
+    static constexpr unsigned long long MOD3 = 469762049;  // 2^26
+    static constexpr unsigned long long M2M3 = MOD2 * MOD3;
+    static constexpr unsigned long long M1M3 = MOD1 * MOD3;
+    static constexpr unsigned long long M1M2 = MOD1 * MOD2;
+    static constexpr unsigned long long M1M2M3 = MOD1 * MOD2 * MOD3;
+
+    static constexpr unsigned long long i1 =
+        internal::inv_gcd(MOD2 * MOD3, MOD1).second;
+    static constexpr unsigned long long i2 =
+        internal::inv_gcd(MOD1 * MOD3, MOD2).second;
+    static constexpr unsigned long long i3 =
+        internal::inv_gcd(MOD1 * MOD2, MOD3).second;
+        
+    static constexpr int MAX_AB_BIT = 24;
+    static_assert(MOD1 % (1ull &lt;&lt; MAX_AB_BIT) == 1, &quot;MOD1 isn&apos;t enough to support an array length of 2^24.&quot;);
+    static_assert(MOD2 % (1ull &lt;&lt; MAX_AB_BIT) == 1, &quot;MOD2 isn&apos;t enough to support an array length of 2^24.&quot;);
+    static_assert(MOD3 % (1ull &lt;&lt; MAX_AB_BIT) == 1, &quot;MOD3 isn&apos;t enough to support an array length of 2^24.&quot;);
+    assert(n + m - 1 &lt;= (1 &lt;&lt; MAX_AB_BIT));
+
+    auto c1 = convolution&lt;MOD1&gt;(a, b);
+    auto c2 = convolution&lt;MOD2&gt;(a, b);
+    auto c3 = convolution&lt;MOD3&gt;(a, b);
+
+    std::vector&lt;long long&gt; c(n + m - 1);
+    for (int i = 0; i &lt; n + m - 1; i++) {
+        unsigned long long x = 0;
+        x += (c1[i] * i1) % MOD1 * M2M3;
+        x += (c2[i] * i2) % MOD2 * M1M3;
+        x += (c3[i] * i3) % MOD3 * M1M2;
+        // B = 2^63, -B &lt;= x, r(real value) &lt; B
+        // (x, x - M, x - 2M, or x - 3M) = r (mod 2B)
+        // r = c1[i] (mod MOD1)
+        // focus on MOD1
+        // r = x, x - M&apos;, x - 2M&apos;, x - 3M&apos; (M&apos; = M % 2^64) (mod 2B)
+        // r = x,
+        //     x - M&apos; + (0 or 2B),
+        //     x - 2M&apos; + (0, 2B or 4B),
+        //     x - 3M&apos; + (0, 2B, 4B or 6B) (without mod!)
+        // (r - x) = 0, (0)
+        //           - M&apos; + (0 or 2B), (1)
+        //           -2M&apos; + (0 or 2B or 4B), (2)
+        //           -3M&apos; + (0 or 2B or 4B or 6B) (3) (mod MOD1)
+        // we checked that
+        //   ((1) mod MOD1) mod 5 = 2
+        //   ((2) mod MOD1) mod 5 = 3
+        //   ((3) mod MOD1) mod 5 = 4
+        long long diff =
+            c1[i] - internal::safe_mod((long long)(x), (long long)(MOD1));
+        if (diff &lt; 0) diff += MOD1;
+        static constexpr unsigned long long offset[5] = {
+            0, 0, M1M2M3, 2 * M1M2M3, 3 * M1M2M3};
+        x -= offset[diff % 5];
+        c[i] = x;
+    }
+
+    return c;
+}
+
+}  // namespace atcoder
+
+#endif  // ATCODER_CONVOLUTION_HPP
+</code></pre>
+<h2 id="fenwicktree.hpp">fenwicktree.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_FENWICKTREE_HPP
+#define ATCODER_FENWICKTREE_HPP 1
+
+#include &lt;cassert&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_type_traits&quot;
+
+namespace atcoder {
+
+// Reference: https://en.wikipedia.org/wiki/Fenwick_tree
+template &lt;class T&gt; struct fenwick_tree {
+    using U = internal::to_unsigned_t&lt;T&gt;;
+
+  public:
+    fenwick_tree() : _n(0) {}
+    explicit fenwick_tree(int n) : _n(n), data(n) {}
+
+    void add(int p, T x) {
+        assert(0 &lt;= p &amp;&amp; p &lt; _n);
+        p++;
+        while (p &lt;= _n) {
+            data[p - 1] += U(x);
+            p += p &amp; -p;
+        }
+    }
+
+    T sum(int l, int r) {
+        assert(0 &lt;= l &amp;&amp; l &lt;= r &amp;&amp; r &lt;= _n);
+        return sum(r) - sum(l);
+    }
+
+  private:
+    int _n;
+    std::vector&lt;U&gt; data;
+
+    U sum(int r) {
+        U s = 0;
+        while (r &gt; 0) {
+            s += data[r - 1];
+            r -= r &amp; -r;
+        }
+        return s;
+    }
+};
+
+}  // namespace atcoder
+
+#endif  // ATCODER_FENWICKTREE_HPP
+</code></pre>
+<h2 id="modint">modint</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;modint.hpp&quot;
+</code></pre>
+<h2 id="LICENSE">LICENSE</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+CC0 1.0 Universal
+
+Statement of Purpose
+
+The laws of most jurisdictions throughout the world automatically confer
+exclusive Copyright and Related Rights (defined below) upon the creator and
+subsequent owner(s) (each and all, an &quot;owner&quot;) of an original work of
+authorship and/or a database (each, a &quot;Work&quot;).
+
+Certain owners wish to permanently relinquish those rights to a Work for the
+purpose of contributing to a commons of creative, cultural and scientific
+works (&quot;Commons&quot;) that the public can reliably and without fear of later
+claims of infringement build upon, modify, incorporate in other works, reuse
+and redistribute as freely as possible in any form whatsoever and for any
+purposes, including without limitation commercial purposes. These owners may
+contribute to the Commons to promote the ideal of a free culture and the
+further production of creative, cultural and scientific works, or to gain
+reputation or greater distribution for their Work in part through the use and
+efforts of others.
+
+For these and/or other purposes and motivations, and without any expectation
+of additional consideration or compensation, the person associating CC0 with a
+Work (the &quot;Affirmer&quot;), to the extent that he or she is an owner of Copyright
+and Related Rights in the Work, voluntarily elects to apply CC0 to the Work
+and publicly distribute the Work under its terms, with knowledge of his or her
+Copyright and Related Rights in the Work and the meaning and intended legal
+effect of CC0 on those rights.
+
+1. Copyright and Related Rights. A Work made available under CC0 may be
+protected by copyright and related or neighboring rights (&quot;Copyright and
+Related Rights&quot;). Copyright and Related Rights include, but are not limited
+to, the following:
+
+  i. the right to reproduce, adapt, distribute, perform, display, communicate,
+  and translate a Work;
+
+  ii. moral rights retained by the original author(s) and/or performer(s);
+
+  iii. publicity and privacy rights pertaining to a person&apos;s image or likeness
+  depicted in a Work;
+
+  iv. rights protecting against unfair competition in regards to a Work,
+  subject to the limitations in paragraph 4(a), below;
+
+  v. rights protecting the extraction, dissemination, use and reuse of data in
+  a Work;
+
+  vi. database rights (such as those arising under Directive 96/9/EC of the
+  European Parliament and of the Council of 11 March 1996 on the legal
+  protection of databases, and under any national implementation thereof,
+  including any amended or successor version of such directive); and
+
+  vii. other similar, equivalent or corresponding rights throughout the world
+  based on applicable law or treaty, and any national implementations thereof.
+
+2. Waiver. To the greatest extent permitted by, but not in contravention of,
+applicable law, Affirmer hereby overtly, fully, permanently, irrevocably and
+unconditionally waives, abandons, and surrenders all of Affirmer&apos;s Copyright
+and Related Rights and associated claims and causes of action, whether now
+known or unknown (including existing as well as future claims and causes of
+action), in the Work (i) in all territories worldwide, (ii) for the maximum
+duration provided by applicable law or treaty (including future time
+extensions), (iii) in any current or future medium and for any number of
+copies, and (iv) for any purpose whatsoever, including without limitation
+commercial, advertising or promotional purposes (the &quot;Waiver&quot;). Affirmer makes
+the Waiver for the benefit of each member of the public at large and to the
+detriment of Affirmer&apos;s heirs and successors, fully intending that such Waiver
+shall not be subject to revocation, rescission, cancellation, termination, or
+any other legal or equitable action to disrupt the quiet enjoyment of the Work
+by the public as contemplated by Affirmer&apos;s express Statement of Purpose.
+
+3. Public License Fallback. Should any part of the Waiver for any reason be
+judged legally invalid or ineffective under applicable law, then the Waiver
+shall be preserved to the maximum extent permitted taking into account
+Affirmer&apos;s express Statement of Purpose. In addition, to the extent the Waiver
+is so judged Affirmer hereby grants to each affected person a royalty-free,
+non transferable, non sublicensable, non exclusive, irrevocable and
+unconditional license to exercise Affirmer&apos;s Copyright and Related Rights in
+the Work (i) in all territories worldwide, (ii) for the maximum duration
+provided by applicable law or treaty (including future time extensions), (iii)
+in any current or future medium and for any number of copies, and (iv) for any
+purpose whatsoever, including without limitation commercial, advertising or
+promotional purposes (the &quot;License&quot;). The License shall be deemed effective as
+of the date CC0 was applied by Affirmer to the Work. Should any part of the
+License for any reason be judged legally invalid or ineffective under
+applicable law, such partial invalidity or ineffectiveness shall not
+invalidate the remainder of the License, and in such case Affirmer hereby
+affirms that he or she will not (i) exercise any of his or her remaining
+Copyright and Related Rights in the Work or (ii) assert any associated claims
+and causes of action with respect to the Work, in either case contrary to
+Affirmer&apos;s express Statement of Purpose.
+
+4. Limitations and Disclaimers.
+
+  a. No trademark or patent rights held by Affirmer are waived, abandoned,
+  surrendered, licensed or otherwise affected by this document.
+
+  b. Affirmer offers the Work as-is and makes no representations or warranties
+  of any kind concerning the Work, express, implied, statutory or otherwise,
+  including without limitation warranties of title, merchantability, fitness
+  for a particular purpose, non infringement, or the absence of latent or
+  other defects, accuracy, or the present or absence of errors, whether or not
+  discoverable, all to the greatest extent permissible under applicable law.
+
+  c. Affirmer disclaims responsibility for clearing rights of other persons
+  that may apply to the Work or any use thereof, including without limitation
+  any person&apos;s Copyright and Related Rights in the Work. Further, Affirmer
+  disclaims responsibility for obtaining any necessary consents, permissions
+  or other rights required for any use of the Work.
+
+  d. Affirmer understands and acknowledges that Creative Commons is not a
+  party to this document and has no duty or obligation with respect to this
+  CC0 or use of the Work.
+
+For more information, please see
+&lt;http://creativecommons.org/publicdomain/zero/1.0/&gt;</code></pre>
+<h2 id="internal_csr.hpp">internal_csr.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_INTERNAL_CSR_HPP
+#define ATCODER_INTERNAL_CSR_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+namespace atcoder {
+namespace internal {
+
+template &lt;class E&gt; struct csr {
+    std::vector&lt;int&gt; start;
+    std::vector&lt;E&gt; elist;
+    explicit csr(int n, const std::vector&lt;std::pair&lt;int, E&gt;&gt;&amp; edges)
+        : start(n + 1), elist(edges.size()) {
+        for (auto e : edges) {
+            start[e.first + 1]++;
+        }
+        for (int i = 1; i &lt;= n; i++) {
+            start[i] += start[i - 1];
+        }
+        auto counter = start;
+        for (auto e : edges) {
+            elist[counter[e.first]++] = e.second;
+        }
+    }
+};
+
+}  // namespace internal
+
+}  // namespace atcoder
+
+#endif  // ATCODER_INTERNAL_CSR_HPP
+</code></pre>
+<h2 id="fenwicktree">fenwicktree</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;fenwicktree.hpp&quot;
+</code></pre>
+<h2 id="internal_math">internal_math</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;internal_math.hpp&quot;
+</code></pre>
+<h2 id="internal_bit.hpp">internal_bit.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_INTERNAL_BITOP_HPP
+#define ATCODER_INTERNAL_BITOP_HPP 1
+
+#ifdef _MSC_VER
+#include &lt;intrin.h&gt;
+#endif
+
+#if __cplusplus &gt;= 202002L
+#include &lt;bit&gt;
+#endif
+
+namespace atcoder {
+
+namespace internal {
+
+#if __cplusplus &gt;= 202002L
+
+using std::bit_ceil;
+
+#else
+
+// @return same with std::bit::bit_ceil
+unsigned int bit_ceil(unsigned int n) {
+    unsigned int x = 1;
+    while (x &lt; (unsigned int)(n)) x *= 2;
+    return x;
+}
+
+#endif
+
+// @param n `1 &lt;= n`
+// @return same with std::bit::countr_zero
+int countr_zero(unsigned int n) {
+#ifdef _MSC_VER
+    unsigned long index;
+    _BitScanForward(&amp;index, n);
+    return index;
+#else
+    return __builtin_ctz(n);
+#endif
+}
+
+// @param n `1 &lt;= n`
+// @return same with std::bit::countr_zero
+constexpr int countr_zero_constexpr(unsigned int n) {
+    int x = 0;
+    while (!(n &amp; (1 &lt;&lt; x))) x++;
+    return x;
+}
+
+}  // namespace internal
+
+}  // namespace atcoder
+
+#endif  // ATCODER_INTERNAL_BITOP_HPP
+</code></pre>
+<h2 id="dsu">dsu</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;dsu.hpp&quot;
+</code></pre>
+<h2 id="internal_bit">internal_bit</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;internal_bit.hpp&quot;
+</code></pre>
+<h2 id="math">math</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;math.hpp&quot;
+</code></pre>
+<h2 id="internal_queue.hpp">internal_queue.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_INTERNAL_QUEUE_HPP
+#define ATCODER_INTERNAL_QUEUE_HPP 1
+
+#include &lt;vector&gt;
+
+namespace atcoder {
+
+namespace internal {
+
+template &lt;class T&gt; struct simple_queue {
+    std::vector&lt;T&gt; payload;
+    int pos = 0;
+    void reserve(int n) { payload.reserve(n); }
+    int size() const { return int(payload.size()) - pos; }
+    bool empty() const { return pos == int(payload.size()); }
+    void push(const T&amp; t) { payload.push_back(t); }
+    T&amp; front() { return payload[pos]; }
+    void clear() {
+        payload.clear();
+        pos = 0;
+    }
+    void pop() { pos++; }
+};
+
+}  // namespace internal
+
+}  // namespace atcoder
+
+#endif  // ATCODER_INTERNAL_QUEUE_HPP
+</code></pre>
+<h2 id="lazysegtree">lazysegtree</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;lazysegtree.hpp&quot;
+</code></pre>
+<h2 id="mincostflow.hpp">mincostflow.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_MINCOSTFLOW_HPP
+#define ATCODER_MINCOSTFLOW_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;limits&gt;
+#include &lt;queue&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_csr&quot;
+#include &quot;internal_queue&quot;
+
+namespace atcoder {
+
+template &lt;class Cap, class Cost&gt; struct mcf_graph {
+  public:
+    mcf_graph() {}
+    explicit mcf_graph(int n) : _n(n) {}
+
+    int add_edge(int from, int to, Cap cap, Cost cost) {
+        assert(0 &lt;= from &amp;&amp; from &lt; _n);
+        assert(0 &lt;= to &amp;&amp; to &lt; _n);
+        assert(0 &lt;= cap);
+        assert(0 &lt;= cost);
+        int m = int(_edges.size());
+        _edges.push_back({from, to, cap, 0, cost});
+        return m;
+    }
+
+    struct edge {
+        int from, to;
+        Cap cap, flow;
+        Cost cost;
+    };
+
+    edge get_edge(int i) {
+        int m = int(_edges.size());
+        assert(0 &lt;= i &amp;&amp; i &lt; m);
+        return _edges[i];
+    }
+    std::vector&lt;edge&gt; edges() { return _edges; }
+
+    std::pair&lt;Cap, Cost&gt; flow(int s, int t) {
+        return flow(s, t, std::numeric_limits&lt;Cap&gt;::max());
+    }
+    std::pair&lt;Cap, Cost&gt; flow(int s, int t, Cap flow_limit) {
+        return slope(s, t, flow_limit).back();
+    }
+    std::vector&lt;std::pair&lt;Cap, Cost&gt;&gt; slope(int s, int t) {
+        return slope(s, t, std::numeric_limits&lt;Cap&gt;::max());
+    }
+    std::vector&lt;std::pair&lt;Cap, Cost&gt;&gt; slope(int s, int t, Cap flow_limit) {
+        assert(0 &lt;= s &amp;&amp; s &lt; _n);
+        assert(0 &lt;= t &amp;&amp; t &lt; _n);
+        assert(s != t);
+
+        int m = int(_edges.size());
+        std::vector&lt;int&gt; edge_idx(m);
+
+        auto g = [&amp;]() {
+            std::vector&lt;int&gt; degree(_n), redge_idx(m);
+            std::vector&lt;std::pair&lt;int, _edge&gt;&gt; elist;
+            elist.reserve(2 * m);
+            for (int i = 0; i &lt; m; i++) {
+                auto e = _edges[i];
+                edge_idx[i] = degree[e.from]++;
+                redge_idx[i] = degree[e.to]++;
+                elist.push_back({e.from, {e.to, -1, e.cap - e.flow, e.cost}});
+                elist.push_back({e.to, {e.from, -1, e.flow, -e.cost}});
+            }
+            auto _g = internal::csr&lt;_edge&gt;(_n, elist);
+            for (int i = 0; i &lt; m; i++) {
+                auto e = _edges[i];
+                edge_idx[i] += _g.start[e.from];
+                redge_idx[i] += _g.start[e.to];
+                _g.elist[edge_idx[i]].rev = redge_idx[i];
+                _g.elist[redge_idx[i]].rev = edge_idx[i];
+            }
+            return _g;
+        }();
+
+        auto result = slope(g, s, t, flow_limit);
+
+        for (int i = 0; i &lt; m; i++) {
+            auto e = g.elist[edge_idx[i]];
+            _edges[i].flow = _edges[i].cap - e.cap;
+        }
+
+        return result;
+    }
+
+  private:
+    int _n;
+    std::vector&lt;edge&gt; _edges;
+
+    // inside edge
+    struct _edge {
+        int to, rev;
+        Cap cap;
+        Cost cost;
+    };
+
+    std::vector&lt;std::pair&lt;Cap, Cost&gt;&gt; slope(internal::csr&lt;_edge&gt;&amp; g,
+                                            int s,
+                                            int t,
+                                            Cap flow_limit) {
+        // variants (C = maxcost):
+        // -(n-1)C &lt;= dual[s] &lt;= dual[i] &lt;= dual[t] = 0
+        // reduced cost (= e.cost + dual[e.from] - dual[e.to]) &gt;= 0 for all edge
+
+        // dual_dist[i] = (dual[i], dist[i])
+        std::vector&lt;std::pair&lt;Cost, Cost&gt;&gt; dual_dist(_n);
+        std::vector&lt;int&gt; prev_e(_n);
+        std::vector&lt;bool&gt; vis(_n);
+        struct Q {
+            Cost key;
+            int to;
+            bool operator&lt;(Q r) const { return key &gt; r.key; }
+        };
+        std::vector&lt;int&gt; que_min;
+        std::vector&lt;Q&gt; que;
+        auto dual_ref = [&amp;]() {
+            for (int i = 0; i &lt; _n; i++) {
+                dual_dist[i].second = std::numeric_limits&lt;Cost&gt;::max();
+            }
+            std::fill(vis.begin(), vis.end(), false);
+            que_min.clear();
+            que.clear();
+
+            // que[0..heap_r) was heapified
+            size_t heap_r = 0;
+
+            dual_dist[s].second = 0;
+            que_min.push_back(s);
+            while (!que_min.empty() || !que.empty()) {
+                int v;
+                if (!que_min.empty()) {
+                    v = que_min.back();
+                    que_min.pop_back();
+                } else {
+                    while (heap_r &lt; que.size()) {
+                        heap_r++;
+                        std::push_heap(que.begin(), que.begin() + heap_r);
+                    }
+                    v = que.front().to;
+                    std::pop_heap(que.begin(), que.end());
+                    que.pop_back();
+                    heap_r--;
+                }
+                if (vis[v]) continue;
+                vis[v] = true;
+                if (v == t) break;
+                // dist[v] = shortest(s, v) + dual[s] - dual[v]
+                // dist[v] &gt;= 0 (all reduced cost are positive)
+                // dist[v] &lt;= (n-1)C
+                Cost dual_v = dual_dist[v].first, dist_v = dual_dist[v].second;
+                for (int i = g.start[v]; i &lt; g.start[v + 1]; i++) {
+                    auto e = g.elist[i];
+                    if (!e.cap) continue;
+                    // |-dual[e.to] + dual[v]| &lt;= (n-1)C
+                    // cost &lt;= C - -(n-1)C + 0 = nC
+                    Cost cost = e.cost - dual_dist[e.to].first + dual_v;
+                    if (dual_dist[e.to].second - dist_v &gt; cost) {
+                        Cost dist_to = dist_v + cost;
+                        dual_dist[e.to].second = dist_to;
+                        prev_e[e.to] = e.rev;
+                        if (dist_to == dist_v) {
+                            que_min.push_back(e.to);
+                        } else {
+                            que.push_back(Q{dist_to, e.to});
+                        }
+                    }
+                }
+            }
+            if (!vis[t]) {
+                return false;
+            }
+
+            for (int v = 0; v &lt; _n; v++) {
+                if (!vis[v]) continue;
+                // dual[v] = dual[v] - dist[t] + dist[v]
+                //         = dual[v] - (shortest(s, t) + dual[s] - dual[t]) +
+                //         (shortest(s, v) + dual[s] - dual[v]) = - shortest(s,
+                //         t) + dual[t] + shortest(s, v) = shortest(s, v) -
+                //         shortest(s, t) &gt;= 0 - (n-1)C
+                dual_dist[v].first -= dual_dist[t].second - dual_dist[v].second;
+            }
+            return true;
+        };
+        Cap flow = 0;
+        Cost cost = 0, prev_cost_per_flow = -1;
+        std::vector&lt;std::pair&lt;Cap, Cost&gt;&gt; result = {{Cap(0), Cost(0)}};
+        while (flow &lt; flow_limit) {
+            if (!dual_ref()) break;
+            Cap c = flow_limit - flow;
+            for (int v = t; v != s; v = g.elist[prev_e[v]].to) {
+                c = std::min(c, g.elist[g.elist[prev_e[v]].rev].cap);
+            }
+            for (int v = t; v != s; v = g.elist[prev_e[v]].to) {
+                auto&amp; e = g.elist[prev_e[v]];
+                e.cap += c;
+                g.elist[e.rev].cap -= c;
+            }
+            Cost d = -dual_dist[s].first;
+            flow += c;
+            cost += c * d;
+            if (prev_cost_per_flow == d) {
+                result.pop_back();
+            }
+            result.push_back({flow, cost});
+            prev_cost_per_flow = d;
+        }
+        return result;
+    }
+};
+
+}  // namespace atcoder
+
+#endif  // ATCODER_MINCOSTFLOW_HPP
+</code></pre>
+<h2 id="scc">scc</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;scc.hpp&quot;
+</code></pre>
+<h2 id="dsu.hpp">dsu.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_DSU_HPP
+#define ATCODER_DSU_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;vector&gt;
+
+namespace atcoder {
+
+// Implement (union by size) + (path compression)
+// Reference:
+// Zvi Galil and Giuseppe F. Italiano,
+// Data structures and algorithms for disjoint set union problems
+struct dsu {
+  public:
+    dsu() : _n(0) {}
+    explicit dsu(int n) : _n(n), parent_or_size(n, -1) {}
+
+    int merge(int a, int b) {
+        assert(0 &lt;= a &amp;&amp; a &lt; _n);
+        assert(0 &lt;= b &amp;&amp; b &lt; _n);
+        int x = leader(a), y = leader(b);
+        if (x == y) return x;
+        if (-parent_or_size[x] &lt; -parent_or_size[y]) std::swap(x, y);
+        parent_or_size[x] += parent_or_size[y];
+        parent_or_size[y] = x;
+        return x;
+    }
+
+    bool same(int a, int b) {
+        assert(0 &lt;= a &amp;&amp; a &lt; _n);
+        assert(0 &lt;= b &amp;&amp; b &lt; _n);
+        return leader(a) == leader(b);
+    }
+
+    int leader(int a) {
+        assert(0 &lt;= a &amp;&amp; a &lt; _n);
+        if (parent_or_size[a] &lt; 0) return a;
+        return parent_or_size[a] = leader(parent_or_size[a]);
+    }
+
+    int size(int a) {
+        assert(0 &lt;= a &amp;&amp; a &lt; _n);
+        return -parent_or_size[leader(a)];
+    }
+
+    std::vector&lt;std::vector&lt;int&gt;&gt; groups() {
+        std::vector&lt;int&gt; leader_buf(_n), group_size(_n);
+        for (int i = 0; i &lt; _n; i++) {
+            leader_buf[i] = leader(i);
+            group_size[leader_buf[i]]++;
+        }
+        std::vector&lt;std::vector&lt;int&gt;&gt; result(_n);
+        for (int i = 0; i &lt; _n; i++) {
+            result[i].reserve(group_size[i]);
+        }
+        for (int i = 0; i &lt; _n; i++) {
+            result[leader_buf[i]].push_back(i);
+        }
+        result.erase(
+            std::remove_if(result.begin(), result.end(),
+                           [&amp;](const std::vector&lt;int&gt;&amp; v) { return v.empty(); }),
+            result.end());
+        return result;
+    }
+
+  private:
+    int _n;
+    // root node: -1 * component size
+    // otherwise: parent
+    std::vector&lt;int&gt; parent_or_size;
+};
+
+}  // namespace atcoder
+
+#endif  // ATCODER_DSU_HPP
+</code></pre>
+<h2 id="maxflow">maxflow</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;maxflow.hpp&quot;
+</code></pre>
+<h2 id="internal_type_traits">internal_type_traits</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;internal_type_traits.hpp&quot;
+</code></pre>
+<h2 id="segtree.hpp">segtree.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_SEGTREE_HPP
+#define ATCODER_SEGTREE_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;functional&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_bit&quot;
+
+namespace atcoder {
+
+#if __cplusplus &gt;= 201703L
+
+template &lt;class S, auto op, auto e&gt; struct segtree {
+    static_assert(std::is_convertible_v&lt;decltype(op), std::function&lt;S(S, S)&gt;&gt;,
+                  &quot;op must work as S(S, S)&quot;);
+    static_assert(std::is_convertible_v&lt;decltype(e), std::function&lt;S()&gt;&gt;,
+                  &quot;e must work as S()&quot;);
+
+#else
+
+template &lt;class S, S (*op)(S, S), S (*e)()&gt; struct segtree {
+
+#endif
+
+  public:
+    segtree() : segtree(0) {}
+    explicit segtree(int n) : segtree(std::vector&lt;S&gt;(n, e())) {}
+    explicit segtree(const std::vector&lt;S&gt;&amp; v) : _n(int(v.size())) {
+        size = (int)internal::bit_ceil((unsigned int)(_n));
+        log = internal::countr_zero((unsigned int)size);
+        d = std::vector&lt;S&gt;(2 * size, e());
+        for (int i = 0; i &lt; _n; i++) d[size + i] = v[i];
+        for (int i = size - 1; i &gt;= 1; i--) {
+            update(i);
+        }
+    }
+
+    void set(int p, S x) {
+        assert(0 &lt;= p &amp;&amp; p &lt; _n);
+        p += size;
+        d[p] = x;
+        for (int i = 1; i &lt;= log; i++) update(p &gt;&gt; i);
+    }
+
+    S get(int p) const {
+        assert(0 &lt;= p &amp;&amp; p &lt; _n);
+        return d[p + size];
+    }
+
+    S prod(int l, int r) const {
+        assert(0 &lt;= l &amp;&amp; l &lt;= r &amp;&amp; r &lt;= _n);
+        S sml = e(), smr = e();
+        l += size;
+        r += size;
+
+        while (l &lt; r) {
+            if (l &amp; 1) sml = op(sml, d[l++]);
+            if (r &amp; 1) smr = op(d[--r], smr);
+            l &gt;&gt;= 1;
+            r &gt;&gt;= 1;
+        }
+        return op(sml, smr);
+    }
+
+    S all_prod() const { return d[1]; }
+
+    template &lt;bool (*f)(S)&gt; int max_right(int l) const {
+        return max_right(l, [](S x) { return f(x); });
+    }
+    template &lt;class F&gt; int max_right(int l, F f) const {
+        assert(0 &lt;= l &amp;&amp; l &lt;= _n);
+        assert(f(e()));
+        if (l == _n) return _n;
+        l += size;
+        S sm = e();
+        do {
+            while (l % 2 == 0) l &gt;&gt;= 1;
+            if (!f(op(sm, d[l]))) {
+                while (l &lt; size) {
+                    l = (2 * l);
+                    if (f(op(sm, d[l]))) {
+                        sm = op(sm, d[l]);
+                        l++;
+                    }
+                }
+                return l - size;
+            }
+            sm = op(sm, d[l]);
+            l++;
+        } while ((l &amp; -l) != l);
+        return _n;
+    }
+
+    template &lt;bool (*f)(S)&gt; int min_left(int r) const {
+        return min_left(r, [](S x) { return f(x); });
+    }
+    template &lt;class F&gt; int min_left(int r, F f) const {
+        assert(0 &lt;= r &amp;&amp; r &lt;= _n);
+        assert(f(e()));
+        if (r == 0) return 0;
+        r += size;
+        S sm = e();
+        do {
+            r--;
+            while (r &gt; 1 &amp;&amp; (r % 2)) r &gt;&gt;= 1;
+            if (!f(op(d[r], sm))) {
+                while (r &lt; size) {
+                    r = (2 * r + 1);
+                    if (f(op(d[r], sm))) {
+                        sm = op(d[r], sm);
+                        r--;
+                    }
+                }
+                return r + 1 - size;
+            }
+            sm = op(d[r], sm);
+        } while ((r &amp; -r) != r);
+        return 0;
+    }
+
+  private:
+    int _n, size, log;
+    std::vector&lt;S&gt; d;
+
+    void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
+};
+
+}  // namespace atcoder
+
+#endif  // ATCODER_SEGTREE_HPP
+</code></pre>
+<h2 id="README.md">README.md</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+# AC(AtCoder) Library
+
+AC Library is the official library of [AtCoder](https://atcoder.jp/home). This repository manages the contents of AC Library.
+
+You may refer to the following links for more details:
+
+- [The Announcement on AtCoder](https://atcoder.jp/posts/518)
+- [The Announcement on Codeforces](https://codeforces.com/blog/entry/82400)
+- [Practice Contest](https://atcoder.jp/contests/practice2)
+- [AC Library Document(en)](https://atcoder.github.io/ac-library/production/document_en/)
+- [AC Library Document(ja)](https://atcoder.github.io/ac-library/production/document_ja/)
+
+The documents of master branch are as follows:
+
+- [AC Library Document(en, master)](https://atcoder.github.io/ac-library/master/document_en/)
+- [AC Library Document(ja, master)](https://atcoder.github.io/ac-library/master/document_ja/)
+
+## Policy
+
+Our goal of this project is to achieve that
+
+- Enable **every AtCoder users** to use this library with **minimum efforts of studying about PC**
+- Maximize convenience for **the usage in competitive programming**. We completely ignore other usages.
+- No bugs. This is a fantasy, but we pursue this.
+
+By this policy, we ignore some manners of C++ intentionally. For example,
+
+- we don&apos;t use `size_t`, but use `int`.
+- Segtree handles function pointers, not functional objects.
+- and so on...
+
+## Direction of this project
+
+We haven&apos;t decided whether we should increase this library&apos;s contents or not because there are pros and cons.
+If you are interested in this topic, please join the discussion in [The Announcement on Codeforces](https://codeforces.com/blog/entry/82400).
+
+For now, we are not planning to add new features, and we use this repository only for
+
+- collecting issues
+- recording the changelogs
+- versioning our releases
+
+## Contributing
+
+We accept issues/PRs **only from AtCoder users**.
+
+We would appreciate it if you would report our mistakes like a typo, or, more importantly, bugs!
+
+As mentioned above, we haven&apos;t decided which way to go. Therefore we are not accepting feature requests for now, and issues will be closed.
+
+## Releases
+
+You can view the newest version of AC Library in [The Announcement on AtCoder](https://atcoder.jp/posts/518) page.
+
+You can also see all versions in [The Release](https://github.com/atcoder/ac-library/releases) page.
+
+## License
+
+This library is released under the [CC0](https://creativecommons.org/publicdomain/zero/1.0/legalcode), except for the third-party libraries that are located under `/document_(en|ja)/lib` directory. Please refer [/document_en/lib/LICENSE.md](./document_en/lib/LICENSE.md) for details.
+</code></pre>
+<h2 id="scc.hpp">scc.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_SCC_HPP
+#define ATCODER_SCC_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_scc&quot;
+
+namespace atcoder {
+
+struct scc_graph {
+  public:
+    scc_graph() : internal(0) {}
+    explicit scc_graph(int n) : internal(n) {}
+
+    void add_edge(int from, int to) {
+        int n = internal.num_vertices();
+        assert(0 &lt;= from &amp;&amp; from &lt; n);
+        assert(0 &lt;= to &amp;&amp; to &lt; n);
+        internal.add_edge(from, to);
+    }
+
+    std::vector&lt;std::vector&lt;int&gt;&gt; scc() { return internal.scc(); }
+
+  private:
+    internal::scc_graph internal;
+};
+
+}  // namespace atcoder
+
+#endif  // ATCODER_SCC_HPP
+</code></pre>
+<h2 id="math.hpp">math.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_MATH_HPP
+#define ATCODER_MATH_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;tuple&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_math&quot;
+
+namespace atcoder {
+
+long long pow_mod(long long x, long long n, int m) {
+    assert(0 &lt;= n &amp;&amp; 1 &lt;= m);
+    if (m == 1) return 0;
+    internal::barrett bt((unsigned int)(m));
+    unsigned int r = 1, y = (unsigned int)(internal::safe_mod(x, m));
+    while (n) {
+        if (n &amp; 1) r = bt.mul(r, y);
+        y = bt.mul(y, y);
+        n &gt;&gt;= 1;
+    }
+    return r;
+}
+
+long long inv_mod(long long x, long long m) {
+    assert(1 &lt;= m);
+    auto z = internal::inv_gcd(x, m);
+    assert(z.first == 1);
+    return z.second;
+}
+
+// (rem, mod)
+std::pair&lt;long long, long long&gt; crt(const std::vector&lt;long long&gt;&amp; r,
+                                    const std::vector&lt;long long&gt;&amp; m) {
+    assert(r.size() == m.size());
+    int n = int(r.size());
+    // Contracts: 0 &lt;= r0 &lt; m0
+    long long r0 = 0, m0 = 1;
+    for (int i = 0; i &lt; n; i++) {
+        assert(1 &lt;= m[i]);
+        long long r1 = internal::safe_mod(r[i], m[i]), m1 = m[i];
+        if (m0 &lt; m1) {
+            std::swap(r0, r1);
+            std::swap(m0, m1);
+        }
+        if (m0 % m1 == 0) {
+            if (r0 % m1 != r1) return {0, 0};
+            continue;
+        }
+        // assume: m0 &gt; m1, lcm(m0, m1) &gt;= 2 * max(m0, m1)
+
+        // (r0, m0), (r1, m1) -&gt; (r2, m2 = lcm(m0, m1));
+        // r2 % m0 = r0
+        // r2 % m1 = r1
+        // -&gt; (r0 + x*m0) % m1 = r1
+        // -&gt; x*u0*g = r1-r0 (mod u1*g) (u0*g = m0, u1*g = m1)
+        // -&gt; x = (r1 - r0) / g * inv(u0) (mod u1)
+
+        // im = inv(u0) (mod u1) (0 &lt;= im &lt; u1)
+        long long g, im;
+        std::tie(g, im) = internal::inv_gcd(m0, m1);
+
+        long long u1 = (m1 / g);
+        // |r1 - r0| &lt; (m0 + m1) &lt;= lcm(m0, m1)
+        if ((r1 - r0) % g) return {0, 0};
+
+        // u1 * u1 &lt;= m1 * m1 / g / g &lt;= m0 * m1 / g = lcm(m0, m1)
+        long long x = (r1 - r0) / g % u1 * im % u1;
+
+        // |r0| + |m0 * x|
+        // &lt; m0 + m0 * (u1 - 1)
+        // = m0 + m0 * m1 / g - m0
+        // = lcm(m0, m1)
+        r0 += x * m0;
+        m0 *= u1;  // -&gt; lcm(m0, m1)
+        if (r0 &lt; 0) r0 += m0;
+    }
+    return {r0, m0};
+}
+
+long long floor_sum(long long n, long long m, long long a, long long b) {
+    assert(0 &lt;= n &amp;&amp; n &lt; (1LL &lt;&lt; 32));
+    assert(1 &lt;= m &amp;&amp; m &lt; (1LL &lt;&lt; 32));
+    unsigned long long ans = 0;
+    if (a &lt; 0) {
+        unsigned long long a2 = internal::safe_mod(a, m);
+        ans -= 1ULL * n * (n - 1) / 2 * ((a2 - a) / m);
+        a = a2;
+    }
+    if (b &lt; 0) {
+        unsigned long long b2 = internal::safe_mod(b, m);
+        ans -= 1ULL * n * ((b2 - b) / m);
+        b = b2;
+    }
+    return ans + internal::floor_sum_unsigned(n, m, a, b);
+}
+
+}  // namespace atcoder
+
+#endif  // ATCODER_MATH_HPP
+</code></pre>
+<h2 id="internal_csr">internal_csr</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;internal_csr.hpp&quot;
+</code></pre>
+<h2 id="internal_math.hpp">internal_math.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_INTERNAL_MATH_HPP
+#define ATCODER_INTERNAL_MATH_HPP 1
+
+#include &lt;utility&gt;
+
+#ifdef _MSC_VER
+#include &lt;intrin.h&gt;
+#endif
+
+namespace atcoder {
+
+namespace internal {
+
+// @param m `1 &lt;= m`
+// @return x mod m
+constexpr long long safe_mod(long long x, long long m) {
+    x %= m;
+    if (x &lt; 0) x += m;
+    return x;
+}
+
+// Fast modular multiplication by barrett reduction
+// Reference: https://en.wikipedia.org/wiki/Barrett_reduction
+// NOTE: reconsider after Ice Lake
+struct barrett {
+    unsigned int _m;
+    unsigned long long im;
+
+    // @param m `1 &lt;= m`
+    explicit barrett(unsigned int m) : _m(m), im((unsigned long long)(-1) / m + 1) {}
+
+    // @return m
+    unsigned int umod() const { return _m; }
+
+    // @param a `0 &lt;= a &lt; m`
+    // @param b `0 &lt;= b &lt; m`
+    // @return `a * b % m`
+    unsigned int mul(unsigned int a, unsigned int b) const {
+        // [1] m = 1
+        // a = b = im = 0, so okay
+
+        // [2] m &gt;= 2
+        // im = ceil(2^64 / m)
+        // -&gt; im * m = 2^64 + r (0 &lt;= r &lt; m)
+        // let z = a*b = c*m + d (0 &lt;= c, d &lt; m)
+        // a*b * im = (c*m + d) * im = c*(im*m) + d*im = c*2^64 + c*r + d*im
+        // c*r + d*im &lt; m * m + m * im &lt; m * m + 2^64 + m &lt;= 2^64 + m * (m + 1) &lt; 2^64 * 2
+        // ((ab * im) &gt;&gt; 64) == c or c + 1
+        unsigned long long z = a;
+        z *= b;
+#ifdef _MSC_VER
+        unsigned long long x;
+        _umul128(z, im, &amp;x);
+#else
+        unsigned long long x =
+            (unsigned long long)(((unsigned __int128)(z)*im) &gt;&gt; 64);
+#endif
+        unsigned long long y = x * _m;
+        return (unsigned int)(z - y + (z &lt; y ? _m : 0));
+    }
+};
+
+// @param n `0 &lt;= n`
+// @param m `1 &lt;= m`
+// @return `(x ** n) % m`
+constexpr long long pow_mod_constexpr(long long x, long long n, int m) {
+    if (m == 1) return 0;
+    unsigned int _m = (unsigned int)(m);
+    unsigned long long r = 1;
+    unsigned long long y = safe_mod(x, m);
+    while (n) {
+        if (n &amp; 1) r = (r * y) % _m;
+        y = (y * y) % _m;
+        n &gt;&gt;= 1;
+    }
+    return r;
+}
+
+// Reference:
+// M. Forisek and J. Jancina,
+// Fast Primality Testing for Integers That Fit into a Machine Word
+// @param n `0 &lt;= n`
+constexpr bool is_prime_constexpr(int n) {
+    if (n &lt;= 1) return false;
+    if (n == 2 || n == 7 || n == 61) return true;
+    if (n % 2 == 0) return false;
+    long long d = n - 1;
+    while (d % 2 == 0) d /= 2;
+    constexpr long long bases[3] = {2, 7, 61};
+    for (long long a : bases) {
+        long long t = d;
+        long long y = pow_mod_constexpr(a, t, n);
+        while (t != n - 1 &amp;&amp; y != 1 &amp;&amp; y != n - 1) {
+            y = y * y % n;
+            t &lt;&lt;= 1;
+        }
+        if (y != n - 1 &amp;&amp; t % 2 == 0) {
+            return false;
+        }
+    }
+    return true;
+}
+template &lt;int n&gt; constexpr bool is_prime = is_prime_constexpr(n);
+
+// @param b `1 &lt;= b`
+// @return pair(g, x) s.t. g = gcd(a, b), xa = g (mod b), 0 &lt;= x &lt; b/g
+constexpr std::pair&lt;long long, long long&gt; inv_gcd(long long a, long long b) {
+    a = safe_mod(a, b);
+    if (a == 0) return {b, 0};
+
+    // Contracts:
+    // [1] s - m0 * a = 0 (mod b)
+    // [2] t - m1 * a = 0 (mod b)
+    // [3] s * |m1| + t * |m0| &lt;= b
+    long long s = b, t = a;
+    long long m0 = 0, m1 = 1;
+
+    while (t) {
+        long long u = s / t;
+        s -= t * u;
+        m0 -= m1 * u;  // |m1 * u| &lt;= |m1| * s &lt;= b
+
+        // [3]:
+        // (s - t * u) * |m1| + t * |m0 - m1 * u|
+        // &lt;= s * |m1| - t * u * |m1| + t * (|m0| + |m1| * u)
+        // = s * |m1| + t * |m0| &lt;= b
+
+        auto tmp = s;
+        s = t;
+        t = tmp;
+        tmp = m0;
+        m0 = m1;
+        m1 = tmp;
+    }
+    // by [3]: |m0| &lt;= b/g
+    // by g != b: |m0| &lt; b/g
+    if (m0 &lt; 0) m0 += b / s;
+    return {s, m0};
+}
+
+// Compile time primitive root
+// @param m must be prime
+// @return primitive root (and minimum in now)
+constexpr int primitive_root_constexpr(int m) {
+    if (m == 2) return 1;
+    if (m == 167772161) return 3;
+    if (m == 469762049) return 3;
+    if (m == 754974721) return 11;
+    if (m == 998244353) return 3;
+    int divs[20] = {};
+    divs[0] = 2;
+    int cnt = 1;
+    int x = (m - 1) / 2;
+    while (x % 2 == 0) x /= 2;
+    for (int i = 3; (long long)(i)*i &lt;= x; i += 2) {
+        if (x % i == 0) {
+            divs[cnt++] = i;
+            while (x % i == 0) {
+                x /= i;
+            }
+        }
+    }
+    if (x &gt; 1) {
+        divs[cnt++] = x;
+    }
+    for (int g = 2;; g++) {
+        bool ok = true;
+        for (int i = 0; i &lt; cnt; i++) {
+            if (pow_mod_constexpr(g, (m - 1) / divs[i], m) == 1) {
+                ok = false;
+                break;
+            }
+        }
+        if (ok) return g;
+    }
+}
+template &lt;int m&gt; constexpr int primitive_root = primitive_root_constexpr(m);
+
+// @param n `n &lt; 2^32`
+// @param m `1 &lt;= m &lt; 2^32`
+// @return sum_{i=0}^{n-1} floor((ai + b) / m) (mod 2^64)
+unsigned long long floor_sum_unsigned(unsigned long long n,
+                                      unsigned long long m,
+                                      unsigned long long a,
+                                      unsigned long long b) {
+    unsigned long long ans = 0;
+    while (true) {
+        if (a &gt;= m) {
+            ans += n * (n - 1) / 2 * (a / m);
+            a %= m;
+        }
+        if (b &gt;= m) {
+            ans += n * (b / m);
+            b %= m;
+        }
+
+        unsigned long long y_max = a * n + b;
+        if (y_max &lt; m) break;
+        // y_max &lt; m * (n + 1)
+        // floor(y_max / m) &lt;= n
+        n = (unsigned long long)(y_max / m);
+        b = (unsigned long long)(y_max % m);
+        std::swap(m, a);
+    }
+    return ans;
+}
+
+}  // namespace internal
+
+}  // namespace atcoder
+
+#endif  // ATCODER_INTERNAL_MATH_HPP
+</code></pre>
+<h2 id="maxflow.hpp">maxflow.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_MAXFLOW_HPP
+#define ATCODER_MAXFLOW_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;limits&gt;
+#include &lt;queue&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_queue&quot;
+
+namespace atcoder {
+
+template &lt;class Cap&gt; struct mf_graph {
+  public:
+    mf_graph() : _n(0) {}
+    explicit mf_graph(int n) : _n(n), g(n) {}
+
+    int add_edge(int from, int to, Cap cap) {
+        assert(0 &lt;= from &amp;&amp; from &lt; _n);
+        assert(0 &lt;= to &amp;&amp; to &lt; _n);
+        assert(0 &lt;= cap);
+        int m = int(pos.size());
+        pos.push_back({from, int(g[from].size())});
+        int from_id = int(g[from].size());
+        int to_id = int(g[to].size());
+        if (from == to) to_id++;
+        g[from].push_back(_edge{to, to_id, cap});
+        g[to].push_back(_edge{from, from_id, 0});
+        return m;
+    }
+
+    struct edge {
+        int from, to;
+        Cap cap, flow;
+    };
+
+    edge get_edge(int i) {
+        int m = int(pos.size());
+        assert(0 &lt;= i &amp;&amp; i &lt; m);
+        auto _e = g[pos[i].first][pos[i].second];
+        auto _re = g[_e.to][_e.rev];
+        return edge{pos[i].first, _e.to, _e.cap + _re.cap, _re.cap};
+    }
+    std::vector&lt;edge&gt; edges() {
+        int m = int(pos.size());
+        std::vector&lt;edge&gt; result;
+        for (int i = 0; i &lt; m; i++) {
+            result.push_back(get_edge(i));
+        }
+        return result;
+    }
+    void change_edge(int i, Cap new_cap, Cap new_flow) {
+        int m = int(pos.size());
+        assert(0 &lt;= i &amp;&amp; i &lt; m);
+        assert(0 &lt;= new_flow &amp;&amp; new_flow &lt;= new_cap);
+        auto&amp; _e = g[pos[i].first][pos[i].second];
+        auto&amp; _re = g[_e.to][_e.rev];
+        _e.cap = new_cap - new_flow;
+        _re.cap = new_flow;
+    }
+
+    Cap flow(int s, int t) {
+        return flow(s, t, std::numeric_limits&lt;Cap&gt;::max());
+    }
+    Cap flow(int s, int t, Cap flow_limit) {
+        assert(0 &lt;= s &amp;&amp; s &lt; _n);
+        assert(0 &lt;= t &amp;&amp; t &lt; _n);
+        assert(s != t);
+
+        std::vector&lt;int&gt; level(_n), iter(_n);
+        internal::simple_queue&lt;int&gt; que;
+
+        auto bfs = [&amp;]() {
+            std::fill(level.begin(), level.end(), -1);
+            level[s] = 0;
+            que.clear();
+            que.push(s);
+            while (!que.empty()) {
+                int v = que.front();
+                que.pop();
+                for (auto e : g[v]) {
+                    if (e.cap == 0 || level[e.to] &gt;= 0) continue;
+                    level[e.to] = level[v] + 1;
+                    if (e.to == t) return;
+                    que.push(e.to);
+                }
+            }
+        };
+        auto dfs = [&amp;](auto self, int v, Cap up) {
+            if (v == s) return up;
+            Cap res = 0;
+            int level_v = level[v];
+            for (int&amp; i = iter[v]; i &lt; int(g[v].size()); i++) {
+                _edge&amp; e = g[v][i];
+                if (level_v &lt;= level[e.to] || g[e.to][e.rev].cap == 0) continue;
+                Cap d =
+                    self(self, e.to, std::min(up - res, g[e.to][e.rev].cap));
+                if (d &lt;= 0) continue;
+                g[v][i].cap += d;
+                g[e.to][e.rev].cap -= d;
+                res += d;
+                if (res == up) return res;
+            }
+            level[v] = _n;
+            return res;
+        };
+
+        Cap flow = 0;
+        while (flow &lt; flow_limit) {
+            bfs();
+            if (level[t] == -1) break;
+            std::fill(iter.begin(), iter.end(), 0);
+            Cap f = dfs(dfs, t, flow_limit - flow);
+            if (!f) break;
+            flow += f;
+        }
+        return flow;
+    }
+
+    std::vector&lt;bool&gt; min_cut(int s) {
+        std::vector&lt;bool&gt; visited(_n);
+        internal::simple_queue&lt;int&gt; que;
+        que.push(s);
+        while (!que.empty()) {
+            int p = que.front();
+            que.pop();
+            visited[p] = true;
+            for (auto e : g[p]) {
+                if (e.cap &amp;&amp; !visited[e.to]) {
+                    visited[e.to] = true;
+                    que.push(e.to);
+                }
+            }
+        }
+        return visited;
+    }
+
+  private:
+    int _n;
+    struct _edge {
+        int to, rev;
+        Cap cap;
+    };
+    std::vector&lt;std::pair&lt;int, int&gt;&gt; pos;
+    std::vector&lt;std::vector&lt;_edge&gt;&gt; g;
+};
+
+}  // namespace atcoder
+
+#endif  // ATCODER_MAXFLOW_HPP
+</code></pre>
+<h2 id="string.hpp">string.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_STRING_HPP
+#define ATCODER_STRING_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;numeric&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+namespace atcoder {
+
+namespace internal {
+
+std::vector&lt;int&gt; sa_naive(const std::vector&lt;int&gt;&amp; s) {
+    int n = int(s.size());
+    std::vector&lt;int&gt; sa(n);
+    std::iota(sa.begin(), sa.end(), 0);
+    std::sort(sa.begin(), sa.end(), [&amp;](int l, int r) {
+        if (l == r) return false;
+        while (l &lt; n &amp;&amp; r &lt; n) {
+            if (s[l] != s[r]) return s[l] &lt; s[r];
+            l++;
+            r++;
+        }
+        return l == n;
+    });
+    return sa;
+}
+
+std::vector&lt;int&gt; sa_doubling(const std::vector&lt;int&gt;&amp; s) {
+    int n = int(s.size());
+    std::vector&lt;int&gt; sa(n), rnk = s, tmp(n);
+    std::iota(sa.begin(), sa.end(), 0);
+    for (int k = 1; k &lt; n; k *= 2) {
+        auto cmp = [&amp;](int x, int y) {
+            if (rnk[x] != rnk[y]) return rnk[x] &lt; rnk[y];
+            int rx = x + k &lt; n ? rnk[x + k] : -1;
+            int ry = y + k &lt; n ? rnk[y + k] : -1;
+            return rx &lt; ry;
+        };
+        std::sort(sa.begin(), sa.end(), cmp);
+        tmp[sa[0]] = 0;
+        for (int i = 1; i &lt; n; i++) {
+            tmp[sa[i]] = tmp[sa[i - 1]] + (cmp(sa[i - 1], sa[i]) ? 1 : 0);
+        }
+        std::swap(tmp, rnk);
+    }
+    return sa;
+}
+
+// SA-IS, linear-time suffix array construction
+// Reference:
+// G. Nong, S. Zhang, and W. H. Chan,
+// Two Efficient Algorithms for Linear Time Suffix Array Construction
+template &lt;int THRESHOLD_NAIVE = 10, int THRESHOLD_DOUBLING = 40&gt;
+std::vector&lt;int&gt; sa_is(const std::vector&lt;int&gt;&amp; s, int upper) {
+    int n = int(s.size());
+    if (n == 0) return {};
+    if (n == 1) return {0};
+    if (n == 2) {
+        if (s[0] &lt; s[1]) {
+            return {0, 1};
+        } else {
+            return {1, 0};
+        }
+    }
+    if (n &lt; THRESHOLD_NAIVE) {
+        return sa_naive(s);
+    }
+    if (n &lt; THRESHOLD_DOUBLING) {
+        return sa_doubling(s);
+    }
+
+    std::vector&lt;int&gt; sa(n);
+    std::vector&lt;bool&gt; ls(n);
+    for (int i = n - 2; i &gt;= 0; i--) {
+        ls[i] = (s[i] == s[i + 1]) ? ls[i + 1] : (s[i] &lt; s[i + 1]);
+    }
+    std::vector&lt;int&gt; sum_l(upper + 1), sum_s(upper + 1);
+    for (int i = 0; i &lt; n; i++) {
+        if (!ls[i]) {
+            sum_s[s[i]]++;
+        } else {
+            sum_l[s[i] + 1]++;
+        }
+    }
+    for (int i = 0; i &lt;= upper; i++) {
+        sum_s[i] += sum_l[i];
+        if (i &lt; upper) sum_l[i + 1] += sum_s[i];
+    }
+
+    auto induce = [&amp;](const std::vector&lt;int&gt;&amp; lms) {
+        std::fill(sa.begin(), sa.end(), -1);
+        std::vector&lt;int&gt; buf(upper + 1);
+        std::copy(sum_s.begin(), sum_s.end(), buf.begin());
+        for (auto d : lms) {
+            if (d == n) continue;
+            sa[buf[s[d]]++] = d;
+        }
+        std::copy(sum_l.begin(), sum_l.end(), buf.begin());
+        sa[buf[s[n - 1]]++] = n - 1;
+        for (int i = 0; i &lt; n; i++) {
+            int v = sa[i];
+            if (v &gt;= 1 &amp;&amp; !ls[v - 1]) {
+                sa[buf[s[v - 1]]++] = v - 1;
+            }
+        }
+        std::copy(sum_l.begin(), sum_l.end(), buf.begin());
+        for (int i = n - 1; i &gt;= 0; i--) {
+            int v = sa[i];
+            if (v &gt;= 1 &amp;&amp; ls[v - 1]) {
+                sa[--buf[s[v - 1] + 1]] = v - 1;
+            }
+        }
+    };
+
+    std::vector&lt;int&gt; lms_map(n + 1, -1);
+    int m = 0;
+    for (int i = 1; i &lt; n; i++) {
+        if (!ls[i - 1] &amp;&amp; ls[i]) {
+            lms_map[i] = m++;
+        }
+    }
+    std::vector&lt;int&gt; lms;
+    lms.reserve(m);
+    for (int i = 1; i &lt; n; i++) {
+        if (!ls[i - 1] &amp;&amp; ls[i]) {
+            lms.push_back(i);
+        }
+    }
+
+    induce(lms);
+
+    if (m) {
+        std::vector&lt;int&gt; sorted_lms;
+        sorted_lms.reserve(m);
+        for (int v : sa) {
+            if (lms_map[v] != -1) sorted_lms.push_back(v);
+        }
+        std::vector&lt;int&gt; rec_s(m);
+        int rec_upper = 0;
+        rec_s[lms_map[sorted_lms[0]]] = 0;
+        for (int i = 1; i &lt; m; i++) {
+            int l = sorted_lms[i - 1], r = sorted_lms[i];
+            int end_l = (lms_map[l] + 1 &lt; m) ? lms[lms_map[l] + 1] : n;
+            int end_r = (lms_map[r] + 1 &lt; m) ? lms[lms_map[r] + 1] : n;
+            bool same = true;
+            if (end_l - l != end_r - r) {
+                same = false;
+            } else {
+                while (l &lt; end_l) {
+                    if (s[l] != s[r]) {
+                        break;
+                    }
+                    l++;
+                    r++;
+                }
+                if (l == n || s[l] != s[r]) same = false;
+            }
+            if (!same) rec_upper++;
+            rec_s[lms_map[sorted_lms[i]]] = rec_upper;
+        }
+
+        auto rec_sa =
+            sa_is&lt;THRESHOLD_NAIVE, THRESHOLD_DOUBLING&gt;(rec_s, rec_upper);
+
+        for (int i = 0; i &lt; m; i++) {
+            sorted_lms[i] = lms[rec_sa[i]];
+        }
+        induce(sorted_lms);
+    }
+    return sa;
+}
+
+}  // namespace internal
+
+std::vector&lt;int&gt; suffix_array(const std::vector&lt;int&gt;&amp; s, int upper) {
+    assert(0 &lt;= upper);
+    for (int d : s) {
+        assert(0 &lt;= d &amp;&amp; d &lt;= upper);
+    }
+    auto sa = internal::sa_is(s, upper);
+    return sa;
+}
+
+template &lt;class T&gt; std::vector&lt;int&gt; suffix_array(const std::vector&lt;T&gt;&amp; s) {
+    int n = int(s.size());
+    std::vector&lt;int&gt; idx(n);
+    iota(idx.begin(), idx.end(), 0);
+    sort(idx.begin(), idx.end(), [&amp;](int l, int r) { return s[l] &lt; s[r]; });
+    std::vector&lt;int&gt; s2(n);
+    int now = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (i &amp;&amp; s[idx[i - 1]] != s[idx[i]]) now++;
+        s2[idx[i]] = now;
+    }
+    return internal::sa_is(s2, now);
+}
+
+std::vector&lt;int&gt; suffix_array(const std::string&amp; s) {
+    int n = int(s.size());
+    std::vector&lt;int&gt; s2(n);
+    for (int i = 0; i &lt; n; i++) {
+        s2[i] = s[i];
+    }
+    return internal::sa_is(s2, 255);
+}
+
+// Reference:
+// T. Kasai, G. Lee, H. Arimura, S. Arikawa, and K. Park,
+// Linear-Time Longest-Common-Prefix Computation in Suffix Arrays and Its
+// Applications
+template &lt;class T&gt;
+std::vector&lt;int&gt; lcp_array(const std::vector&lt;T&gt;&amp; s,
+                           const std::vector&lt;int&gt;&amp; sa) {
+    int n = int(s.size());
+    assert(n &gt;= 1);
+    std::vector&lt;int&gt; rnk(n);
+    for (int i = 0; i &lt; n; i++) {
+        rnk[sa[i]] = i;
+    }
+    std::vector&lt;int&gt; lcp(n - 1);
+    int h = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (h &gt; 0) h--;
+        if (rnk[i] == 0) continue;
+        int j = sa[rnk[i] - 1];
+        for (; j + h &lt; n &amp;&amp; i + h &lt; n; h++) {
+            if (s[j + h] != s[i + h]) break;
+        }
+        lcp[rnk[i] - 1] = h;
+    }
+    return lcp;
+}
+
+std::vector&lt;int&gt; lcp_array(const std::string&amp; s, const std::vector&lt;int&gt;&amp; sa) {
+    int n = int(s.size());
+    std::vector&lt;int&gt; s2(n);
+    for (int i = 0; i &lt; n; i++) {
+        s2[i] = s[i];
+    }
+    return lcp_array(s2, sa);
+}
+
+// Reference:
+// D. Gusfield,
+// Algorithms on Strings, Trees, and Sequences: Computer Science and
+// Computational Biology
+template &lt;class T&gt; std::vector&lt;int&gt; z_algorithm(const std::vector&lt;T&gt;&amp; s) {
+    int n = int(s.size());
+    if (n == 0) return {};
+    std::vector&lt;int&gt; z(n);
+    z[0] = 0;
+    for (int i = 1, j = 0; i &lt; n; i++) {
+        int&amp; k = z[i];
+        k = (j + z[j] &lt;= i) ? 0 : std::min(j + z[j] - i, z[i - j]);
+        while (i + k &lt; n &amp;&amp; s[k] == s[i + k]) k++;
+        if (j + z[j] &lt; i + z[i]) j = i;
+    }
+    z[0] = n;
+    return z;
+}
+
+std::vector&lt;int&gt; z_algorithm(const std::string&amp; s) {
+    int n = int(s.size());
+    std::vector&lt;int&gt; s2(n);
+    for (int i = 0; i &lt; n; i++) {
+        s2[i] = s[i];
+    }
+    return z_algorithm(s2);
+}
+
+}  // namespace atcoder
+
+#endif  // ATCODER_STRING_HPP
+</code></pre>
+<h2 id="segtree">segtree</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;segtree.hpp&quot;
+</code></pre>
+<h2 id="lazysegtree.hpp">lazysegtree.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_LAZYSEGTREE_HPP
+#define ATCODER_LAZYSEGTREE_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;cassert&gt;
+#include &lt;functional&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_bit&quot;
+
+namespace atcoder {
+
+#if __cplusplus &gt;= 201703L
+
+template &lt;class S,
+          auto op,
+          auto e,
+          class F,
+          auto mapping,
+          auto composition,
+          auto id&gt;
+struct lazy_segtree {
+    static_assert(std::is_convertible_v&lt;decltype(op), std::function&lt;S(S, S)&gt;&gt;,
+                  &quot;op must work as S(S, S)&quot;);
+    static_assert(std::is_convertible_v&lt;decltype(e), std::function&lt;S()&gt;&gt;,
+                  &quot;e must work as S()&quot;);
+    static_assert(
+        std::is_convertible_v&lt;decltype(mapping), std::function&lt;S(F, S)&gt;&gt;,
+        &quot;mapping must work as F(F, S)&quot;);
+    static_assert(
+        std::is_convertible_v&lt;decltype(composition), std::function&lt;F(F, F)&gt;&gt;,
+        &quot;compostiion must work as F(F, F)&quot;);
+    static_assert(std::is_convertible_v&lt;decltype(id), std::function&lt;F()&gt;&gt;,
+                  &quot;id must work as F()&quot;);
+
+#else
+
+template &lt;class S,
+          S (*op)(S, S),
+          S (*e)(),
+          class F,
+          S (*mapping)(F, S),
+          F (*composition)(F, F),
+          F (*id)()&gt;
+struct lazy_segtree {
+
+#endif
+
+  public:
+    lazy_segtree() : lazy_segtree(0) {}
+    explicit lazy_segtree(int n) : lazy_segtree(std::vector&lt;S&gt;(n, e())) {}
+    explicit lazy_segtree(const std::vector&lt;S&gt;&amp; v) : _n(int(v.size())) {
+        size = (int)internal::bit_ceil((unsigned int)(_n));
+        log = internal::countr_zero((unsigned int)size);
+        d = std::vector&lt;S&gt;(2 * size, e());
+        lz = std::vector&lt;F&gt;(size, id());
+        for (int i = 0; i &lt; _n; i++) d[size + i] = v[i];
+        for (int i = size - 1; i &gt;= 1; i--) {
+            update(i);
+        }
+    }
+
+    void set(int p, S x) {
+        assert(0 &lt;= p &amp;&amp; p &lt; _n);
+        p += size;
+        for (int i = log; i &gt;= 1; i--) push(p &gt;&gt; i);
+        d[p] = x;
+        for (int i = 1; i &lt;= log; i++) update(p &gt;&gt; i);
+    }
+
+    S get(int p) {
+        assert(0 &lt;= p &amp;&amp; p &lt; _n);
+        p += size;
+        for (int i = log; i &gt;= 1; i--) push(p &gt;&gt; i);
+        return d[p];
+    }
+
+    S prod(int l, int r) {
+        assert(0 &lt;= l &amp;&amp; l &lt;= r &amp;&amp; r &lt;= _n);
+        if (l == r) return e();
+
+        l += size;
+        r += size;
+
+        for (int i = log; i &gt;= 1; i--) {
+            if (((l &gt;&gt; i) &lt;&lt; i) != l) push(l &gt;&gt; i);
+            if (((r &gt;&gt; i) &lt;&lt; i) != r) push((r - 1) &gt;&gt; i);
+        }
+
+        S sml = e(), smr = e();
+        while (l &lt; r) {
+            if (l &amp; 1) sml = op(sml, d[l++]);
+            if (r &amp; 1) smr = op(d[--r], smr);
+            l &gt;&gt;= 1;
+            r &gt;&gt;= 1;
+        }
+
+        return op(sml, smr);
+    }
+
+    S all_prod() { return d[1]; }
+
+    void apply(int p, F f) {
+        assert(0 &lt;= p &amp;&amp; p &lt; _n);
+        p += size;
+        for (int i = log; i &gt;= 1; i--) push(p &gt;&gt; i);
+        d[p] = mapping(f, d[p]);
+        for (int i = 1; i &lt;= log; i++) update(p &gt;&gt; i);
+    }
+    void apply(int l, int r, F f) {
+        assert(0 &lt;= l &amp;&amp; l &lt;= r &amp;&amp; r &lt;= _n);
+        if (l == r) return;
+
+        l += size;
+        r += size;
+
+        for (int i = log; i &gt;= 1; i--) {
+            if (((l &gt;&gt; i) &lt;&lt; i) != l) push(l &gt;&gt; i);
+            if (((r &gt;&gt; i) &lt;&lt; i) != r) push((r - 1) &gt;&gt; i);
+        }
+
+        {
+            int l2 = l, r2 = r;
+            while (l &lt; r) {
+                if (l &amp; 1) all_apply(l++, f);
+                if (r &amp; 1) all_apply(--r, f);
+                l &gt;&gt;= 1;
+                r &gt;&gt;= 1;
+            }
+            l = l2;
+            r = r2;
+        }
+
+        for (int i = 1; i &lt;= log; i++) {
+            if (((l &gt;&gt; i) &lt;&lt; i) != l) update(l &gt;&gt; i);
+            if (((r &gt;&gt; i) &lt;&lt; i) != r) update((r - 1) &gt;&gt; i);
+        }
+    }
+
+    template &lt;bool (*g)(S)&gt; int max_right(int l) {
+        return max_right(l, [](S x) { return g(x); });
+    }
+    template &lt;class G&gt; int max_right(int l, G g) {
+        assert(0 &lt;= l &amp;&amp; l &lt;= _n);
+        assert(g(e()));
+        if (l == _n) return _n;
+        l += size;
+        for (int i = log; i &gt;= 1; i--) push(l &gt;&gt; i);
+        S sm = e();
+        do {
+            while (l % 2 == 0) l &gt;&gt;= 1;
+            if (!g(op(sm, d[l]))) {
+                while (l &lt; size) {
+                    push(l);
+                    l = (2 * l);
+                    if (g(op(sm, d[l]))) {
+                        sm = op(sm, d[l]);
+                        l++;
+                    }
+                }
+                return l - size;
+            }
+            sm = op(sm, d[l]);
+            l++;
+        } while ((l &amp; -l) != l);
+        return _n;
+    }
+
+    template &lt;bool (*g)(S)&gt; int min_left(int r) {
+        return min_left(r, [](S x) { return g(x); });
+    }
+    template &lt;class G&gt; int min_left(int r, G g) {
+        assert(0 &lt;= r &amp;&amp; r &lt;= _n);
+        assert(g(e()));
+        if (r == 0) return 0;
+        r += size;
+        for (int i = log; i &gt;= 1; i--) push((r - 1) &gt;&gt; i);
+        S sm = e();
+        do {
+            r--;
+            while (r &gt; 1 &amp;&amp; (r % 2)) r &gt;&gt;= 1;
+            if (!g(op(d[r], sm))) {
+                while (r &lt; size) {
+                    push(r);
+                    r = (2 * r + 1);
+                    if (g(op(d[r], sm))) {
+                        sm = op(d[r], sm);
+                        r--;
+                    }
+                }
+                return r + 1 - size;
+            }
+            sm = op(d[r], sm);
+        } while ((r &amp; -r) != r);
+        return 0;
+    }
+
+  private:
+    int _n, size, log;
+    std::vector&lt;S&gt; d;
+    std::vector&lt;F&gt; lz;
+
+    void update(int k) { d[k] = op(d[2 * k], d[2 * k + 1]); }
+    void all_apply(int k, F f) {
+        d[k] = mapping(f, d[k]);
+        if (k &lt; size) lz[k] = composition(f, lz[k]);
+    }
+    void push(int k) {
+        all_apply(2 * k, lz[k]);
+        all_apply(2 * k + 1, lz[k]);
+        lz[k] = id();
+    }
+};
+
+}  // namespace atcoder
+
+#endif  // ATCODER_LAZYSEGTREE_HPP
+</code></pre>
+<h2 id="mincostflow">mincostflow</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;mincostflow.hpp&quot;
+</code></pre>
+<h2 id="convolution">convolution</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;convolution.hpp&quot;
+</code></pre>
+<h2 id="twosat.hpp">twosat.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_TWOSAT_HPP
+#define ATCODER_TWOSAT_HPP 1
+
+#include &lt;cassert&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_scc&quot;
+
+namespace atcoder {
+
+// Reference:
+// B. Aspvall, M. Plass, and R. Tarjan,
+// A Linear-Time Algorithm for Testing the Truth of Certain Quantified Boolean
+// Formulas
+struct two_sat {
+  public:
+    two_sat() : _n(0), scc(0) {}
+    explicit two_sat(int n) : _n(n), _answer(n), scc(2 * n) {}
+
+    void add_clause(int i, bool f, int j, bool g) {
+        assert(0 &lt;= i &amp;&amp; i &lt; _n);
+        assert(0 &lt;= j &amp;&amp; j &lt; _n);
+        scc.add_edge(2 * i + (f ? 0 : 1), 2 * j + (g ? 1 : 0));
+        scc.add_edge(2 * j + (g ? 0 : 1), 2 * i + (f ? 1 : 0));
+    }
+    bool satisfiable() {
+        auto id = scc.scc_ids().second;
+        for (int i = 0; i &lt; _n; i++) {
+            if (id[2 * i] == id[2 * i + 1]) return false;
+            _answer[i] = id[2 * i] &lt; id[2 * i + 1];
+        }
+        return true;
+    }
+    std::vector&lt;bool&gt; answer() { return _answer; }
+
+  private:
+    int _n;
+    std::vector&lt;bool&gt; _answer;
+    internal::scc_graph scc;
+};
+
+}  // namespace atcoder
+
+#endif  // ATCODER_TWOSAT_HPP
+</code></pre>
+<h2 id="internal_type_traits.hpp">internal_type_traits.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_INTERNAL_TYPE_TRAITS_HPP
+#define ATCODER_INTERNAL_TYPE_TRAITS_HPP 1
+
+#include &lt;cassert&gt;
+#include &lt;numeric&gt;
+#include &lt;type_traits&gt;
+
+namespace atcoder {
+
+namespace internal {
+
+#ifndef _MSC_VER
+template &lt;class T&gt;
+using is_signed_int128 =
+    typename std::conditional&lt;std::is_same&lt;T, __int128_t&gt;::value ||
+                                  std::is_same&lt;T, __int128&gt;::value,
+                              std::true_type,
+                              std::false_type&gt;::type;
+
+template &lt;class T&gt;
+using is_unsigned_int128 =
+    typename std::conditional&lt;std::is_same&lt;T, __uint128_t&gt;::value ||
+                                  std::is_same&lt;T, unsigned __int128&gt;::value,
+                              std::true_type,
+                              std::false_type&gt;::type;
+
+template &lt;class T&gt;
+using make_unsigned_int128 =
+    typename std::conditional&lt;std::is_same&lt;T, __int128_t&gt;::value,
+                              __uint128_t,
+                              unsigned __int128&gt;;
+
+template &lt;class T&gt;
+using is_integral = typename std::conditional&lt;std::is_integral&lt;T&gt;::value ||
+                                                  is_signed_int128&lt;T&gt;::value ||
+                                                  is_unsigned_int128&lt;T&gt;::value,
+                                              std::true_type,
+                                              std::false_type&gt;::type;
+
+template &lt;class T&gt;
+using is_signed_int = typename std::conditional&lt;(is_integral&lt;T&gt;::value &amp;&amp;
+                                                 std::is_signed&lt;T&gt;::value) ||
+                                                    is_signed_int128&lt;T&gt;::value,
+                                                std::true_type,
+                                                std::false_type&gt;::type;
+
+template &lt;class T&gt;
+using is_unsigned_int =
+    typename std::conditional&lt;(is_integral&lt;T&gt;::value &amp;&amp;
+                               std::is_unsigned&lt;T&gt;::value) ||
+                                  is_unsigned_int128&lt;T&gt;::value,
+                              std::true_type,
+                              std::false_type&gt;::type;
+
+template &lt;class T&gt;
+using to_unsigned = typename std::conditional&lt;
+    is_signed_int128&lt;T&gt;::value,
+    make_unsigned_int128&lt;T&gt;,
+    typename std::conditional&lt;std::is_signed&lt;T&gt;::value,
+                              std::make_unsigned&lt;T&gt;,
+                              std::common_type&lt;T&gt;&gt;::type&gt;::type;
+
+#else
+
+template &lt;class T&gt; using is_integral = typename std::is_integral&lt;T&gt;;
+
+template &lt;class T&gt;
+using is_signed_int =
+    typename std::conditional&lt;is_integral&lt;T&gt;::value &amp;&amp; std::is_signed&lt;T&gt;::value,
+                              std::true_type,
+                              std::false_type&gt;::type;
+
+template &lt;class T&gt;
+using is_unsigned_int =
+    typename std::conditional&lt;is_integral&lt;T&gt;::value &amp;&amp;
+                                  std::is_unsigned&lt;T&gt;::value,
+                              std::true_type,
+                              std::false_type&gt;::type;
+
+template &lt;class T&gt;
+using to_unsigned = typename std::conditional&lt;is_signed_int&lt;T&gt;::value,
+                                              std::make_unsigned&lt;T&gt;,
+                                              std::common_type&lt;T&gt;&gt;::type;
+
+#endif
+
+template &lt;class T&gt;
+using is_signed_int_t = std::enable_if_t&lt;is_signed_int&lt;T&gt;::value&gt;;
+
+template &lt;class T&gt;
+using is_unsigned_int_t = std::enable_if_t&lt;is_unsigned_int&lt;T&gt;::value&gt;;
+
+template &lt;class T&gt; using to_unsigned_t = typename to_unsigned&lt;T&gt;::type;
+
+}  // namespace internal
+
+}  // namespace atcoder
+
+#endif  // ATCODER_INTERNAL_TYPE_TRAITS_HPP
+</code></pre>
+<h2 id="all">all</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;convolution&quot;
+#include &quot;dsu&quot;
+#include &quot;fenwicktree&quot;
+#include &quot;lazysegtree&quot;
+#include &quot;math&quot;
+#include &quot;maxflow&quot;
+#include &quot;mincostflow&quot;
+#include &quot;modint&quot;
+#include &quot;scc&quot;
+#include &quot;segtree&quot;
+#include &quot;string&quot;
+#include &quot;twosat&quot;
+</code></pre>
+<h2 id="internal_scc.hpp">internal_scc.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_INTERNAL_SCC_HPP
+#define ATCODER_INTERNAL_SCC_HPP 1
+
+#include &lt;algorithm&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+#include &quot;internal_csr&quot;
+
+namespace atcoder {
+namespace internal {
+
+// Reference:
+// R. Tarjan,
+// Depth-First Search and Linear Graph Algorithms
+struct scc_graph {
+  public:
+    explicit scc_graph(int n) : _n(n) {}
+
+    int num_vertices() { return _n; }
+
+    void add_edge(int from, int to) { edges.push_back({from, {to}}); }
+
+    // @return pair of (# of scc, scc id)
+    std::pair&lt;int, std::vector&lt;int&gt;&gt; scc_ids() {
+        auto g = csr&lt;edge&gt;(_n, edges);
+        int now_ord = 0, group_num = 0;
+        std::vector&lt;int&gt; visited, low(_n), ord(_n, -1), ids(_n);
+        visited.reserve(_n);
+        auto dfs = [&amp;](auto self, int v) -&gt; void {
+            low[v] = ord[v] = now_ord++;
+            visited.push_back(v);
+            for (int i = g.start[v]; i &lt; g.start[v + 1]; i++) {
+                auto to = g.elist[i].to;
+                if (ord[to] == -1) {
+                    self(self, to);
+                    low[v] = std::min(low[v], low[to]);
+                } else {
+                    low[v] = std::min(low[v], ord[to]);
+                }
+            }
+            if (low[v] == ord[v]) {
+                while (true) {
+                    int u = visited.back();
+                    visited.pop_back();
+                    ord[u] = _n;
+                    ids[u] = group_num;
+                    if (u == v) break;
+                }
+                group_num++;
+            }
+        };
+        for (int i = 0; i &lt; _n; i++) {
+            if (ord[i] == -1) dfs(dfs, i);
+        }
+        for (auto&amp; x : ids) {
+            x = group_num - 1 - x;
+        }
+        return {group_num, ids};
+    }
+
+    std::vector&lt;std::vector&lt;int&gt;&gt; scc() {
+        auto ids = scc_ids();
+        int group_num = ids.first;
+        std::vector&lt;int&gt; counts(group_num);
+        for (auto x : ids.second) counts[x]++;
+        std::vector&lt;std::vector&lt;int&gt;&gt; groups(ids.first);
+        for (int i = 0; i &lt; group_num; i++) {
+            groups[i].reserve(counts[i]);
+        }
+        for (int i = 0; i &lt; _n; i++) {
+            groups[ids.second[i]].push_back(i);
+        }
+        return groups;
+    }
+
+  private:
+    int _n;
+    struct edge {
+        int to;
+    };
+    std::vector&lt;std::pair&lt;int, edge&gt;&gt; edges;
+};
+
+}  // namespace internal
+
+}  // namespace atcoder
+
+#endif  // ATCODER_INTERNAL_SCC_HPP
+</code></pre>
+<h2 id="modint.hpp">modint.hpp</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#ifndef ATCODER_MODINT_HPP
+#define ATCODER_MODINT_HPP 1
+
+#include &lt;cassert&gt;
+#include &lt;numeric&gt;
+#include &lt;type_traits&gt;
+
+#ifdef _MSC_VER
+#include &lt;intrin.h&gt;
+#endif
+
+#include &quot;internal_math&quot;
+#include &quot;internal_type_traits&quot;
+
+namespace atcoder {
+
+namespace internal {
+
+struct modint_base {};
+struct static_modint_base : modint_base {};
+
+template &lt;class T&gt; using is_modint = std::is_base_of&lt;modint_base, T&gt;;
+template &lt;class T&gt; using is_modint_t = std::enable_if_t&lt;is_modint&lt;T&gt;::value&gt;;
+
+}  // namespace internal
+
+template &lt;int m, std::enable_if_t&lt;(1 &lt;= m)&gt;* = nullptr&gt;
+struct static_modint : internal::static_modint_base {
+    using mint = static_modint;
+
+  public:
+    static constexpr int mod() { return m; }
+    static mint raw(int v) {
+        mint x;
+        x._v = v;
+        return x;
+    }
+
+    static_modint() : _v(0) {}
+    template &lt;class T, internal::is_signed_int_t&lt;T&gt;* = nullptr&gt;
+    static_modint(T v) {
+        long long x = (long long)(v % (long long)(umod()));
+        if (x &lt; 0) x += umod();
+        _v = (unsigned int)(x);
+    }
+    template &lt;class T, internal::is_unsigned_int_t&lt;T&gt;* = nullptr&gt;
+    static_modint(T v) {
+        _v = (unsigned int)(v % umod());
+    }
+
+    unsigned int val() const { return _v; }
+
+    mint&amp; operator++() {
+        _v++;
+        if (_v == umod()) _v = 0;
+        return *this;
+    }
+    mint&amp; operator--() {
+        if (_v == 0) _v = umod();
+        _v--;
+        return *this;
+    }
+    mint operator++(int) {
+        mint result = *this;
+        ++*this;
+        return result;
+    }
+    mint operator--(int) {
+        mint result = *this;
+        --*this;
+        return result;
+    }
+
+    mint&amp; operator+=(const mint&amp; rhs) {
+        _v += rhs._v;
+        if (_v &gt;= umod()) _v -= umod();
+        return *this;
+    }
+    mint&amp; operator-=(const mint&amp; rhs) {
+        _v -= rhs._v;
+        if (_v &gt;= umod()) _v += umod();
+        return *this;
+    }
+    mint&amp; operator*=(const mint&amp; rhs) {
+        unsigned long long z = _v;
+        z *= rhs._v;
+        _v = (unsigned int)(z % umod());
+        return *this;
+    }
+    mint&amp; operator/=(const mint&amp; rhs) { return *this = *this * rhs.inv(); }
+
+    mint operator+() const { return *this; }
+    mint operator-() const { return mint() - *this; }
+
+    mint pow(long long n) const {
+        assert(0 &lt;= n);
+        mint x = *this, r = 1;
+        while (n) {
+            if (n &amp; 1) r *= x;
+            x *= x;
+            n &gt;&gt;= 1;
+        }
+        return r;
+    }
+    mint inv() const {
+        if (prime) {
+            assert(_v);
+            return pow(umod() - 2);
+        } else {
+            auto eg = internal::inv_gcd(_v, m);
+            assert(eg.first == 1);
+            return eg.second;
+        }
+    }
+
+    friend mint operator+(const mint&amp; lhs, const mint&amp; rhs) {
+        return mint(lhs) += rhs;
+    }
+    friend mint operator-(const mint&amp; lhs, const mint&amp; rhs) {
+        return mint(lhs) -= rhs;
+    }
+    friend mint operator*(const mint&amp; lhs, const mint&amp; rhs) {
+        return mint(lhs) *= rhs;
+    }
+    friend mint operator/(const mint&amp; lhs, const mint&amp; rhs) {
+        return mint(lhs) /= rhs;
+    }
+    friend bool operator==(const mint&amp; lhs, const mint&amp; rhs) {
+        return lhs._v == rhs._v;
+    }
+    friend bool operator!=(const mint&amp; lhs, const mint&amp; rhs) {
+        return lhs._v != rhs._v;
+    }
+
+  private:
+    unsigned int _v;
+    static constexpr unsigned int umod() { return m; }
+    static constexpr bool prime = internal::is_prime&lt;m&gt;;
+};
+
+template &lt;int id&gt; struct dynamic_modint : internal::modint_base {
+    using mint = dynamic_modint;
+
+  public:
+    static int mod() { return (int)(bt.umod()); }
+    static void set_mod(int m) {
+        assert(1 &lt;= m);
+        bt = internal::barrett(m);
+    }
+    static mint raw(int v) {
+        mint x;
+        x._v = v;
+        return x;
+    }
+
+    dynamic_modint() : _v(0) {}
+    template &lt;class T, internal::is_signed_int_t&lt;T&gt;* = nullptr&gt;
+    dynamic_modint(T v) {
+        long long x = (long long)(v % (long long)(mod()));
+        if (x &lt; 0) x += mod();
+        _v = (unsigned int)(x);
+    }
+    template &lt;class T, internal::is_unsigned_int_t&lt;T&gt;* = nullptr&gt;
+    dynamic_modint(T v) {
+        _v = (unsigned int)(v % mod());
+    }
+
+    unsigned int val() const { return _v; }
+
+    mint&amp; operator++() {
+        _v++;
+        if (_v == umod()) _v = 0;
+        return *this;
+    }
+    mint&amp; operator--() {
+        if (_v == 0) _v = umod();
+        _v--;
+        return *this;
+    }
+    mint operator++(int) {
+        mint result = *this;
+        ++*this;
+        return result;
+    }
+    mint operator--(int) {
+        mint result = *this;
+        --*this;
+        return result;
+    }
+
+    mint&amp; operator+=(const mint&amp; rhs) {
+        _v += rhs._v;
+        if (_v &gt;= umod()) _v -= umod();
+        return *this;
+    }
+    mint&amp; operator-=(const mint&amp; rhs) {
+        _v += mod() - rhs._v;
+        if (_v &gt;= umod()) _v -= umod();
+        return *this;
+    }
+    mint&amp; operator*=(const mint&amp; rhs) {
+        _v = bt.mul(_v, rhs._v);
+        return *this;
+    }
+    mint&amp; operator/=(const mint&amp; rhs) { return *this = *this * rhs.inv(); }
+
+    mint operator+() const { return *this; }
+    mint operator-() const { return mint() - *this; }
+
+    mint pow(long long n) const {
+        assert(0 &lt;= n);
+        mint x = *this, r = 1;
+        while (n) {
+            if (n &amp; 1) r *= x;
+            x *= x;
+            n &gt;&gt;= 1;
+        }
+        return r;
+    }
+    mint inv() const {
+        auto eg = internal::inv_gcd(_v, mod());
+        assert(eg.first == 1);
+        return eg.second;
+    }
+
+    friend mint operator+(const mint&amp; lhs, const mint&amp; rhs) {
+        return mint(lhs) += rhs;
+    }
+    friend mint operator-(const mint&amp; lhs, const mint&amp; rhs) {
+        return mint(lhs) -= rhs;
+    }
+    friend mint operator*(const mint&amp; lhs, const mint&amp; rhs) {
+        return mint(lhs) *= rhs;
+    }
+    friend mint operator/(const mint&amp; lhs, const mint&amp; rhs) {
+        return mint(lhs) /= rhs;
+    }
+    friend bool operator==(const mint&amp; lhs, const mint&amp; rhs) {
+        return lhs._v == rhs._v;
+    }
+    friend bool operator!=(const mint&amp; lhs, const mint&amp; rhs) {
+        return lhs._v != rhs._v;
+    }
+
+  private:
+    unsigned int _v;
+    static internal::barrett bt;
+    static unsigned int umod() { return bt.umod(); }
+};
+template &lt;int id&gt; internal::barrett dynamic_modint&lt;id&gt;::bt(998244353);
+
+using modint998244353 = static_modint&lt;998244353&gt;;
+using modint1000000007 = static_modint&lt;1000000007&gt;;
+using modint = dynamic_modint&lt;-1&gt;;
+
+namespace internal {
+
+template &lt;class T&gt;
+using is_static_modint = std::is_base_of&lt;internal::static_modint_base, T&gt;;
+
+template &lt;class T&gt;
+using is_static_modint_t = std::enable_if_t&lt;is_static_modint&lt;T&gt;::value&gt;;
+
+template &lt;class&gt; struct is_dynamic_modint : public std::false_type {};
+template &lt;int id&gt;
+struct is_dynamic_modint&lt;dynamic_modint&lt;id&gt;&gt; : public std::true_type {};
+
+template &lt;class T&gt;
+using is_dynamic_modint_t = std::enable_if_t&lt;is_dynamic_modint&lt;T&gt;::value&gt;;
+
+}  // namespace internal
+
+}  // namespace atcoder
+
+#endif  // ATCODER_MODINT_HPP
+</code></pre>
+<h2 id="internal_queue">internal_queue</h2>
+<a href="#table-of-content">^top</a>
+<pre><code>
+#include &quot;internal_queue.hpp&quot;
+</code></pre>
+</body></html>

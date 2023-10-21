@@ -20,6 +20,12 @@ add_compile_definitions(VALID_FILE="${CMAKE_CURRENT_SOURCE_DIR}/valid.txt")
 add_compile_definitions(TEST_CASES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test_cases/")
 add_compile_definitions(CP_LIBRARY_PATH="${CMAKE_CURRENT_SOURCE_DIR}/library/")
 
+if (NOT MSVC)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+else()
+    target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
+endif()
+
 add_subdirectory(tools)
 
 # TODO: Add tests and install targets if needed.
