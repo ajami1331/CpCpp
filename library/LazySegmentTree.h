@@ -12,7 +12,7 @@ template <class S, auto op, auto e, class F, auto mapping, auto composition, aut
 {
     static_assert(std::is_convertible_v<decltype(op), std::function<S(S, S)>>, "op must work as S(S, S)");
     static_assert(std::is_convertible_v<decltype(e), std::function<S()>>, "e must work as S()");
-    static_assert(std::is_convertible_v<decltype(mapping), std::function<S(F, S)>>, "mapping must work as F(F, S)");
+    static_assert(std::is_convertible_v<decltype(mapping), std::function<S(F, S)>>, "mapping must work as S(F, S)");
     static_assert(std::is_convertible_v<decltype(composition), std::function<F(F, F)>>,
                   "compostiion must work as F(F, F)");
     static_assert(std::is_convertible_v<decltype(id), std::function<F()>>, "id must work as F()");
