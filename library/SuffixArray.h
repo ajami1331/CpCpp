@@ -35,8 +35,8 @@ template <size_t MAXLEN> struct SuffixArray
     void CountingSort(int k) // O(n)
     {
         int i, sum, maxi = std::max(300, n); // up to 255 ASCII chars or length of n
-        memset(c, 0, sizeof c);         // clear frequency table
-        for (i = 0; i < n; i++)         // count the frequency of each integer rank
+        memset(c, 0, sizeof c);              // clear frequency table
+        for (i = 0; i < n; i++)              // count the frequency of each integer rank
             c[i + k < n ? RA[i + k] : 0]++;
         for (i = sum = 0; i < maxi; i++)
         {

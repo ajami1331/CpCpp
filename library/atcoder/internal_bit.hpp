@@ -9,9 +9,11 @@
 #include <bit>
 #endif
 
-namespace atcoder {
+namespace atcoder
+{
 
-namespace internal {
+namespace internal
+{
 
 #if __cplusplus >= 202002L
 
@@ -20,9 +22,11 @@ using std::bit_ceil;
 #else
 
 // @return same with std::bit::bit_ceil
-unsigned int bit_ceil(unsigned int n) {
+unsigned int bit_ceil(unsigned int n)
+{
     unsigned int x = 1;
-    while (x < (unsigned int)(n)) x *= 2;
+    while (x < (unsigned int)(n))
+        x *= 2;
     return x;
 }
 
@@ -30,7 +34,8 @@ unsigned int bit_ceil(unsigned int n) {
 
 // @param n `1 <= n`
 // @return same with std::bit::countr_zero
-int countr_zero(unsigned int n) {
+int countr_zero(unsigned int n)
+{
 #ifdef _MSC_VER
     unsigned long index;
     _BitScanForward(&index, n);
@@ -42,14 +47,16 @@ int countr_zero(unsigned int n) {
 
 // @param n `1 <= n`
 // @return same with std::bit::countr_zero
-constexpr int countr_zero_constexpr(unsigned int n) {
+constexpr int countr_zero_constexpr(unsigned int n)
+{
     int x = 0;
-    while (!(n & (1 << x))) x++;
+    while (!(n & (1 << x)))
+        x++;
     return x;
 }
 
-}  // namespace internal
+} // namespace internal
 
-}  // namespace atcoder
+} // namespace atcoder
 
-#endif  // ATCODER_INTERNAL_BITOP_HPP
+#endif // ATCODER_INTERNAL_BITOP_HPP

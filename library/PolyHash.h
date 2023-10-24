@@ -2,10 +2,10 @@
 #ifndef PolyHash_h
 #define PolyHash_h 1
 
+#include <cassert>
 #include <chrono>
 #include <random>
 #include <vector>
-#include <cassert>
 
 // #define IMPLEMENT_REV_HASH
 

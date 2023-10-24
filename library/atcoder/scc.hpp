@@ -7,26 +7,36 @@
 
 #include "internal_scc"
 
-namespace atcoder {
+namespace atcoder
+{
 
-struct scc_graph {
+struct scc_graph
+{
   public:
-    scc_graph() : internal(0) {}
-    explicit scc_graph(int n) : internal(n) {}
+    scc_graph() : internal(0)
+    {
+    }
+    explicit scc_graph(int n) : internal(n)
+    {
+    }
 
-    void add_edge(int from, int to) {
+    void add_edge(int from, int to)
+    {
         int n = internal.num_vertices();
         assert(0 <= from && from < n);
         assert(0 <= to && to < n);
         internal.add_edge(from, to);
     }
 
-    std::vector<std::vector<int>> scc() { return internal.scc(); }
+    std::vector<std::vector<int>> scc()
+    {
+        return internal.scc();
+    }
 
   private:
     internal::scc_graph internal;
 };
 
-}  // namespace atcoder
+} // namespace atcoder
 
-#endif  // ATCODER_SCC_HPP
+#endif // ATCODER_SCC_HPP

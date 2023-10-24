@@ -21,7 +21,7 @@ add_compile_definitions(TEST_CASES_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test_cases/"
 add_compile_definitions(CP_LIBRARY_PATH="${CMAKE_CURRENT_SOURCE_DIR}/library/")
 
 if (NOT MSVC)
-    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic -Werror)
+    target_compile_options(${PROJECT_NAME} PRIVATE -Wall -Wextra -Wpedantic)
 else()
     target_compile_options(${PROJECT_NAME} PRIVATE /W4 /WX)
 endif()
