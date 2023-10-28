@@ -164,12 +164,12 @@ struct ModInt
         return lhs;
     }
 
-    friend istream &operator>>(istream &in, ModInt &inp)
+    friend std::istream &operator>>(std::istream &in, ModInt &inp)
     {
         return in >> inp.val;
     }
 
-    friend ostream &operator<<(ostream &out, const ModInt &pr)
+    friend std::ostream &operator<<(std::ostream &out, const ModInt &pr)
     {
         return out << pr.val;
     }

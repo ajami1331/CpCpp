@@ -10,137 +10,83 @@
 #define dbg(...) 0
 #endif
 #endif // DEBUG_H
-#ifndef LCA_H
-#define LCA_H 1
+#ifndef DisjointSet_h
+#define DisjointSet_h 1
 #include <algorithm>
-#include <array>
-#include <cassert>
-#include <functional>
-#include <iostream>
 #include <vector>
 namespace library
 {
-constexpr int LOG2(int x)
-{
-    return 32 - __builtin_clz(x) - 1;
-}
-template <int sz = 3'00'105, int LG = LOG2(sz)> struct LCA
+template <int sz> struct DisjointSet
 {
     int n;
-    int log2n;
-    std::vector<int> graph[sz];
-    std::array<int, sz> level;
-    std::array<int, sz> parent[LG];
-    std::array<int, sz> tr;
-    LCA()
+    int par[sz];
+    int cnt[sz];
+    int rnk[sz];
+    int components;
+    DisjointSet()
     {
     }
-    LCA(int n)
+    DisjointSet(int n) : n(n)
     {
-        Init(n);
+        this->Reset();
     }
-    ~LCA()
+    ~DisjointSet()
     {
     }
-    void Init(int n)
+    void Resize(int n)
     {
-        assert(n < sz);
         this->n = n;
-        log2n = LOG2(n) + 1;
-        for (int i = 0; i <= n; ++i)
-        {
-            graph[i].clear();
-        }
+        this->Reset();
     }
-    void AddEdge(int from, int to)
+    void Reset()
     {
-        graph[from].emplace_back(to);
-        graph[to].emplace_back(from);
+        for (int i = 0; i < n; i++)
+        {
+            par[i] = i;
+            cnt[i] = 1;
+            rnk[i] = 0;
+        }
+        components = n;
     }
-    void Build(int root)
+    int FindSet(int u)
     {
-        level[root] = 0;
-        parent[0].fill(-1);
-        Dfs(root, -1);
-    }
-    void Dfs(int u, int prev = -1)
-    {
-        parent[0][u] = prev;
-        level[u] = level[prev] + 1;
-        tr[u] = 1;
-        for (int i = 1; i < log2n; i++)
-        {
-            parent[i][u] = parent[i - 1][parent[i - 1][u]];
-        }
-        for (int v : graph[u])
-        {
-            if (v != prev)
-            {
-                Dfs(v, u);
-                tr[u] += tr[v];
-            }
-        }
-    }
-    int Query(int u, int v)
-    {
-        if (level[u] < level[v])
-        {
-            std::swap(u, v);
-        }
-        for (int i = log2n - 1; i >= 0; i--)
-        {
-            if (level[u] - (1 << i) >= level[v])
-            {
-                u = parent[i][u];
-            }
-        }
-        if (u == v)
+        if (par[u] == u)
         {
             return u;
         }
-        for (int i = log2n - 1; i >= 0; i--)
+        return par[u] = FindSet(par[u]);
+    }
+    bool IsSameSet(int u, int v)
+    {
+        return FindSet(u) == FindSet(v);
+    }
+    void MergeSet(int u, int v)
+    {
+        if (IsSameSet(u, v))
         {
-            if (parent[i][u] != parent[i][v])
+            return;
+        }
+        u = FindSet(u);
+        v = FindSet(v);
+        if (cnt[u] < cnt[v])
+        {
+            std::swap(u, v);
+        }
+        par[u] = par[v];
+        cnt[v] += cnt[u];
+        components--;
+    }
+    std::vector<int> GetComponents()
+    {
+        std::vector<int> ret;
+        for (int i = 0; i < n; i++)
+        {
+            if (FindSet(i) == i)
             {
-                u = parent[i][u];
-                v = parent[i][v];
+                ret.emplace_back(i);
             }
         }
-        return parent[0][u];
-    }
-    int Distance(int u, int v)
-    {
-        int lca = Query(u, v);
-        return level[u] + level[v] - 2 * level[lca];
-    }
-    int KthAncestor(int u, int k)
-    {
-        assert(k >= 0);
-        for (int i = 0; i < log2n; i++)
-        {
-            if (u == -1)
-            {
-                break;
-            }
-            if (k & (1 << i))
-            {
-                u = parent[i][u];
-            }
-        }
-        return u;
-    }
-    int KthAncestor(int u, int v, int k)
-    {
-        int lca = Query(u, v);
-        int d = level[u] + level[v] - 2 * level[lca];
-        if (k <= level[u] - level[lca])
-        {
-            return KthAncestor(u, k);
-        }
-        else
-        {
-            return KthAncestor(v, d - k);
-        }
+        return ret;
     }
 };
 } // namespace library
@@ -167,31 +113,58 @@ using ll = long long;
 using ull = unsigned long long;
 const int sz = 2e5 + 105;
 int n, m;
-vector<int> g[sz];
-library::LCA lca;
+int t;
+ll ar[sz];
+ll c;
+library::DisjointSet<sz> ds;
 void Solve()
 {
-    scanf("%d %d", &n, &m);
-    lca.Init(n);
-    for (int i = 2; i <= n; i++)
+    scanf("%d", &t);
+    while (t--)
     {
-        int x, y;
-        scanf("%d", &x);
-        lca.AddEdge(x, i);
-    }
-    lca.Build(1);
-    debug(lca.Query(4, 5));
-    dbg(lca.Query(4, 5));
-    debug(lca.level);
-    while (m--)
-    {
-        int x, y;
-        scanf("%d %d", &x, &y);
-        printf("%d\n", lca.Query(x, y));
+        scanf("%d %lld", &n, &c);
+        ds.Resize(n);
+        for (int i = 0; i < n; i++)
+        {
+            scanf("%lld", &ar[i]);
+        }
+        bool ok = true;
+        vector<int> other;
+        for (ll i = 0, j = 1; j < n; j++)
+        {
+            ll h = c * (i + 1) * (j + 1);
+            if (ar[i] + ar[j] >= h)
+            {
+                ar[i] += ar[j];
+                ds.MergeSet(i, j);
+                if (other.size())
+                {
+                    for (int v : other)
+                    {
+                        ds.MergeSet(i, v);
+                        ar[i] += ar[v];
+                    }
+                    other.clear();
+                }
+            }
+            else
+            {
+                other.emplace_back(j);
+            }
+        }
+        ok = ds.components == 1;
+        if (ok)
+        {
+            printf("Yes\n");
+        }
+        else
+        {
+            printf("No\n");
+        }
     }
 }
 } // namespace solution
-#endif
+#endif // solution_h
 #define _CRT_SECURE_NO_WARNINGS
 int main()
 {

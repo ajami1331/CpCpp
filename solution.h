@@ -15,7 +15,7 @@
 #include <utility>
 #include <vector>
 #include "library/Debug.h"
-#include "library/LCA.h"
+#include "library/DisjointSet.h"
 
 namespace solution
 {
@@ -25,29 +25,63 @@ using ull = unsigned long long;
 
 const int sz = 2e5 + 105;
 int n, m;
-vector<int> g[sz];
-library::LCA lca;
+int t;
+ll ar[sz];
+ll c;
+library::DisjointSet<sz> ds;
 
 void Solve()
 {
-    scanf("%d %d", &n, &m);
-    lca.Init(n);
-    for (int i = 2; i <= n; i++)
+    scanf("%d", &t);
+    while (t--)
     {
-        int x, y;
-        scanf("%d", &x);
-        lca.AddEdge(x, i);
-    }
-    
-    lca.Build(1);
-    while (m--)
-    {
-        int x, y;
-        scanf("%d %d", &x, &y);
-        printf("%d\n", lca.Query(x, y));
+        scanf("%d %lld", &n, &c);
+        ds.Resize(n);
+        for (int i = 0; i < n; i++)
+        {
+            scanf("%lld", &ar[i]);
+        }
+
+        bool ok = true;
+
+        vector<int> other;
+
+        for (ll i = 0, j = 1; j < n; j++)
+        {
+            ll h = c * (i + 1) * (j + 1);
+            if (ar[i] + ar[j] >= h)
+            {
+                ar[i] += ar[j];
+                ds.MergeSet(i, j);
+                if (other.size())
+                {
+                    for (int v : other)
+                    {
+                        ds.MergeSet(i, v);
+                        ar[i] += ar[v];
+                    }
+                    other.clear();
+                }
+            }
+            else
+            {
+                other.emplace_back(j);
+            }
+        }
+
+        ok = ds.components == 1;
+
+        if (ok)
+        {
+            printf("Yes\n");
+        }
+        else
+        {
+            printf("No\n");
+        }
     }
 }
 
 } // namespace solution
 
-#endif
+#endif // solution_h

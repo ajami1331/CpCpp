@@ -2,6 +2,7 @@
 #define DisjointSet_h 1
 
 #include <algorithm>
+#include <vector>
 
 namespace library
 {
