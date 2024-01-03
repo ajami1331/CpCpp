@@ -1,17 +1,6 @@
-#ifndef DEBUG_H
-#define DEBUG_H 1
-#include <iostream>
-#include <iterator>
-#include <sstream>
-#include <string>
-#ifndef CLown1331
-#define debug(...) 0
-#define ASSERT(...) 0
-#define dbg(...) 0
-#endif
-#endif // DEBUG_H
 #ifndef REROOTER_H
 #define REROOTER_H 1
+
 #include <algorithm>
 #include <vector>
 #include <tuple>
@@ -36,12 +25,16 @@ const auto exclusive = [](const auto &a, const auto &base, const auto &merge_int
     }
     return b;
 };
+// MergeInto : Aggregate * Value * Vertex(int) * EdgeIndex(int) -> Aggregate
+// Base : Vertex(int) -> Aggregate
+// FinalizeMerge : Aggregate * Vertex(int) * EdgeIndex(int) -> Value
 const auto rerooter = [](const auto &g, const auto &base, const auto &merge_into, const auto &finalize_merge) {
     int n = (int)g.size();
     using Aggregate = std::decay_t<decltype(base(0))>;
     using Value = std::decay_t<decltype(finalize_merge(base(0), 0, 0))>;
     std::vector<Value> root_dp(n), dp(n);
     std::vector<std::vector<Value>> edge_dp(n), redge_dp(n);
+
     std::vector<int> bfs, parent(n);
     bfs.reserve(n);
     bfs.push_back(0);
@@ -56,6 +49,7 @@ const auto rerooter = [](const auto &g, const auto &base, const auto &merge_into
             bfs.push_back(v);
         }
     }
+
     for (int i = n - 1; i >= 0; --i)
     {
         int u = bfs[i];
@@ -73,6 +67,7 @@ const auto rerooter = [](const auto &g, const auto &base, const auto &merge_into
         }
         dp[u] = finalize_merge(aggregate, u, p_edge_index);
     }
+
     for (auto u : bfs)
     {
         dp[parent[u]] = dp[u];
@@ -89,78 +84,10 @@ const auto rerooter = [](const auto &g, const auto &base, const auto &merge_into
             dp[g[u][i]] = redge_dp[u][i];
         }
     }
+
     return std::make_tuple(std::move(root_dp), std::move(edge_dp), std::move(redge_dp));
 };
 } // namespace reroot
 } // namespace library
+
 #endif // REROOTER_H
-#ifndef solution_h
-#define solution_h 1
-#include <algorithm>
-#include <climits>
-#include <cmath>
-#include <cstdio>
-#include <cstring>
-#include <deque>
-#include <iostream>
-#include <map>
-#include <numeric>
-#include <queue>
-#include <set>
-#include <stack>
-#include <unordered_map>
-#include <utility>
-#include <vector>
-namespace solution
-{
-using namespace std;
-using ll = long long;
-using ull = long long;
-const int sz = 2e5 + 105;
-struct Solution
-{
-    int n;
-    void Solve()
-    {
-        scanf("%d", &n);
-        vector<vector<int>> g(n);
-        vector<vector<int>> dir(n);
-        for (int i = 1; i < n; i++)
-        {
-            int u, v;
-            scanf("%d %d", &u, &v);
-            --u;
-            --v;
-            g[u].emplace_back(v);
-            g[v].emplace_back(u);
-            dir[u].emplace_back(0);
-            dir[v].emplace_back(1);
-        }
-        using Aggregate = int;
-        using Value = int;
-        auto base = [](int) -> Aggregate { return 0; };
-        auto merge_into = [&](Aggregate a, Value b, int vertex, int edge_index) -> Aggregate {
-            return a + b + dir[vertex][edge_index];
-        };
-        auto finalize_merge = [](Aggregate a, int vertex, int edge_index) -> Value { return a; };
-        auto [reroot, f, r] = library::reroot::rerooter(g, base, merge_into, finalize_merge);
-        int ans = *min_element(reroot.begin(), reroot.end());
-        printf("%d\n", ans);
-        for (int i = 0; i < n; i++)
-        {
-            if (reroot[i] == ans)
-            {
-                printf("%d ", i + 1);
-            }
-        }
-    }
-};
-} // namespace solution
-#endif // solution_h
-#define _CRT_SECURE_NO_WARNINGS
-int main()
-{
-    solution::Solution solution;
-    solution.Solve();
-    return 0;
-}

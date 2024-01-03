@@ -9,78 +9,69 @@
 #include <deque>
 #include <iostream>
 #include <map>
+#include <numeric>
 #include <queue>
 #include <set>
+#include <stack>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 #include "library/Debug.h"
-#include "library/DisjointSet.h"
+#include "library/Rerooter.h"
 
 namespace solution
 {
 using namespace std;
 using ll = long long;
-using ull = unsigned long long;
-
+using ull = long long;
 const int sz = 2e5 + 105;
-int n, m;
-int t;
-ll ar[sz];
-ll c;
-library::DisjointSet<sz> ds;
-
-void Solve()
+struct Solution
 {
-    scanf("%d", &t);
-    while (t--)
+    int n;
+
+    void Solve()
     {
-        scanf("%d %lld", &n, &c);
-        ds.Resize(n);
+        scanf("%d", &n);
+        vector<vector<int>> g(n);
+        vector<vector<int>> dir(n);
+        for (int i = 1; i < n; i++)
+        {
+            int u, v;
+            scanf("%d %d", &u, &v);
+            --u;
+            --v;
+            g[u].emplace_back(v);
+            g[v].emplace_back(u);
+            dir[u].emplace_back(0);
+            dir[v].emplace_back(1);
+        }
+
+        using Aggregate = int;
+        using Value = int;
+
+        auto base = [](int) -> Aggregate { return 0; };
+
+        auto merge_into = [&](Aggregate a, Value b, int vertex, int edge_index) -> Aggregate {
+            return a + b + dir[vertex][edge_index];
+        };
+
+        auto finalize_merge = [](Aggregate a, int vertex, int edge_index) -> Value { return a; };
+
+        auto [reroot, f, r] = library::reroot::rerooter(g, base, merge_into, finalize_merge);
+
+        int ans = *min_element(reroot.begin(), reroot.end());
+
+        printf("%d\n", ans);
+
         for (int i = 0; i < n; i++)
         {
-            scanf("%lld", &ar[i]);
-        }
-
-        bool ok = true;
-
-        vector<int> other;
-
-        for (ll i = 0, j = 1; j < n; j++)
-        {
-            ll h = c * (i + 1) * (j + 1);
-            if (ar[i] + ar[j] >= h)
+            if (reroot[i] == ans)
             {
-                ar[i] += ar[j];
-                ds.MergeSet(i, j);
-                if (other.size())
-                {
-                    for (int v : other)
-                    {
-                        ds.MergeSet(i, v);
-                        ar[i] += ar[v];
-                    }
-                    other.clear();
-                }
+                printf("%d ", i + 1);
             }
-            else
-            {
-                other.emplace_back(j);
-            }
-        }
-
-        ok = ds.components == 1;
-
-        if (ok)
-        {
-            printf("Yes\n");
-        }
-        else
-        {
-            printf("No\n");
         }
     }
-}
+};
 
 } // namespace solution
 
