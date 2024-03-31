@@ -2,8 +2,8 @@
 #define REROOTER_H 1
 
 #include <algorithm>
-#include <vector>
 #include <tuple>
+#include <vector>
 namespace library
 {
 namespace reroot

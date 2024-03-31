@@ -4,7 +4,6 @@
 #include <algorithm>
 #include <functional>
 
-
 namespace library
 {
 #if __cplusplus >= 201703L
@@ -33,7 +32,7 @@ class LazySegmentTree
     {
         Reset();
     }
-    
+
     void Reset()
     {
         std::fill(tree, tree + sz * 4, e());

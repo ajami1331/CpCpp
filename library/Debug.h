@@ -78,13 +78,15 @@ template <typename T, typename... Args> void err(std::istream_iterator<std::stri
 
 int recursion_depth = 0;
 #define dbg(...)                                                                                                       \
-    [&]() -> auto && {                                                                                                 \
+    [&]() -> auto &&                                                                                                   \
+    {                                                                                                                  \
         ++recursion_depth;                                                                                             \
         auto &&value = __VA_ARGS__;                                                                                    \
         --recursion_depth;                                                                                             \
         std::cerr << std::string(recursion_depth, '\t') << #__VA_ARGS__ " = " << value << endl;                        \
         return std::forward<decltype(value)>(value);                                                                   \
-    }()
+    }                                                                                                                  \
+    ()
 
 #define ASSERT(...)                                                                                                    \
     if (not(__VA_ARGS__))                                                                                              \
