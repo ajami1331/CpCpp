@@ -10,14 +10,9 @@ namespace fs = std::filesystem;
 std::vector<std::string> getFiles(std::string path)
 {
     std::vector<std::string> files;
-    for (const auto &entry : fs::directory_iterator(path))
+    for (const auto &entry : fs::recursive_directory_iterator(path))
     {
-        if (entry.is_directory())
-        {
-            auto subfiles = getFiles(entry.path().string());
-            files.insert(files.end(), subfiles.begin(), subfiles.end());
-        }
-        else
+        if (entry.is_regular_file() && entry.path().has_extension())
         {
             files.emplace_back(entry.path().string());
         }
