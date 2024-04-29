@@ -52,8 +52,7 @@ void Process(bool validateTestCases)
     {
         freopen(INPUT_FILE, "r", stdin);
         freopen(OUTPUT_FILE, "w", stdout);
-        solution::Solution solution;
-        solution.Solve();
+        solution::solve();
         fflush(stdout);
         std::ifstream outputFileForTestcase(OUTPUT_FILE);
         std::string outputLine;
@@ -82,8 +81,7 @@ void Process(bool validateTestCases)
         freopen(inputFileForTestcaseName.c_str(), "r", stdin);
         freopen(outputFileForTestcaseName.c_str(), "w", stdout);
         const clock_t tStart = clock();
-        solution::Solution solution;
-        solution.Solve();
+        solution::solve();
         totalRuntime += static_cast<double>(clock() - tStart) / CLOCKS_PER_SEC;
         fflush(stdout);
         std::ifstream outputFileForTestcase(outputFileForTestcaseName);

@@ -9,7 +9,6 @@ int main()
     validator::Process(true);
     return 0;
 #endif
-    solution::Solution solution;
-    solution.Solve();
+    solution::solve();
     return 0;
 }
