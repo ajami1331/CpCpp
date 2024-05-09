@@ -3,8 +3,6 @@
 #define solution_h 1
 
 #include "../library/LCA.h"
-#include <cstdio>
-#include <cstring>
 
 namespace solution
 {

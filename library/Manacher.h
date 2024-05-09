@@ -1,7 +1,7 @@
 #ifndef Manacher_h
 #define Manacher_h 1
 
-#include <algorithm>
+#include "Common.h"
 
 namespace library
 {
@@ -31,7 +31,7 @@ template <size_t MAXLEN> struct Manacher
         {
             int _i = c - (i - c);
             if (r > i)
-                LPS[i] = std::min(LPS[_i], r - i);
+                LPS[i] = min(LPS[_i], r - i);
             else
                 LPS[i] = 0;
             while (i - 1 - LPS[i] >= 0 && str[i - 1 - LPS[i]] == str[i + 1 + LPS[i]])
@@ -43,7 +43,7 @@ template <size_t MAXLEN> struct Manacher
                 r = i + LPS[i];
                 c = i;
             }
-            ans = std::max(ans, LPS[i]);
+            ans = max(ans, LPS[i]);
         }
         return ans;
     }

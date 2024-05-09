@@ -1,46 +1,44 @@
 #ifndef StringUtils_h
 #define StringUtils_h 1
 
-#include <algorithm>
-#include <string>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
-static inline void ltrim(std::string &s)
+static inline void ltrim(string &s)
 {
-    s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](unsigned char c) -> bool { return !std::isspace(c); }));
+    s.erase(s.begin(), find_if(s.begin(), s.end(), [](unsigned char c) -> bool { return !isspace(c); }));
 }
 
-static inline void rtrim(std::string &s)
+static inline void rtrim(string &s)
 {
-    s.erase(std::find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !std::isspace(ch); }).base(), s.end());
+    s.erase(find_if(s.rbegin(), s.rend(), [](unsigned char ch) { return !isspace(ch); }).base(), s.end());
 }
 
-static inline void trim(std::string &s)
-{
-    ltrim(s);
-    rtrim(s);
-}
-
-static inline std::string &trim_i(std::string &s)
+static inline void trim(string &s)
 {
     ltrim(s);
     rtrim(s);
-    return s;
 }
 
-static inline std::string trim_n(std::string s)
+static inline string &trim_i(string &s)
 {
     ltrim(s);
     rtrim(s);
     return s;
 }
 
-std::vector<std::string> split(const std::string &s, char splitChar)
+static inline string trim_n(string s)
 {
-    std::vector<std::string> splittedString;
-    std::string hand = "";
+    ltrim(s);
+    rtrim(s);
+    return s;
+}
+
+vector<string> split(const string &s, char splitChar)
+{
+    vector<string> splittedString;
+    string hand = "";
     for (char c : s)
     {
         if (c == splitChar)

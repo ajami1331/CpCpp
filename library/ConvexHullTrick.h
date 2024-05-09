@@ -1,17 +1,14 @@
 #ifndef ConvexHullTrick_h
 #define ConvexHullTrick_h 1
 
-#include <algorithm>
-#include <complex>
-#include <numeric>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
 
 struct ConvexHullTrick
 {
-    std::vector<long long> M, C;
+    vector<long long> M, C;
     int pointer = 0;
 
     bool bad(int l1, int l2, int l3)

@@ -1,9 +1,7 @@
 #ifndef EdmondsKarp_h
 #define EdmondsKarp_h 1
 
-#include <algorithm>
-#include <queue>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
@@ -11,14 +9,14 @@ namespace library
 template <int INF> struct EdmondsKarp
 {
     int n;
-    std::vector<int> par;
-    std::vector<bool> vis;
-    std::vector<std::vector<int>> graph;
+    vector<int> par;
+    vector<bool> vis;
+    vector<vector<int>> graph;
 
     EdmondsKarp()
     {
     }
-    EdmondsKarp(int _n) : n(_n), par(_n), vis(_n), graph(_n, std::vector<int>(_n, 0))
+    EdmondsKarp(int _n) : n(_n), par(_n), vis(_n), graph(_n, vector<int>(_n, 0))
     {
     }
     ~EdmondsKarp()
@@ -40,10 +38,10 @@ template <int INF> struct EdmondsKarp
     bool Bfs(int src, int sink)
     {
         int u;
-        std::fill(vis.begin(), vis.end(), false);
-        std::fill(par.begin(), par.end(), -1);
+        fill(vis.begin(), vis.end(), false);
+        fill(par.begin(), par.end(), -1);
         vis[src] = true;
-        std::queue<int> q;
+        queue<int> q;
         q.push(src);
         while (!q.empty())
         {
@@ -69,7 +67,7 @@ template <int INF> struct EdmondsKarp
         int ret = INF;
         for (; par[i] != -1; i = par[i])
         {
-            ret = std::min(ret, graph[par[i]][i]);
+            ret = min(ret, graph[par[i]][i]);
         }
         return ret;
     }

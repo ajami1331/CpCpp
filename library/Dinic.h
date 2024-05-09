@@ -1,8 +1,7 @@
 #ifndef Dinic_h
 #define Dinic_h 1
 
-#include <algorithm>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
@@ -18,9 +17,9 @@ struct Edge
 template <int INF> struct Dinic
 {
     int N;
-    std::vector<std::vector<Edge>> G;
-    std::vector<Edge *> dad;
-    std::vector<int> Q;
+    vector<vector<Edge>> G;
+    vector<Edge *> dad;
+    vector<int> Q;
 
     Dinic(int N) : N(N), G(N), dad(N), Q(N)
     {
@@ -36,7 +35,7 @@ template <int INF> struct Dinic
 
     long long BlockingFlow(int s, int t)
     {
-        std::fill(dad.begin(), dad.end(), (Edge *)NULL);
+        fill(dad.begin(), dad.end(), (Edge *)NULL);
         dad[s] = &G[0][0] - 1;
 
         int head = 0, tail = 0;
@@ -69,7 +68,7 @@ template <int INF> struct Dinic
                     amt = 0;
                     break;
                 }
-                amt = std::min(amt, e->cap - e->flow);
+                amt = min(amt, e->cap - e->flow);
             }
             if (amt == 0)
                 continue;

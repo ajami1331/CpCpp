@@ -1,9 +1,7 @@
 #ifndef ModInt_h
 #define ModInt_h 1
 
-#include <algorithm>
-#include <iomanip>
-#include <iostream>
+#include "Common.h"
 
 namespace library
 {
@@ -164,12 +162,12 @@ struct ModInt
         return lhs;
     }
 
-    friend std::istream &operator>>(std::istream &in, ModInt &inp)
+    friend istream &operator>>(istream &in, ModInt &inp)
     {
         return in >> inp.val;
     }
 
-    friend std::ostream &operator<<(std::ostream &out, const ModInt &pr)
+    friend ostream &operator<<(ostream &out, const ModInt &pr)
     {
         return out << pr.val;
     }

@@ -1,20 +1,19 @@
 #ifndef LAZY_SEGMENT_TREE_H
 #define LAZY_SEGMENT_TREE_H 1
 
-#include <algorithm>
-#include <functional>
+#include "Common.h"
 
 namespace library
 {
 #if __cplusplus >= 201703L
 template <class S, auto op, auto e, class F, auto mapping, auto composition, auto id, size_t sz> class LazySegmentTree
 {
-    static_assert(std::is_convertible_v<decltype(op), std::function<S(S, S)>>, "op must work as S(S, S)");
-    static_assert(std::is_convertible_v<decltype(e), std::function<S()>>, "e must work as S()");
-    static_assert(std::is_convertible_v<decltype(mapping), std::function<S(F, S)>>, "mapping must work as S(F, S)");
-    static_assert(std::is_convertible_v<decltype(composition), std::function<F(F, F)>>,
+    static_assert(is_convertible_v<decltype(op), function<S(S, S)>>, "op must work as S(S, S)");
+    static_assert(is_convertible_v<decltype(e), function<S()>>, "e must work as S()");
+    static_assert(is_convertible_v<decltype(mapping), function<S(F, S)>>, "mapping must work as S(F, S)");
+    static_assert(is_convertible_v<decltype(composition), function<F(F, F)>>,
                   "compostiion must work as F(F, F)");
-    static_assert(std::is_convertible_v<decltype(id), std::function<F()>>, "id must work as F()");
+    static_assert(is_convertible_v<decltype(id), function<F()>>, "id must work as F()");
 
 #else
 
@@ -35,8 +34,8 @@ class LazySegmentTree
 
     void Reset()
     {
-        std::fill(tree, tree + sz * 4, e());
-        std::fill(lazy, lazy + sz * 4, id());
+        fill(tree, tree + sz * 4, e());
+        fill(lazy, lazy + sz * 4, id());
     }
 
     void Build(int node, int begin, int end)

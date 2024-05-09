@@ -1,10 +1,7 @@
 #ifndef SmallestStringRotation_h
 #define SmallestStringRotation_h 1
 
-#include <algorithm>
-#include <cassert>
-#include <cstring>
-#include <string>
+#include "Common.h"
 
 namespace library
 {
@@ -12,10 +9,10 @@ namespace library
 template <size_t MAXLEN> struct SmallestStringRotation
 {
     int f[MAXLEN];
-    int operator()(const std::string &s)
+    int operator()(const string &s)
     {
         int n = s.size();
-        std::string t = s + s;
+        string t = s + s;
         memset(f, -1, sizeof f);
         int k = 0;
         for (int j = 1; j < 2 * n; ++j)

@@ -1,15 +1,13 @@
 #ifndef AhoCorasick_h
 #define AhoCorasick_h 1
 
-#include <algorithm>
-#include <queue>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
 template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
 {
-    std::vector<int> mark[MAXLEN + 7];
+    vector<int> mark[MAXLEN + 7];
     int state, failure[MAXLEN + 7];
     int trie[MAXLEN + 7][AC_ALPHABET_SIZE];
 
@@ -21,7 +19,7 @@ template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
     void Init()
     {
         mark[0].clear();
-        std::fill(trie[0], trie[0] + AC_ALPHABET_SIZE, -1);
+        fill(trie[0], trie[0] + AC_ALPHABET_SIZE, -1);
         state = 0;
     }
 
@@ -40,7 +38,7 @@ template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
             {
                 trie[root][id] = ++state;
                 mark[state].clear();
-                std::fill(trie[state], trie[state + 1] + AC_ALPHABET_SIZE, -1);
+                fill(trie[state], trie[state + 1] + AC_ALPHABET_SIZE, -1);
             }
             root = trie[root][id];
         }
@@ -49,7 +47,7 @@ template <size_t MAXLEN, size_t AC_ALPHABET_SIZE = 26> struct AhoCorasick
 
     void ComputeFailure()
     {
-        std::queue<int> Q;
+        queue<int> Q;
         failure[0] = 0;
         for (int i = 0; i < AC_ALPHABET_SIZE; i++)
         {

@@ -1,9 +1,7 @@
 #ifndef KnuthMorrisPrattMatcher_h
 #define KnuthMorrisPrattMatcher_h 1
 
-#include <algorithm>
-#include <cstring>
-#include <vector>
+#include "Common.h"
 
 template <size_t MAXLEN> struct KnuthMorrisPrattMatcher
 {
@@ -39,10 +37,10 @@ template <size_t MAXLEN> struct KnuthMorrisPrattMatcher
         }
     }
 
-    std::vector<int> MatchString(const char *s, int lenS)
+    vector<int> MatchString(const char *s, int lenS)
     {
         int i = 0, j = 0;
-        std::vector<int> matches;
+        vector<int> matches;
         while (i < lenS)
         {
             while (i < lenS && j < lenM && s[i] == m[j])

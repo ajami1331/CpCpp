@@ -1,9 +1,7 @@
 #ifndef SuffixArray_h
 #define SuffixArray_h 1
 
-#include <algorithm>
-#include <cstring>
-#include <utility>
+#include "Common.h"
 
 namespace library
 {
@@ -34,7 +32,7 @@ template <size_t MAXLEN> struct SuffixArray
 
     void CountingSort(int k) // O(n)
     {
-        int i, sum, maxi = std::max(300, n); // up to 255 ASCII chars or length of n
+        int i, sum, maxi = max(300, n); // up to 255 ASCII chars or length of n
         memset(c, 0, sizeof c);              // clear frequency table
         for (i = 0; i < n; i++)              // count the frequency of each integer rank
             c[i + k < n ? RA[i + k] : 0]++;
@@ -88,13 +86,13 @@ template <size_t MAXLEN> struct SuffixArray
             while (T[i + L] == T[Phi[i] + L])
                 L++; // L increased max n times
             PLCP[i] = L;
-            L = std::max(L - 1, 0); // L decreased max n times
+            L = max(L - 1, 0); // L decreased max n times
         }
         for (i = 0; i < n; i++)   // compute LCP in O(n)
             LCP[i] = PLCP[SA[i]]; // put the permuted LCP to the correct position
     }
 
-    std::pair<int, int> StringMatching() // string matching in O(m log n)
+    pair<int, int> StringMatching() // string matching in O(m log n)
     {
         int lo = 0, hi = n - 1, mid = lo; // valid matching = [0..n-1]
         while (lo < hi)                   // find lower bound
@@ -107,8 +105,8 @@ template <size_t MAXLEN> struct SuffixArray
                 lo = mid + 1; // prune lower half including mid
         }                     // observe `=' in "res >= 0" above
         if (strncmp(T + SA[lo], P, m) != 0)
-            return std::pair<int, int>(-1, -1); // if not found
-        std::pair<int, int> ans;
+            return pair<int, int>(-1, -1); // if not found
+        pair<int, int> ans;
         ans.first = lo;
         lo = 0;
         hi = n - 1;
@@ -128,13 +126,13 @@ template <size_t MAXLEN> struct SuffixArray
         return ans;
     } // return lower/upperbound as first/second item of the pair, respectively
 
-    std::pair<int, int> LRS() // returns a pair (the LRS length and its index)
+    pair<int, int> LRS() // returns a pair (the LRS length and its index)
     {
         int i, idx = 0, maxLCP = -1;
         for (i = 1; i < n; i++) // O(n), start from i = 1
             if (LCP[i] > maxLCP)
                 maxLCP = LCP[i], idx = i;
-        return std::pair<int, int>(maxLCP, idx);
+        return pair<int, int>(maxLCP, idx);
     }
 
     int Owner(int idx)
@@ -142,13 +140,13 @@ template <size_t MAXLEN> struct SuffixArray
         return (idx < n - m - 1) ? 1 : 2;
     }
 
-    std::pair<int, int> LCS() // returns a pair (the LCS length and its index)
+    pair<int, int> LCS() // returns a pair (the LCS length and its index)
     {
         int i, idx = 0, maxLCP = -1;
         for (i = 1; i < n; i++) // O(n), start from i = 1
             if (Owner(SA[i]) != Owner(SA[i - 1]) && LCP[i] > maxLCP)
                 maxLCP = LCP[i], idx = i;
-        return std::pair<int, int>(maxLCP, idx);
+        return pair<int, int>(maxLCP, idx);
     }
 };
 } // namespace library

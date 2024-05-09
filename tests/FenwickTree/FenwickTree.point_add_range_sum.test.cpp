@@ -3,9 +3,6 @@
 #define solution_h 1
 
 #include "../../library/FenwickTree.h"
-#include <cstdio>
-#include <cstring>
-#include <iostream>
 
 namespace solution
 {

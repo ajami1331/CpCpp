@@ -1,8 +1,7 @@
 #ifndef DisjointSet_h
 #define DisjointSet_h 1
 
-#include <algorithm>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
@@ -71,7 +70,7 @@ template <int sz> struct DisjointSet
         v = FindSet(v);
         if (cnt[u] < cnt[v])
         {
-            std::swap(u, v);
+            swap(u, v);
         }
 
         par[u] = par[v];
@@ -80,9 +79,9 @@ template <int sz> struct DisjointSet
         components--;
     }
 
-    std::vector<int> GetComponents()
+    vector<int> GetComponents()
     {
-        std::vector<int> ret;
+        vector<int> ret;
         for (int i = 0; i < n; i++)
         {
             if (FindSet(i) == i)

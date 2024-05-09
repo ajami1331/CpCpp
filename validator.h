@@ -1,18 +1,16 @@
 #ifndef validator_h
 #define validator_h 1
 
-#include <cstdio>
-#include <fstream>
-#include <iostream>
+#include "library/Common.h"
 #include "solution.h"
 #include "utils.h"
 
 namespace validator
 {
-bool compareFiles(const std::string &p1, const std::string &p2)
+bool compareFiles(const string &p1, const string &p2)
 {
-    std::ifstream f1(p1, std::ifstream::binary | std::ifstream::ate);
-    std::ifstream f2(p2, std::ifstream::binary | std::ifstream::ate);
+    ifstream f1(p1, ifstream::binary | ifstream::ate);
+    ifstream f2(p2, ifstream::binary | ifstream::ate);
 
     if (f1.fail() || f2.fail())
     {
@@ -24,11 +22,11 @@ bool compareFiles(const std::string &p1, const std::string &p2)
         return false; // size mismatch
     }
 
-    // seek back to beginning and use std::equal to compare contents
-    f1.seekg(0, std::ifstream::beg);
-    f2.seekg(0, std::ifstream::beg);
-    return std::equal(std::istreambuf_iterator<char>(f1.rdbuf()), std::istreambuf_iterator<char>(),
-                      std::istreambuf_iterator<char>(f2.rdbuf()));
+    // seek back to beginning and use equal to compare contents
+    f1.seekg(0, ifstream::beg);
+    f2.seekg(0, ifstream::beg);
+    return equal(istreambuf_iterator<char>(f1.rdbuf()), istreambuf_iterator<char>(),
+                      istreambuf_iterator<char>(f2.rdbuf()));
 }
 
 void red(FILE *file)
@@ -54,42 +52,42 @@ void Process(bool validateTestCases)
         freopen(OUTPUT_FILE, "w", stdout);
         solution::solve();
         fflush(stdout);
-        std::ifstream outputFileForTestcase(OUTPUT_FILE);
-        std::string outputLine;
-        while (std::getline(outputFileForTestcase, outputLine))
+        ifstream outputFileForTestcase(OUTPUT_FILE);
+        string outputLine;
+        while (getline(outputFileForTestcase, outputLine))
         {
-            std::cerr << outputLine << std::endl;
+            cerr << outputLine << endl;
         }
         return;
     }
 
-    std::ifstream testCaseCntFile;
-    std::string testCaseDir(TEST_CASES_DIR);
+    ifstream testCaseCntFile;
+    string testCaseDir(TEST_CASES_DIR);
     testCaseCntFile.open(testCaseDir + "cnt");
     int testCaseCnt = 0;
     testCaseCntFile >> testCaseCnt;
     testCaseCntFile.close();
-    std::ofstream outfile;
+    ofstream outfile;
     outfile.open(OUTPUT_FILE);
     int passedCnt = 0;
     double totalRuntime = 0;
     for (int testCase = 1; testCase <= testCaseCnt; testCase++)
     {
-        std::string inputFileForTestcaseName = testCaseDir + std::to_string(testCase) + ".in";
-        std::string outputFileForTestcaseName = testCaseDir + std::to_string(testCase) + ".out";
-        std::string validFileForTestcaseName = testCaseDir + std::to_string(testCase) + ".val";
+        string inputFileForTestcaseName = testCaseDir + to_string(testCase) + ".in";
+        string outputFileForTestcaseName = testCaseDir + to_string(testCase) + ".out";
+        string validFileForTestcaseName = testCaseDir + to_string(testCase) + ".val";
         freopen(inputFileForTestcaseName.c_str(), "r", stdin);
         freopen(outputFileForTestcaseName.c_str(), "w", stdout);
         const clock_t tStart = clock();
         solution::solve();
         totalRuntime += static_cast<double>(clock() - tStart) / CLOCKS_PER_SEC;
         fflush(stdout);
-        std::ifstream outputFileForTestcase(outputFileForTestcaseName);
-        std::string outputLine;
-        while (std::getline(outputFileForTestcase, outputLine))
+        ifstream outputFileForTestcase(outputFileForTestcaseName);
+        string outputLine;
+        while (getline(outputFileForTestcase, outputLine))
         {
-            outfile << outputLine << std::endl;
-            std::cerr << outputLine << std::endl;
+            outfile << outputLine << endl;
+            cerr << outputLine << endl;
         }
 
         bool success = compareFiles(validFileForTestcaseName, outputFileForTestcaseName);
@@ -97,12 +95,12 @@ void Process(bool validateTestCases)
         {
             passedCnt++;
             green(stderr);
-            std::cerr << "Test " << testCase << ": Success!" << std::endl;
+            cerr << "Test " << testCase << ": Success!" << endl;
         }
         else
         {
             red(stderr);
-            std::cerr << "Test " << testCase << ": Fail!" << std::endl;
+            cerr << "Test " << testCase << ": Fail!" << endl;
         }
         reset(stderr);
     }
@@ -115,7 +113,7 @@ void Process(bool validateTestCases)
     {
         red(stderr);
     }
-    std::cerr << passedCnt << "/" << testCaseCnt << " Test passed!" << std::endl;
+    cerr << passedCnt << "/" << testCaseCnt << " Test passed!" << endl;
     reset(stderr);
 
     outfile.close();

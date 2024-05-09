@@ -2,10 +2,7 @@
 #ifndef PolyHash_h
 #define PolyHash_h 1
 
-#include <cassert>
-#include <chrono>
-#include <random>
-#include <vector>
+#include "Common.h"
 
 // #define IMPLEMENT_REV_HASH
 
@@ -14,8 +11,8 @@ namespace library
 
 constexpr unsigned long long mod = (1ULL << 61) - 1;
 
-const unsigned long long seed = std::chrono::system_clock::now().time_since_epoch().count();
-const unsigned long long base = std::mt19937_64(seed)() % (mod / 3) + (mod / 3);
+const unsigned long long seed = chrono::system_clock::now().time_since_epoch().count();
+const unsigned long long polyhash_base = mt19937_64(seed)() % (mod / 3) + (mod / 3);
 
 long long ModMul(unsigned long long a, unsigned long long b)
 {
@@ -29,20 +26,20 @@ long long ModMul(unsigned long long a, unsigned long long b)
 
 template <size_t MAXLEN> struct PolyHash
 {
-    std::vector<long long> pref;
+    vector<long long> pref;
 /// Removes the suff vector and usage if reverse hash is not required for more speed
 #ifdef IMPLEMENT_REV_HASH
-    std::vector<long long> suff;
+    vector<long long> suff;
 #endif
-    inline static unsigned long long base_pow[MAXLEN];
+    inline static unsigned long long polyhash_base_pow[MAXLEN];
 
     PolyHash()
     {
     }
 
-    template <typename T> PolyHash(const std::vector<T> &ar)
+    template <typename T> PolyHash(const vector<T> &ar)
     {
-        if (!base_pow[0])
+        if (!polyhash_base_pow[0])
             init();
 
         int n = ar.size();
@@ -51,7 +48,7 @@ template <size_t MAXLEN> struct PolyHash
 
         for (int i = 1; i <= n; i++)
         {
-            pref[i] = ModMul(pref[i - 1], base) + ar[i - 1] + 997;
+            pref[i] = ModMul(pref[i - 1], polyhash_base) + ar[i - 1] + 997;
             if (pref[i] >= mod)
                 pref[i] -= mod;
         }
@@ -60,42 +57,42 @@ template <size_t MAXLEN> struct PolyHash
         suff.resize(n + 3, 0);
         for (int i = n; i >= 1; i--)
         {
-            suff[i] = ModMul(suff[i + 1], base) + ar[i - 1] + 997;
+            suff[i] = ModMul(suff[i + 1], polyhash_base) + ar[i - 1] + 997;
             if (suff[i] >= mod)
                 suff[i] -= mod;
         }
 #endif
     }
 
-    PolyHash(const char *str) : PolyHash(std::vector<char>(str, str + strlen(str)))
+    PolyHash(const char *str) : PolyHash(vector<char>(str, str + strlen(str)))
     {
     }
 
     unsigned long long GetHash(int l, int r)
     {
-        long long h = pref[r + 1] - ModMul(base_pow[r - l + 1], pref[l]);
+        long long h = pref[r + 1] - ModMul(polyhash_base_pow[r - l + 1], pref[l]);
         return h < 0 ? h + mod : h;
     }
 
 #ifdef IMPLEMENT_REV_HASH
     unsigned long long ReverseHash(int l, int r)
     {
-        long long h = suff[l + 1] - ModMul(base_pow[r - l + 1], suff[r + 2]);
+        long long h = suff[l + 1] - ModMul(polyhash_base_pow[r - l + 1], suff[r + 2]);
         return h < 0 ? h + mod : h;
     }
 #endif
 
     unsigned long long GetHash(int l, int r, int x, int y)
     {
-        return (ModMul(GetHash(l, r), base_pow[y - x + 1]) + GetHash(x, y)) % mod;
+        return (ModMul(GetHash(l, r), polyhash_base_pow[y - x + 1]) + GetHash(x, y)) % mod;
     }
 
     void init()
     {
-        base_pow[0] = 1;
+        polyhash_base_pow[0] = 1;
         for (int i = 1; i < MAXLEN; i++)
         {
-            base_pow[i] = ModMul(base_pow[i - 1], base);
+            polyhash_base_pow[i] = ModMul(polyhash_base_pow[i - 1], polyhash_base);
         }
     }
 };

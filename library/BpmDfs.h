@@ -1,7 +1,7 @@
 #ifndef BpmDfs_h
 #define BpmDfs_h 1
 
-#include <cstring>
+#include "Common.h"
 
 namespace library
 {

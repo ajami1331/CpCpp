@@ -1,9 +1,7 @@
 #ifndef ZAlgo_H
 #define ZAlgo_H 1
 
-#include <algorithm>
-#include <cstring>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
@@ -33,7 +31,7 @@ template <class T, size_t MAXLEN> struct ZAlgo
         Compute();
     }
 
-    void Init(const std::vector<T> &a, const std::vector<T> &b, const T &_outOfBound)
+    void Init(const vector<T> &a, const vector<T> &b, const T &_outOfBound)
     {
         n = 0;
         for (int i = 0; i < a.size(); i++)
@@ -92,7 +90,7 @@ template <class T, size_t MAXLEN> struct ZAlgo
             iter++;
         for (int i = iter + 1; i < n; i++)
         {
-            maxZ = std::max(maxZ, z[i]);
+            maxZ = max(maxZ, z[i]);
             occurrence[z[i]]++;
         }
     }

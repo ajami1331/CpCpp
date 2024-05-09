@@ -1,8 +1,7 @@
 #ifndef SparseTable_h
 #define SparseTable_h 1
 
-#include <functional>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
@@ -11,28 +10,28 @@ template <typename T> struct SparseTable
 {
     int n;
     int log2n;
-    std::function<T(T, T)> combine;
-    std::vector<T> table[32];
+    function<T(T, T)> combine;
+    vector<T> table[32];
 
     SparseTable()
     {
     }
 
-    SparseTable(T *arr, int len, std::function<T(T, T)> combine) : SparseTable(arr, len)
+    SparseTable(T *arr, int len, function<T(T, T)> combine) : SparseTable(arr, len)
     {
         this->combine = combine;
     }
 
-    SparseTable(T *arr, int len) : SparseTable(std::vector<T>(arr, arr + len))
+    SparseTable(T *arr, int len) : SparseTable(vector<T>(arr, arr + len))
     {
     }
 
-    SparseTable(const std::vector<T> &arr, std::function<T(T, T)> combine) : SparseTable(arr)
+    SparseTable(const vector<T> &arr, function<T(T, T)> combine) : SparseTable(arr)
     {
         this->combine = combine;
     }
 
-    SparseTable(const std::vector<T> &arr)
+    SparseTable(const vector<T> &arr)
     {
         n = arr.size();
         log2n = LOG2(n) + 1;
@@ -53,7 +52,7 @@ template <typename T> struct SparseTable
     {
         if (this->combine != nullptr)
             return this->combine(x, y);
-        return std::min(x, y);
+        return min(x, y);
     }
 
     T Query(int l, int r)

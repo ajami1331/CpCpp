@@ -1,15 +1,7 @@
 #ifndef util_h
 #define util_h 1
 
-#include <algorithm>
-#include <cassert>
-#include <cstring>
-#include <filesystem>
-#include <fstream>
-#include <iostream>
-#include <map>
-#include <string>
-
+#include "library/Common.h"
 #include "library/StringUtils.h"
 
 const int MAX_PATH = 256;
@@ -17,46 +9,46 @@ const int MAX_PATH = 256;
 namespace utils
 {
 const char *header = "#include";
-const std::string ifPrefix = "#ifdef CLown1331";
-const std::string ifnPrefix = "#ifndef CLown1331";
-const std::string elifPrefix = "#elif";
-const std::string elsePrefix = "#else";
-const std::string endifPrefix = "#endif";
+const string ifPrefix = "#ifdef CLown1331";
+const string ifnPrefix = "#ifndef CLown1331";
+const string elifPrefix = "#elif";
+const string elsePrefix = "#else";
+const string endifPrefix = "#endif";
 const bool shouldSkipComment = true;
-std::map<std::string, bool> visited;
-std::vector<std::string> headers;
-std::string content;
+map<string, bool> visited;
+vector<string> headers;
+string content;
 
-void Process(std::filesystem::path filePath);
+void Process(filesystem::path filePath);
 
-bool IsComment(std::string line)
+bool IsComment(string line)
 {
     library::trim(line);
     return line.rfind("//") == 0 || line.rfind("///") == 0;
 }
 
-bool ProcessIncludes(std::string line, std::filesystem::path filePath)
+bool ProcessIncludes(string line, filesystem::path filePath)
 {
     auto tokens = library::split(line, ' ');
-    auto tokensFiltered = std::vector<std::string>{};
-    std::copy_if(begin(tokens), end(tokens), back_inserter(tokensFiltered),
-                 [](const std::string &s) -> bool { return !s.empty(); });
-    assert(tokensFiltered.size() == 2 && "Should be in format {#include $library_name}");
+    auto tokensFiltered = vector<string>{};
+    copy_if(begin(tokens), end(tokens), back_inserter(tokensFiltered),
+                 [](const string &s) -> bool { return !s.empty(); });
     if (tokensFiltered[1][0] == '<')
     {
         return false;
     }
-    std::string includePath = tokensFiltered[1];
+    assert(tokensFiltered.size() == 2 && "Should be in format {#include $library_name}");
+    string includePath = tokensFiltered[1];
     includePath.pop_back();
     includePath.erase(0, 1);
-    std::filesystem::path fpath = includePath;
-    Process(std::filesystem::path(filePath).remove_filename().concat(fpath.string()));
+    filesystem::path fpath = includePath;
+    Process(filesystem::path(filePath).remove_filename().concat(fpath.string()));
     return true;
 }
 
-std::ifstream OpenInputAndValidate(std::string filePathString)
+ifstream OpenInputAndValidate(string filePathString)
 {
-    std::ifstream fstream(filePathString);
+    ifstream fstream(filePathString);
     char a, b, c;
     a = fstream.get();
     b = fstream.get();
@@ -67,13 +59,13 @@ std::ifstream OpenInputAndValidate(std::string filePathString)
     }
     else
     {
-        std::cerr << "Warning: " + filePathString + " contains the so-called 'UTF-8 signature'\n";
+        cerr << "Warning: " + filePathString + " contains the so-called 'UTF-8 signature'\n";
     }
 
     return fstream;
 }
 
-void Process(std::filesystem::path filePath)
+void Process(filesystem::path filePath)
 {
     bool skipIfBlock = false;
     auto filePathString = filePath.string();
@@ -83,10 +75,10 @@ void Process(std::filesystem::path filePath)
     }
 
     visited[filePathString] = true;
-    std::ifstream fstream = OpenInputAndValidate(filePathString);
-    std::string line;
-    std::string skippedContent;
-    while (std::getline(fstream, line))
+    ifstream fstream = OpenInputAndValidate(filePathString);
+    string line;
+    string skippedContent;
+    while (getline(fstream, line))
     {
         library::rtrim(line);
         if (library::trim_n(line).rfind(header) == 0 && ProcessIncludes(line, filePath))
@@ -143,11 +135,11 @@ void Process(std::filesystem::path filePath)
     fstream.close();
 }
 
-void WriteFile(std::filesystem::path path)
+void WriteFile(filesystem::path path)
 {
-    std::ofstream out(std::filesystem::path(path).remove_filename().concat("submission.cpp"));
-    std::sort(headers.begin(), headers.end());
-    headers.resize(std::unique(headers.begin(), headers.end()) - headers.begin());
+    ofstream out(filesystem::path(path).remove_filename().concat("submission.cpp"));
+    sort(headers.begin(), headers.end());
+    headers.resize(unique(headers.begin(), headers.end()) - headers.begin());
     for (const auto &header : headers)
     {
         out << header;
@@ -158,10 +150,10 @@ void WriteFile(std::filesystem::path path)
 
 void CreateFileForSubmission()
 {
-    auto path = std::filesystem::path(STARTING_FILE);
+    auto path = filesystem::path(STARTING_FILE);
     visited.clear();
-    visited[std::filesystem::path(path).remove_filename().concat("utils.h").string()] = true;
-    visited[std::filesystem::path(path).remove_filename().concat("validator.h").string()] = true;
+    visited[filesystem::path(path).remove_filename().concat("utils.h").string()] = true;
+    visited[filesystem::path(path).remove_filename().concat("validator.h").string()] = true;
     content.clear();
     Process(path);
     WriteFile(path);

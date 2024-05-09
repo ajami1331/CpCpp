@@ -1,18 +1,17 @@
 #ifndef REROOTER_H
 #define REROOTER_H 1
 
-#include <algorithm>
-#include <tuple>
-#include <vector>
+#include "Common.h"
+
 namespace library
 {
 namespace reroot
 {
 const auto exclusive = [](const auto &a, const auto &base, const auto &merge_into, int vertex) {
     int n = (int)a.size();
-    using Aggregate = std::decay_t<decltype(base)>;
-    std::vector<Aggregate> b(n, base);
-    for (int bit = (int)std::__lg(n); bit >= 0; --bit)
+    using Aggregate = decay_t<decltype(base)>;
+    vector<Aggregate> b(n, base);
+    for (int bit = (int)__lg(n); bit >= 0; --bit)
     {
         for (int i = n - 1; i >= 0; --i)
             b[i] = b[i >> 1];
@@ -30,12 +29,12 @@ const auto exclusive = [](const auto &a, const auto &base, const auto &merge_int
 // FinalizeMerge : Aggregate * Vertex(int) * EdgeIndex(int) -> Value
 const auto rerooter = [](const auto &g, const auto &base, const auto &merge_into, const auto &finalize_merge) {
     int n = (int)g.size();
-    using Aggregate = std::decay_t<decltype(base(0))>;
-    using Value = std::decay_t<decltype(finalize_merge(base(0), 0, 0))>;
-    std::vector<Value> root_dp(n), dp(n);
-    std::vector<std::vector<Value>> edge_dp(n), redge_dp(n);
+    using Aggregate = decay_t<decltype(base(0))>;
+    using Value = decay_t<decltype(finalize_merge(base(0), 0, 0))>;
+    vector<Value> root_dp(n), dp(n);
+    vector<vector<Value>> edge_dp(n), redge_dp(n);
 
-    std::vector<int> bfs, parent(n);
+    vector<int> bfs, parent(n);
     bfs.reserve(n);
     bfs.push_back(0);
     for (int i = 0; i < n; ++i)
@@ -85,7 +84,7 @@ const auto rerooter = [](const auto &g, const auto &base, const auto &merge_into
         }
     }
 
-    return std::make_tuple(std::move(root_dp), std::move(edge_dp), std::move(redge_dp));
+    return make_tuple(move(root_dp), move(edge_dp), move(redge_dp));
 };
 } // namespace reroot
 } // namespace library

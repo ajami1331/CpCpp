@@ -1,15 +1,12 @@
 #ifndef FenwickTree_h
 #define FenwickTree_h 1
 
-#include <cstring>
-#include <functional>
-#include <numeric>
+#include "Common.h"
 
 namespace library
 {
-#define LOG2(x) (32 - __builtin_clz(x) - 1)
-template <typename T, size_t sz, typename op_combine_type = std::plus<T>, typename op_decombine_type = std::minus<T>,
-          typename less_type = std::less<T>>
+template <typename T, size_t sz, typename op_combine_type = plus<T>, typename op_decombine_type = minus<T>,
+          typename less_type = less<T>>
 class FenwickTree
 {
   private:

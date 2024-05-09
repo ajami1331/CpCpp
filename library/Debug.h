@@ -1,24 +1,21 @@
 #ifndef DEBUG_H
 #define DEBUG_H 1
 
-#include <iostream>
-#include <iterator>
-#include <sstream>
-#include <string>
+#include "Common.h"
 
 #ifdef CLown1331
 
 #define SFINAE(x, ...)                                                                                                 \
-    template <class, class = void> struct x : std::false_type                                                          \
+    template <class, class = void> struct x : false_type                                                          \
     {                                                                                                                  \
     };                                                                                                                 \
-    template <class T> struct x<T, std::void_t<__VA_ARGS__>> : std::true_type                                          \
+    template <class T> struct x<T, void_t<__VA_ARGS__>> : true_type                                          \
     {                                                                                                                  \
     }
 
-SFINAE(DefaultIO, decltype(std::cout << std::declval<T &>()));
-SFINAE(IsTuple, typename std::tuple_size<T>::type);
-SFINAE(Iterable, decltype(std::begin(std::declval<T>())));
+SFINAE(DefaultIO, decltype(cout << declval<T &>()));
+SFINAE(IsTuple, typename tuple_size<T>::type);
+SFINAE(Iterable, decltype(begin(declval<T>())));
 
 template <class T> constexpr char Space(const T &)
 {
@@ -38,7 +35,7 @@ template <auto &os> struct Writer
                 ((i++) ? (os << Space(x), Impl(x)) : Impl(x));
         }
         else if constexpr (IsTuple<T>::value)
-            std::apply(
+            apply(
                 [this](auto const &...args) {
                     int i = 0;
                     (((i++) ? (os << ' ', Impl(args)) : Impl(args)), ...);
@@ -55,24 +52,24 @@ template <auto &os> struct Writer
 
 #define debug(args...)                                                                                                 \
     {                                                                                                                  \
-        std::string _s = #args;                                                                                        \
-        std::replace(_s.begin(), _s.end(), ',', ' ');                                                                  \
-        std::stringstream _ss(_s);                                                                                     \
-        std::istream_iterator<std::string> _it(_ss);                                                                   \
-        std::cerr << "Line " << __LINE__ << "\n";                                                                      \
+        string _s = #args;                                                                                        \
+        replace(_s.begin(), _s.end(), ',', ' ');                                                                  \
+        stringstream _ss(_s);                                                                                     \
+        istream_iterator<string> _it(_ss);                                                                   \
+        cerr << "Line " << __LINE__ << "\n";                                                                      \
         err(_it, args);                                                                                                \
     }
 
-void err(std::istream_iterator<std::string> it)
+void err(istream_iterator<string> it)
 {
-    std::ignore = it;
+    ignore = it;
 }
 
-template <typename T, typename... Args> void err(std::istream_iterator<std::string> it, T a, Args... args)
+template <typename T, typename... Args> void err(istream_iterator<string> it, T a, Args... args)
 {
-    std::cerr << "\033[0;31m" << *it << " = ";
-    Writer<std::cerr>{}(a);
-    std::cerr << "\033[0m";
+    cerr << "\033[0;31m" << *it << " = ";
+    Writer<cerr>{}(a);
+    cerr << "\033[0m";
     err(++it, args...);
 }
 
@@ -83,8 +80,8 @@ int recursion_depth = 0;
         ++recursion_depth;                                                                                             \
         auto &&value = __VA_ARGS__;                                                                                    \
         --recursion_depth;                                                                                             \
-        std::cerr << std::string(recursion_depth, '\t') << #__VA_ARGS__ " = " << value << endl;                        \
-        return std::forward<decltype(value)>(value);                                                                   \
+        cerr << string(recursion_depth, '\t') << #__VA_ARGS__ " = " << value << endl;                        \
+        return forward<decltype(value)>(value);                                                                   \
     }                                                                                                                  \
     ()
 

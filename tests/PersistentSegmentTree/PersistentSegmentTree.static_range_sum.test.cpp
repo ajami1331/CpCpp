@@ -3,9 +3,6 @@
 #define solution_h 1
 
 #include "../../library/PersistentSegmentTree.h"
-#include <cstdio>
-#include <cstring>
-#include <iostream>
 
 namespace solution
 {

@@ -1,8 +1,7 @@
 #ifndef BpmHopcraft_h
 #define BpmHopcraft_h 1
 
-#include <algorithm>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
@@ -22,7 +21,7 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
         n1 = _n1;
         n2 = _n2;
         edges = 0;
-        std::fill(last, last + n1, -1);
+        fill(last, last + n1, -1);
     }
 
     void AddEdge(int u, int v)
@@ -34,7 +33,7 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
 
     void Bfs()
     {
-        std::fill(dist, dist + n1, -1);
+        fill(dist, dist + n1, -1);
         int sizeQ = 0;
         for (int u = 0; u < n1; ++u)
         {
@@ -79,7 +78,7 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
     int AugmentPath()
     {
         Bfs();
-        std::fill(vis, vis + n1, false);
+        fill(vis, vis + n1, false);
         int f = 0;
         for (int u = 0; u < n1; ++u)
             if (!used[u] && Dfs(u))
@@ -89,8 +88,8 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
 
     int MaxMatching()
     {
-        std::fill(used, used + n1, false);
-        std::fill(matching, matching + n2, -1);
+        fill(used, used + n1, false);
+        fill(matching, matching + n2, -1);
         for (int res = 0;;)
         {
             int f = AugmentPath();
@@ -100,9 +99,9 @@ template <size_t MAXN1, size_t MAXN2, size_t MAXM> struct BpmHopcraft
         }
     }
 
-    std::vector<std::pair<int, int>> GetMatching()
+    vector<pair<int, int>> GetMatching()
     {
-        std::vector<std::pair<int, int>> res;
+        vector<pair<int, int>> res;
         for (int i = 0; i < n2; ++i)
             if (matching[i] != -1)
                 res.emplace_back(matching[i], i);

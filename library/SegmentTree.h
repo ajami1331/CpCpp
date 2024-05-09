@@ -1,8 +1,7 @@
 #ifndef SegmentTree_h
 #define SegmentTree_h 1
 
-#include <algorithm>
-#include <functional>
+#include "Common.h"
 
 namespace library
 {
@@ -10,10 +9,10 @@ template <typename T, size_t sz, T identityElem> class SegmentTree
 {
   private:
     T tr[sz * 4];
-    std::function<T(T, T)> combine;
+    function<T(T, T)> combine;
 
   public:
-    SegmentTree(std::function<T(T, T)> combine = [](T a, T b) { return a + b; })
+    SegmentTree(function<T(T, T)> combine = [](T a, T b) { return a + b; })
     {
         SetCombine(combine);
         Reset();
@@ -23,14 +22,14 @@ template <typename T, size_t sz, T identityElem> class SegmentTree
     {
     }
 
-    void SetCombine(std::function<T(T, T)> combine)
+    void SetCombine(function<T(T, T)> combine)
     {
         this->combine = combine;
     }
 
     void Reset()
     {
-        std::fill(tr, tr + sz * 4, identityElem);
+        fill(tr, tr + sz * 4, identityElem);
     }
 
     inline void Build(int node, int b, int e, T *arr)

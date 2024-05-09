@@ -1,28 +1,19 @@
 #ifndef LCA_H
 #define LCA_H 1
 
-#include <algorithm>
-#include <array>
-#include <cassert>
-#include <functional>
-#include <iostream>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
-constexpr int LOG2(int x)
-{
-    return 32 - __builtin_clz(x) - 1;
-}
 
 template <int sz = 3'00'105, int LG = LOG2(sz)> struct LCA
 {
     int n;
     int log2n;
-    std::vector<int> graph[sz];
-    std::array<int, sz> level;
-    std::array<int, sz> parent[LG];
-    std::array<int, sz> tr;
+    vector<int> graph[sz];
+    array<int, sz> level;
+    array<int, sz> parent[LG];
+    array<int, sz> tr;
     LCA()
     {
     }
@@ -81,7 +72,7 @@ template <int sz = 3'00'105, int LG = LOG2(sz)> struct LCA
     {
         if (level[u] < level[v])
         {
-            std::swap(u, v);
+            swap(u, v);
         }
         for (int i = log2n - 1; i >= 0; i--)
         {

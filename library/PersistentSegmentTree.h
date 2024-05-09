@@ -1,8 +1,7 @@
 #ifndef PersistentSegmentTree_h
 #define PersistentSegmentTree_h 1
 
-#include <functional>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
@@ -17,8 +16,8 @@ template <typename T, size_t sz> class PersistentSegmentTree
         size_t right;
         T val;
     } nodes[sz * 32];
-    std::function<T(T, T)> combine;
-    std::function<T(T, T)> replace;
+    function<T(T, T)> combine;
+    function<T(T, T)> replace;
 
     size_t UpdateInternal(size_t node_idx, int l, int r, int idx, T x)
     {
@@ -89,11 +88,11 @@ template <typename T, size_t sz> class PersistentSegmentTree
     }
 
   public:
-    std::vector<size_t> roots;
+    vector<size_t> roots;
 
     PersistentSegmentTree(
-        std::function<T(T, T)> combine = [](T a, T b) { return a + b; },
-        std::function<T(T, T)> replace = [](T a, T b) { return a + b; })
+        function<T(T, T)> combine = [](T a, T b) { return a + b; },
+        function<T(T, T)> replace = [](T a, T b) { return a + b; })
     {
         SetCombine(combine);
         SetReplace(replace);
@@ -104,12 +103,12 @@ template <typename T, size_t sz> class PersistentSegmentTree
     {
     }
 
-    void SetCombine(std::function<T(T, T)> combine)
+    void SetCombine(function<T(T, T)> combine)
     {
         this->combine = combine;
     }
 
-    void SetReplace(std::function<T(T, T)> replace)
+    void SetReplace(function<T(T, T)> replace)
     {
         this->replace = replace;
     }

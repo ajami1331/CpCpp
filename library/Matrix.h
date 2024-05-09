@@ -1,17 +1,16 @@
 #ifndef Matrix_h
 #define Matrix_h 1
 
-#include <algorithm>
-#include <vector>
+#include "Common.h"
 
 namespace library
 {
 template <long long mod> struct Matrix
 {
     int mat_sz;
-    std::vector<std::vector<int>> a;
+    vector<vector<int>> a;
 
-    Matrix(int _mat_sz) : mat_sz(_mat_sz), a(std::vector<std::vector<int>>(_mat_sz, std::vector<int>(_mat_sz, 0)))
+    Matrix(int _mat_sz) : mat_sz(_mat_sz), a(vector<vector<int>>(_mat_sz, vector<int>(_mat_sz, 0)))
     {
     }
 
@@ -23,7 +22,7 @@ template <long long mod> struct Matrix
     {
         for (int i = 0; i < mat_sz; i++)
         {
-            std::fill(a[i].begin(), a[i].end(), 0);
+            fill(a[i].begin(), a[i].end(), 0);
         }
     }
 
