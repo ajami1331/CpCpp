@@ -3,6 +3,7 @@
 
 #include "library/Common.h"
 #include "library/StringUtils.h"
+#include <filesystem>
 
 const int MAX_PATH = 256;
 
