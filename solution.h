@@ -6,18 +6,15 @@
 
 namespace solution
 {
-const int sz = 3e5 + 105;
+const int sz = 2e5 + 105;
 const int mod = 1e9 + 7;
+const ll INF = 1e16;
 
 void solve()
 {
-    int t, a, b, c;
-    cin >> t;
-    while (t-- && cin >> a >> b >> c)
-    {
-        cout << (a ^ b ^ c) << "\n";
-    }
-    
+    int a, b;
+    cin >> a >> b;
+    cout << a + b << endl;
 }
 
 } // namespace solution
