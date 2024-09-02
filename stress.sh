@@ -1,21 +1,21 @@
 #!/bin/bash
 
-rm -rf stress_test
-mkdir stress_test
+rm -rf random_tests
+mkdir random_tests
 
-g++ -std=c++17 -O2 -Wall submission.cpp -o stress_test/submission
+g++ -std=c++17 -O2 -Wall submission.cpp -o random_tests/submission
 
-g++ -std=c++17 -O2 -Wall brute.cpp -o stress_test/brute
+g++ -std=c++17 -O2 -Wall brute.cpp -o random_tests/brute
 
-g++ -std=c++17 -O2 -Wall gen.cpp -o stress_test/gen
+g++ -std=c++17 -O2 -Wall gen.cpp -o random_tests/gen
 
 for((i = 1; ; ++i)); do
-    ./stress_test/gen $i > stress_test/input
-    ./stress_test/submission < stress_test/input > stress_test/output
-    ./stress_test/brute < stress_test/input > stress_test/correct
-    if (! diff stress_test/output stress_test/correct); then
+    ./random_tests/gen $i > random_tests/input
+    ./random_tests/submission < random_tests/input > random_tests/output
+    ./random_tests/brute < random_tests/input > random_tests/correct
+    if (! diff random_tests/output random_tests/correct); then
         echo "WA"
-        cat stress_test/input
+        cat random_tests/input
         break
     fi
     echo "Test $i passed"
