@@ -2,8 +2,10 @@
 #define validator_h 1
 
 #include "library/Common.h"
+#include "library/TeeBuf.h"
 #include "solution.h"
 #include "utils.h"
+extern FILE *local_foutput;
 
 namespace validator
 {
@@ -26,7 +28,7 @@ bool compareFiles(const string &p1, const string &p2)
     f1.seekg(0, ifstream::beg);
     f2.seekg(0, ifstream::beg);
     return equal(istreambuf_iterator<char>(f1.rdbuf()), istreambuf_iterator<char>(),
-                      istreambuf_iterator<char>(f2.rdbuf()));
+                 istreambuf_iterator<char>(f2.rdbuf()));
 }
 
 void red(FILE *file)
@@ -76,18 +78,20 @@ void Process(bool validateTestCases)
         string inputFileForTestcaseName = testCaseDir + to_string(testCase) + ".in";
         string outputFileForTestcaseName = testCaseDir + to_string(testCase) + ".out";
         string validFileForTestcaseName = testCaseDir + to_string(testCase) + ".val";
+        std::ofstream outfileForTestcase(outputFileForTestcaseName);
+        TeeBuf teeBuf(cout.rdbuf(), outfileForTestcase.rdbuf());
+        cout.rdbuf(&teeBuf);
         freopen(inputFileForTestcaseName.c_str(), "r", stdin);
-        freopen(outputFileForTestcaseName.c_str(), "w", stdout);
+        local_foutput = fopen(outputFileForTestcaseName.c_str(), "w");
         const clock_t tStart = clock();
         solution::solve();
         totalRuntime += static_cast<double>(clock() - tStart) / CLOCKS_PER_SEC;
-        fflush(stdout);
+        fclose(local_foutput);
         ifstream outputFileForTestcase(outputFileForTestcaseName);
         string outputLine;
         while (getline(outputFileForTestcase, outputLine))
         {
             outfile << outputLine << endl;
-            cerr << outputLine << endl;
         }
 
         bool success = compareFiles(validFileForTestcaseName, outputFileForTestcaseName);
