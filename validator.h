@@ -9,7 +9,7 @@ extern FILE *local_foutput;
 
 namespace validator
 {
-bool compareFiles(const string &p1, const string &p2)
+bool CompareFiles(const string &p1, const string &p2)
 {
     ifstream f1(p1, ifstream::binary | ifstream::ate);
     ifstream f2(p2, ifstream::binary | ifstream::ate);
@@ -31,17 +31,17 @@ bool compareFiles(const string &p1, const string &p2)
                  istreambuf_iterator<char>(f2.rdbuf()));
 }
 
-void red(FILE *file)
+void Red(FILE *file)
 {
     fprintf(file, "\033[1;31m");
 }
 
-void green(FILE *file)
+void Green(FILE *file)
 {
     fprintf(file, "\033[1;32m");
 }
 
-void reset(FILE *file)
+void Reset(FILE *file)
 {
     fprintf(file, "\033[0m");
 }
@@ -85,6 +85,7 @@ void Process(bool validateTestCases)
         local_foutput = fopen(outputFileForTestcaseName.c_str(), "w");
         const clock_t tStart = clock();
         solution::solve();
+        cout.flush();
         totalRuntime += static_cast<double>(clock() - tStart) / CLOCKS_PER_SEC;
         fclose(local_foutput);
         ifstream outputFileForTestcase(outputFileForTestcaseName);
@@ -94,31 +95,31 @@ void Process(bool validateTestCases)
             outfile << outputLine << endl;
         }
 
-        bool success = compareFiles(validFileForTestcaseName, outputFileForTestcaseName);
+        bool success = CompareFiles(validFileForTestcaseName, outputFileForTestcaseName);
         if (success)
         {
             passedCnt++;
-            green(stderr);
+            Green(stderr);
             cerr << "Test " << testCase << ": Success!" << endl;
         }
         else
         {
-            red(stderr);
+            Red(stderr);
             cerr << "Test " << testCase << ": Fail!" << endl;
         }
-        reset(stderr);
+        Reset(stderr);
     }
 
     if (passedCnt == testCaseCnt)
     {
-        green(stderr);
+        Green(stderr);
     }
     else
     {
-        red(stderr);
+        Red(stderr);
     }
     cerr << passedCnt << "/" << testCaseCnt << " Test passed!" << endl;
-    reset(stderr);
+    Reset(stderr);
 
     outfile.close();
     fprintf(stderr, "\n>> Avg Runtime: %.10fs\n", totalRuntime / testCaseCnt);
