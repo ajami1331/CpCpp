@@ -3,12 +3,11 @@
 #include "solution.h"
 #include "validator.h"
 
-int main()
-{
+int main() {
 #ifdef CLown1331
-    validator::Process(true);
-    return 0;
+  validator::Process(true);
+  return 0;
 #endif
-    solution::solve();
-    return 0;
+  solution::solve();
+  return 0;
 }

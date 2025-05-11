@@ -3,9 +3,9 @@
 
 #include <algorithm>
 #include <cassert>
+#include <chrono>
 #include <climits>
 #include <cmath>
-#include <chrono>
 #include <cstdio>
 #include <cstring>
 #include <deque>
@@ -17,6 +17,7 @@
 #include <map>
 #include <numeric>
 #include <queue>
+#include <random>
 #include <set>
 #include <sstream>
 #include <stack>
@@ -24,7 +25,6 @@
 #include <unordered_map>
 #include <utility>
 #include <vector>
-#include <random>
 
 using namespace std;
 
@@ -36,18 +36,16 @@ using ll = long long;
 using vi = vector<int>;
 using pii = pair<int, int>;
 
-constexpr int LOG2(int x)
-{
-    return 32 - __builtin_clz(x) - 1;
-}
+constexpr int LOG2(int x) { return 32 - __builtin_clz(x) - 1; }
 
 #ifdef CLown1331
 // duplicate printf that outputs to file and stdout
-FILE *local_foutput;
-#define printf(...) fprintf(local_foutput, __VA_ARGS__), printf(__VA_ARGS__), fflush(stdout)
+FILE* local_foutput;
+#define printf(...) \
+  fprintf(local_foutput, __VA_ARGS__), printf(__VA_ARGS__), fflush(stdout)
 #define puts(s) fputs(s, local_foutput), puts(s), fflush(stdout)
 #define putchar(c) fputc(c, local_foutput), putchar(c), fflush(stdout)
 
-#endif // CLown1331
+#endif  // CLown1331
 
-#endif // COMMON_H
+#endif  // COMMON_H

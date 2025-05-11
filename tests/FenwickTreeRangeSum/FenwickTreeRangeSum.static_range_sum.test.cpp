@@ -4,8 +4,7 @@
 
 #include "../../library/FenwickTreeRangeSum.h"
 
-namespace solution
-{
+namespace solution {
 using namespace std;
 const int sz = 5e5 + 10;
 using ll = long long;
@@ -14,28 +13,24 @@ library::FenwickTreeRangeSum<ll, sz> ft;
 int n, q;
 ll ar[sz];
 
-void Solve()
-{
-    cin >> n >> q;
-    ft.Reset();
-    for (int i = 0; i < n; i++)
-    {
-        cin >> ar[i];
-        ft.Update(i + 1, ar[i]);
-    }
+void Solve() {
+  cin >> n >> q;
+  ft.Reset();
+  for (int i = 0; i < n; i++) {
+    cin >> ar[i];
+    ft.Update(i + 1, ar[i]);
+  }
 
-    while (q--)
-    {
-        int x, y;
-        cin >> x >> y;
-        cout << ft.QueryRange(x + 1, y) << "\n";
-    }
+  while (q--) {
+    int x, y;
+    cin >> x >> y;
+    cout << ft.QueryRange(x + 1, y) << "\n";
+  }
 }
-} // namespace solution
+}  // namespace solution
 #endif
 
-int main(int argc, char *argv[])
-{
-    solution::Solve();
-    return 0;
+int main(int argc, char* argv[]) {
+  solution::Solve();
+  return 0;
 }
