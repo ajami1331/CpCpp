@@ -1,3 +1,62 @@
+#ifndef ATCODER_DSU_HPP
+#define ATCODER_DSU_HPP 1
+#include <algorithm>
+#include <cassert>
+#include <vector>
+namespace atcoder {
+struct dsu {
+ public:
+  dsu() : _n(0) {}
+  explicit dsu(int n) : _n(n), parent_or_size(n, -1) {}
+  int merge(int a, int b) {
+    assert(0 <= a && a < _n);
+    assert(0 <= b && b < _n);
+    int x = leader(a), y = leader(b);
+    if (x == y) return x;
+    if (-parent_or_size[x] < -parent_or_size[y]) std::swap(x, y);
+    parent_or_size[x] += parent_or_size[y];
+    parent_or_size[y] = x;
+    return x;
+  }
+  bool same(int a, int b) {
+    assert(0 <= a && a < _n);
+    assert(0 <= b && b < _n);
+    return leader(a) == leader(b);
+  }
+  int leader(int a) {
+    assert(0 <= a && a < _n);
+    if (parent_or_size[a] < 0) return a;
+    return parent_or_size[a] = leader(parent_or_size[a]);
+  }
+  int size(int a) {
+    assert(0 <= a && a < _n);
+    return -parent_or_size[leader(a)];
+  }
+  std::vector<std::vector<int>> groups() {
+    std::vector<int> leader_buf(_n), group_size(_n);
+    for (int i = 0; i < _n; i++) {
+      leader_buf[i] = leader(i);
+      group_size[leader_buf[i]]++;
+    }
+    std::vector<std::vector<int>> result(_n);
+    for (int i = 0; i < _n; i++) {
+      result[i].reserve(group_size[i]);
+    }
+    for (int i = 0; i < _n; i++) {
+      result[leader_buf[i]].push_back(i);
+    }
+    result.erase(
+        std::remove_if(result.begin(), result.end(),
+                       [&](const std::vector<int>& v) { return v.empty(); }),
+        result.end());
+    return result;
+  }
+ private:
+  int _n;
+  std::vector<int> parent_or_size;
+};
+}  // namespace atcoder
+#endif  // ATCODER_DSU_HPP
 #ifndef COMMON_H
 #define COMMON_H 1
 #include <algorithm>
@@ -47,65 +106,16 @@ namespace solution {
 const int sz = 2e5 + 105;
 const int mod = 1e9 + 7;
 const ll INF = 1e16;
-bool is_regular(const string& s) {
-  int cnt = 0;
-  for (char c : s) {
-    if (c == '(')
-      cnt++;
-    else
-      cnt--;
-    if (cnt < 0) return false;
-  }
-  return cnt == 0;
-}
-bool is_beautiful(string s) {
-  if (is_regular(s)) return true;
-  reverse(all(s));
-  return is_regular(s);
-}
 void solve() {
-  int t;
-  cin >> t;
-  while (t--) {
-    int n;
-    string s;
-    cin >> n >> s;
-    if (is_beautiful(s)) {
-      printf("1\n1");
-      for (int i = 1; i < n; i++) {
-        printf(" 1");
-      }
-      printf("\n");
-      continue;
-    }
-    int cnt = 0;
-    vector<int> ans;
-    int color = 0;
-    for (char c : s) {
-      if (cnt == 0) color = c == ')';
-      if (c == '(')
-        cnt++;
-      else
-        cnt--;
-      ans.push_back(color);
-    }
-    string part1, part2;
-    for (int i = 0; i < n; i++) {
-      if (ans[i] == 0)
-        part1.push_back(s[i]);
-      else
-        part2.push_back(s[i]);
-    }
-    if (is_beautiful(part1) && is_beautiful(part2)) {
-      printf("2\n");
-      for (int i = 0; i < n; i++) {
-        printf("%d ", ans[i] + 1);
-      }
-      printf("\n");
-    } else {
-      printf("-1\n");
-    }
+  int n;
+  scanf("%d", &n);
+  atcoder::dsu ds(n);
+  for (int i = 0; i < n; ++i) {
+    int x;
+    scanf("%d", &x);
+    ds.merge(i, x - 1);
   }
+  printf("%d\n", ds.groups().size());
 }
 }  // namespace solution
 #endif  // solution_h
