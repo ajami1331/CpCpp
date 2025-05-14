@@ -9,7 +9,7 @@
 const int MAX_PATH = 256;
 
 namespace utils {
-const char* header = "#include";
+const char* headerPrefix = "#include";
 const string ifPrefix = "#ifdef CLown1331";
 const string ifnPrefix = "#ifndef CLown1331";
 const string elifPrefix = "#elif";
@@ -75,7 +75,7 @@ void Process(filesystem::path filePath) {
   string skippedContent;
   while (getline(fstream, line)) {
     library::rtrim(line);
-    if (library::trim_n(line).rfind(header) == 0 &&
+    if (library::trim_n(line).rfind(headerPrefix) == 0 &&
         ProcessIncludes(line, filePath)) {
       continue;
     }

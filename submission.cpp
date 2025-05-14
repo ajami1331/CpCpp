@@ -1,3 +1,38 @@
+#ifndef COMMON_H
+#define COMMON_H 1
+#include <algorithm>
+#include <cassert>
+#include <chrono>
+#include <climits>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
+#include <deque>
+#include <fstream>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <iterator>
+#include <map>
+#include <numeric>
+#include <queue>
+#include <random>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <string>
+#include <unordered_map>
+#include <utility>
+#include <vector>
+using namespace std;
+#define rep(i, a, b) for (int i = a; i < (b); ++i)
+#define all(x) begin(x), end(x)
+#define szx(x) (int)(x).size()
+using ll = long long;
+using vi = vector<int>;
+using pii = pair<int, int>;
+constexpr int LOG2(int x) { return 32 - __builtin_clz(x) - 1; }
+#endif  // COMMON_H
 #ifndef ATCODER_DSU_HPP
 #define ATCODER_DSU_HPP 1
 #include <algorithm>
@@ -57,41 +92,6 @@ struct dsu {
 };
 }  // namespace atcoder
 #endif  // ATCODER_DSU_HPP
-#ifndef COMMON_H
-#define COMMON_H 1
-#include <algorithm>
-#include <cassert>
-#include <chrono>
-#include <climits>
-#include <cmath>
-#include <cstdio>
-#include <cstring>
-#include <deque>
-#include <fstream>
-#include <functional>
-#include <iomanip>
-#include <iostream>
-#include <iterator>
-#include <map>
-#include <numeric>
-#include <queue>
-#include <random>
-#include <set>
-#include <sstream>
-#include <stack>
-#include <string>
-#include <unordered_map>
-#include <utility>
-#include <vector>
-using namespace std;
-#define rep(i, a, b) for (int i = a; i < (b); ++i)
-#define all(x) begin(x), end(x)
-#define szx(x) (int)(x).size()
-using ll = long long;
-using vi = vector<int>;
-using pii = pair<int, int>;
-constexpr int LOG2(int x) { return 32 - __builtin_clz(x) - 1; }
-#endif  // COMMON_H
 #ifndef DEBUG_H
 #define DEBUG_H 1
 #ifndef CLown1331
@@ -108,14 +108,14 @@ const int mod = 1e9 + 7;
 const ll INF = 1e16;
 void solve() {
   int n;
-  scanf("%d", &n);
+  std::ignore = scanf("%d", &n);
   atcoder::dsu ds(n);
   for (int i = 0; i < n; ++i) {
     int x;
-    scanf("%d", &x);
+    std::ignore = scanf("%d", &x);
     ds.merge(i, x - 1);
   }
-  printf("%d\n", ds.groups().size());
+  printf("%d\n", static_cast<int>(ds.groups().size()));
 }
 }  // namespace solution
 #endif  // solution_h

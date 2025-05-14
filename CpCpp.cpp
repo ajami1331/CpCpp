@@ -1,5 +1,6 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 
+#include "library/Common.h"
 #include "solution.h"
 #include "validator.h"
 

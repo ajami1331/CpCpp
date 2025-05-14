@@ -36,8 +36,8 @@ void Reset(FILE* file) { fprintf(file, "\033[0m"); }
 
 void Process(bool validateTestCases) {
   if (!validateTestCases) {
-    freopen(INPUT_FILE, "r", stdin);
-    freopen(OUTPUT_FILE, "w", stdout);
+    std::ignore = freopen(INPUT_FILE, "r", stdin);
+    std::ignore = freopen(OUTPUT_FILE, "w", stdout);
     solution::solve();
     fflush(stdout);
     ifstream outputFileForTestcase(OUTPUT_FILE);
@@ -68,7 +68,7 @@ void Process(bool validateTestCases) {
     TeeBuf teeBuf(cout.rdbuf(), outfileForTestcase.rdbuf());
     auto backupCoutBuf = std::cout.rdbuf();
     cout.rdbuf(&teeBuf);
-    freopen(inputFileForTestcaseName.c_str(), "r", stdin);
+    std::ignore = freopen(inputFileForTestcaseName.c_str(), "r", stdin);
     local_foutput = fopen(outputFileForTestcaseName.c_str(), "w");
     const clock_t tStart = clock();
     solution::solve();
